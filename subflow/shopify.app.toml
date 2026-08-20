@@ -2,7 +2,7 @@
 
 client_id = "69fce1c6e1d94b514c322edde8eab3f7"
 name = "Subflow"
-application_url = "https://example.com"
+application_url = "https://subflow-7a83yeav.b4a.run"
 embedded = true
 
 [access_scopes]
@@ -38,20 +38,16 @@ type = "multi_line_text_field"
 [webhooks]
 api_version = "2026-07"
 
-# Webhook subscriptions temporarily disabled for local (--use-localhost)
-# self-testing, since Shopify rejects localhost as a webhook URL. Restore
-# these once a real public app URL (ngrok) is in place.
-#  [[webhooks.subscriptions]]
-#  uri = "/webhooks/app/uninstalled"
-#  topics = [ "app/uninstalled" ]
-#
-#  [[webhooks.subscriptions]]
-#  uri = "/webhooks/app/scopes_update"
-#  topics = [ "app/scopes_update" ]
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/app/uninstalled"
+  topics = [ "app/uninstalled" ]
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/app/scopes_update"
+  topics = [ "app/scopes_update" ]
 
 [auth]
-redirect_urls = [ ]
+redirect_urls = [ "https://subflow-7a83yeav.b4a.run/auth/callback" ]
 
 [build]
-include_config_on_deploy = true
 automatically_update_urls_on_dev = true
