@@ -1,3 +1,5 @@
-.cache
-build
 node_modules
+build
+dev.sqlite
+.env
+.shopify
