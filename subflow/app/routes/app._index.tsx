@@ -139,6 +139,23 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     return { userErrors };
   }
 
+  if (intent === "delete_plan") {
+    const groupId = String(formData.get("groupId"));
+    const response = await admin.graphql(
+      `#graphql
+        mutation DeleteSellingPlanGroup($id: ID!) {
+          sellingPlanGroupDelete(id: $id) {
+            deletedSellingPlanGroupId
+            userErrors { field message }
+          }
+        }`,
+      { variables: { id: groupId } },
+    );
+    const json = await response.json();
+    const userErrors = json.data?.sellingPlanGroupDelete?.userErrors ?? [];
+    return { userErrors };
+  }
+
   return null;
 };
 
@@ -154,7 +171,11 @@ export default function Index() {
   useEffect(() => {
     if (fetcher.data && "userErrors" in fetcher.data) {
       if (fetcher.data.userErrors.length === 0) {
-        shopify.toast.show("Subscription plan created");
+        shopify.toast.show(
+          fetcher.formData?.get("_action") === "delete_plan"
+            ? "Subscription plan deleted"
+            : "Subscription plan created",
+        );
       } else {
         shopify.toast.show(fetcher.data.userErrors[0].message, {
           isError: true,
@@ -241,13 +262,32 @@ export default function Index() {
         {data.sellingPlanGroups.length === 0 ? (
           <s-paragraph>No subscription plans created yet.</s-paragraph>
         ) : (
-          <s-unordered-list>
+          <s-stack direction="block" gap="base">
             {data.sellingPlanGroups.map((g) => (
-              <s-list-item key={g.id}>
-                {g.name} — {g.sellingPlansCount} plan(s)
-              </s-list-item>
+              <s-stack
+                key={g.id}
+                direction="inline"
+                gap="base"
+                alignItems="center"
+              >
+                <s-text>
+                  {g.name} — {g.sellingPlansCount} plan(s)
+                </s-text>
+                <s-button
+                  variant="tertiary"
+                  tone="critical"
+                  onClick={() =>
+                    fetcher.submit(
+                      { _action: "delete_plan", groupId: g.id },
+                      { method: "POST" },
+                    )
+                  }
+                >
+                  Delete
+                </s-button>
+              </s-stack>
             ))}
-          </s-unordered-list>
+          </s-stack>
         )}
       </s-section>
     </s-page>
