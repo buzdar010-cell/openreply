@@ -38,13 +38,16 @@ type = "multi_line_text_field"
 [webhooks]
 api_version = "2026-07"
 
-  [[webhooks.subscriptions]]
-  uri = "/webhooks/app/uninstalled"
-  topics = [ "app/uninstalled" ]
-
-  [[webhooks.subscriptions]]
-  uri = "/webhooks/app/scopes_update"
-  topics = [ "app/scopes_update" ]
+# Webhook subscriptions temporarily disabled for local (--use-localhost)
+# self-testing, since Shopify rejects localhost as a webhook URL. Restore
+# these once a real public app URL (ngrok) is in place.
+#  [[webhooks.subscriptions]]
+#  uri = "/webhooks/app/uninstalled"
+#  topics = [ "app/uninstalled" ]
+#
+#  [[webhooks.subscriptions]]
+#  uri = "/webhooks/app/scopes_update"
+#  topics = [ "app/scopes_update" ]
 
 [auth]
 redirect_urls = [ ]
