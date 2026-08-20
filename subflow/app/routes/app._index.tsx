@@ -88,9 +88,17 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 
   if (intent === "create_plan") {
-    const productId = String(formData.get("productId"));
+    const productIds = formData.getAll("productIds").map(String);
     const discountPercent = Number(formData.get("discountPercent"));
     const intervalDays = Number(formData.get("intervalDays"));
+
+    if (productIds.length === 0) {
+      return {
+        userErrors: [
+          { field: ["productIds"], message: "Pick at least one product." },
+        ],
+      };
+    }
 
     const response = await admin.graphql(
       `#graphql
@@ -130,7 +138,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
               },
             ],
           },
-          resources: { productIds: [productId] },
+          resources: { productIds },
         },
       },
     );
@@ -218,13 +226,14 @@ export default function Index() {
         <fetcher.Form method="POST">
           <input type="hidden" name="_action" value="create_plan" />
           <s-stack direction="block" gap="base">
-            <s-select label="Product" name="productId">
-              {data.products.map((p) => (
-                <s-option key={p.id} value={p.id}>
-                  {p.title}
-                </s-option>
-              ))}
-            </s-select>
+            <s-box>
+              <s-text>Products (select one or more)</s-text>
+              <s-stack direction="block" gap="small">
+                {data.products.map((p) => (
+                  <s-checkbox key={p.id} name="productIds" value={p.id} label={p.title} />
+                ))}
+              </s-stack>
+            </s-box>
             <s-select
               label="Discount"
               name="discountPercent"
