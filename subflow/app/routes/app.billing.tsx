@@ -107,35 +107,42 @@ export default function BillingPage() {
       </s-section>
 
       <s-section heading="Plans & pricing">
-        <s-table variant="auto">
-          <s-table-header-row>
-            <s-table-header listSlot="primary">Plan</s-table-header>
-            <s-table-header listSlot="secondary">Price</s-table-header>
-            <s-table-header listSlot="labeled">Subscriber limit</s-table-header>
-          </s-table-header-row>
-          <s-table-body>
-            <s-table-row>
-              <s-table-cell>Free</s-table-cell>
-              <s-table-cell>$0/mo</s-table-cell>
-              <s-table-cell>Up to 100</s-table-cell>
-            </s-table-row>
-            <s-table-row>
-              <s-table-cell>Growth</s-table-cell>
-              <s-table-cell>$9.99/mo</s-table-cell>
-              <s-table-cell>Up to 250</s-table-cell>
-            </s-table-row>
-            <s-table-row>
-              <s-table-cell>Scale</s-table-cell>
-              <s-table-cell>$24.99/mo</s-table-cell>
-              <s-table-cell>Up to 1,000</s-table-cell>
-            </s-table-row>
-            <s-table-row>
-              <s-table-cell>Enterprise</s-table-cell>
-              <s-table-cell>Contact us</s-table-cell>
-              <s-table-cell>1,000+</s-table-cell>
-            </s-table-row>
-          </s-table-body>
-        </s-table>
+        <s-stack direction="block" gap="small">
+          {[
+            { key: "free", label: "Free", price: "$0/mo", limit: "Up to 100" },
+            { key: "growth", label: "Growth", price: "$9.99/mo", limit: "Up to 250" },
+            { key: "scale", label: "Scale", price: "$24.99/mo", limit: "Up to 1,000" },
+            { key: "enterprise", label: "Enterprise", price: "Contact us", limit: "1,000+" },
+          ].map((tier) => {
+            const isCurrent = tier.key === data.currentTier.key;
+            return (
+              <s-box
+                key={tier.key}
+                background={isCurrent ? "strong" : "subdued"}
+                padding="base"
+                borderRadius="base"
+                {...(isCurrent
+                  ? { borderWidth: "base", borderColor: "strong" }
+                  : {})}
+              >
+                <s-stack
+                  direction="inline"
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
+                  <s-stack direction="block" gap="small-100">
+                    <s-stack direction="inline" gap="small-200" alignItems="center">
+                      <s-heading>{tier.label}</s-heading>
+                      {isCurrent && <s-badge tone="success">Current</s-badge>}
+                    </s-stack>
+                    <s-text color="subdued">{tier.limit} subscribers</s-text>
+                  </s-stack>
+                  <s-text type="strong">{tier.price}</s-text>
+                </s-stack>
+              </s-box>
+            );
+          })}
+        </s-stack>
       </s-section>
 
       <s-section heading="Cancel your plan">
