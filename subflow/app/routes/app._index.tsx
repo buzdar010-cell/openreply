@@ -6,7 +6,7 @@ import type {
 import { useFetcher, useLoaderData } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { useEffect, useState } from "react";
-import { authenticate, MONTHLY_PLAN } from "../shopify.server";
+import { getShopify, MONTHLY_PLAN } from "../shopify.server";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 
 interface ProductOption {
@@ -21,12 +21,13 @@ interface SellingPlanGroupSummary {
   activeSubscribers: number;
 }
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { billing, admin } = await authenticate.admin(request);
+export const loader = async ({ request, context }: LoaderFunctionArgs) => {
+  const shopify = getShopify(context.cloudflare.env);
+  const { billing, admin } = await shopify.authenticate.admin(request);
 
   const billingCheck = await billing.check({
     plans: [MONTHLY_PLAN],
-    isTest: process.env.NODE_ENV !== "production",
+    isTest: import.meta.env.DEV,
   });
 
   if (!billingCheck.hasActivePayment) {
@@ -111,16 +112,17 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return { subscribed: true, products, sellingPlanGroups };
 };
 
-export const action = async ({ request }: ActionFunctionArgs) => {
-  const { billing, admin } = await authenticate.admin(request);
+export const action = async ({ request, context }: ActionFunctionArgs) => {
+  const shopify = getShopify(context.cloudflare.env);
+  const { billing, admin } = await shopify.authenticate.admin(request);
   const formData = await request.formData();
   const intent = formData.get("_action");
 
   if (intent === "subscribe") {
     await billing.request({
       plan: MONTHLY_PLAN,
-      isTest: process.env.NODE_ENV !== "production",
-      returnUrl: `${process.env.SHOPIFY_APP_URL}/app`,
+      isTest: import.meta.env.DEV,
+      returnUrl: `${context.cloudflare.env.SHOPIFY_APP_URL}/app`,
     });
     return null;
   }

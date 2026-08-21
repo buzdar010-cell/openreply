@@ -10,11 +10,11 @@
     "config:use": "shopify app config use",
     "env": "shopify app env",
     "start": "react-router-serve ./build/server/index.js",
-    "docker-start": "npm run setup && npm run start",
-    "setup": "prisma generate && prisma migrate deploy",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "shopify": "shopify",
-    "prisma": "prisma",
+    "worker:deploy": "react-router build && wrangler deploy",
+    "worker:dev": "react-router build && wrangler dev",
+    "worker:d1:migrate": "wrangler d1 execute subflow-db --remote --file=./workers/schema.sql",
     "graphql-codegen": "graphql-codegen",
     "vite": "vite",
     "typecheck": "react-router typegen && tsc --noEmit"
@@ -24,23 +24,22 @@
     "node": ">=20.19 <22 || >=22.12"
   },
   "dependencies": {
-    "@prisma/client": "^6.16.3",
     "@react-router/dev": "^7.12.0",
     "@react-router/fs-routes": "^7.12.0",
     "@react-router/node": "^7.12.0",
     "@react-router/serve": "^7.12.0",
     "@shopify/app-bridge-react": "^4.2.4",
+    "@shopify/cli": "4.7.0",
     "@shopify/shopify-app-react-router": "^1.2.1",
-    "@shopify/shopify-app-session-storage-prisma": "^9.0.0",
+    "@shopify/shopify-app-session-storage": "^5.0.1",
     "isbot": "^5.1.31",
-    "prisma": "^6.16.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router": "^7.12.0",
-    "vite-tsconfig-paths": "^5.1.4",
-    "@shopify/cli": "4.7.0"
+    "vite-tsconfig-paths": "^5.1.4"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260821.1",
     "@shopify/api-codegen-preset": "^1.2.0",
     "@shopify/polaris-types": "^1.0.1",
     "@types/eslint": "^9.6.1",
@@ -58,7 +57,8 @@
     "graphql-config": "^5.1.1",
     "prettier": "^3.6.2",
     "typescript": "^5.9.3",
-    "vite": "^6.3.6"
+    "vite": "^6.3.6",
+    "wrangler": "^4.125.0"
   },
   "workspaces": [
     "extensions/*"
