@@ -17,8 +17,13 @@ interface ProductOption {
 interface SellingPlanGroupSummary {
   id: string;
   name: string;
-  sellingPlansCount: number;
+  createdAt: string;
+  discountPercent: number | null;
+  intervalDays: number | null;
+  productsCount: number;
+  productTitles: string[];
   activeSubscribers: number;
+  cancelledSubscribers: number;
 }
 
 export const loader = async ({ request, context }: LoaderFunctionArgs) => {
@@ -56,8 +61,31 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
             node {
               id
               name
+              createdAt
+              productsCount { count }
+              products(first: 10) {
+                edges { node { title } }
+              }
               sellingPlans(first: 10) {
-                edges { node { id } }
+                edges {
+                  node {
+                    id
+                    billingPolicy {
+                      ... on SellingPlanRecurringBillingPolicy {
+                        intervalCount
+                      }
+                    }
+                    pricingPolicies {
+                      ... on SellingPlanFixedPricingPolicy {
+                        adjustmentValue {
+                          ... on SellingPlanPricingPolicyPercentageValue {
+                            percentage
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
               }
             }
           }
@@ -65,22 +93,50 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
       }`,
   );
   const groupsJson = await groupsResponse.json();
-  const groups: Array<{ id: string; name: string; planIds: string[] }> =
-    groupsJson.data?.sellingPlanGroups.edges.map((e: any) => ({
-      id: e.node.id,
-      name: e.node.name,
-      planIds: e.node.sellingPlans.edges.map((se: any) => se.node.id),
-    })) ?? [];
+  const groups: Array<{
+    id: string;
+    name: string;
+    createdAt: string;
+    productsCount: number;
+    productTitles: string[];
+    planIds: string[];
+    discountPercent: number | null;
+    intervalDays: number | null;
+  }> =
+    groupsJson.data?.sellingPlanGroups.edges.map((e: any) => {
+      const firstPlan = e.node.sellingPlans.edges[0]?.node;
+      return {
+        id: e.node.id,
+        name: e.node.name,
+        createdAt: e.node.createdAt,
+        productsCount: e.node.productsCount?.count ?? 0,
+        productTitles: e.node.products.edges.map((pe: any) => pe.node.title),
+        planIds: e.node.sellingPlans.edges.map((se: any) => se.node.id),
+        discountPercent:
+          firstPlan?.pricingPolicies?.[0]?.adjustmentValue?.percentage ?? null,
+        intervalDays: firstPlan?.billingPolicy?.intervalCount ?? null,
+      };
+    }) ?? [];
 
   // read_own_subscription_contracts is a protected scope pending Shopify's
   // approval — until then this query is denied, so fail soft to zero counts
   // instead of taking down the whole dashboard.
-  const subscriberCountByPlanId = new Map<string, number>();
+  const activeCountByPlanId = new Map<string, number>();
+  const cancelledCountByPlanId = new Map<string, number>();
   try {
     const contractsResponse = await admin.graphql(
       `#graphql
-        query GetActiveSubscriptionContracts {
-          subscriptionContracts(first: 250, query: "status:active") {
+        query GetSubscriptionContractCounts {
+          active: subscriptionContracts(first: 250, query: "status:active") {
+            edges {
+              node {
+                lines(first: 5) {
+                  edges { node { sellingPlanId } }
+                }
+              }
+            }
+          }
+          cancelled: subscriptionContracts(first: 250, query: "status:cancelled") {
             edges {
               node {
                 lines(first: 5) {
@@ -92,16 +148,17 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
         }`,
     );
     const contractsJson = await contractsResponse.json();
-    for (const edge of contractsJson.data?.subscriptionContracts?.edges ?? []) {
-      for (const lineEdge of edge.node.lines.edges) {
-        const planId = lineEdge.node.sellingPlanId;
-        if (!planId) continue;
-        subscriberCountByPlanId.set(
-          planId,
-          (subscriberCountByPlanId.get(planId) ?? 0) + 1,
-        );
+    const tally = (edges: any[], map: Map<string, number>) => {
+      for (const edge of edges ?? []) {
+        for (const lineEdge of edge.node.lines.edges) {
+          const planId = lineEdge.node.sellingPlanId;
+          if (!planId) continue;
+          map.set(planId, (map.get(planId) ?? 0) + 1);
+        }
       }
-    }
+    };
+    tally(contractsJson.data?.active?.edges, activeCountByPlanId);
+    tally(contractsJson.data?.cancelled?.edges, cancelledCountByPlanId);
   } catch {
     // Scope not yet approved — subscriber counts show as 0 until it is.
   }
@@ -109,9 +166,17 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
   const sellingPlanGroups: SellingPlanGroupSummary[] = groups.map((g) => ({
     id: g.id,
     name: g.name,
-    sellingPlansCount: g.planIds.length,
+    createdAt: g.createdAt,
+    discountPercent: g.discountPercent,
+    intervalDays: g.intervalDays,
+    productsCount: g.productsCount,
+    productTitles: g.productTitles,
     activeSubscribers: g.planIds.reduce(
-      (sum, planId) => sum + (subscriberCountByPlanId.get(planId) ?? 0),
+      (sum, planId) => sum + (activeCountByPlanId.get(planId) ?? 0),
+      0,
+    ),
+    cancelledSubscribers: g.planIds.reduce(
+      (sum, planId) => sum + (cancelledCountByPlanId.get(planId) ?? 0),
       0,
     ),
   }));
@@ -145,6 +210,9 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
     const productIds = formData.getAll("productIds").map(String);
     const discountPercent = Number(formData.get("discountPercent"));
     const intervalDays = Number(formData.get("intervalDays"));
+    const planName =
+      String(formData.get("planName") || "").trim() ||
+      `Subscribe & Save ${discountPercent}%`;
 
     if (productIds.length === 0) {
       return {
@@ -168,8 +236,8 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
       {
         variables: {
           input: {
-            name: `Subscribe & Save ${discountPercent}%`,
-            merchantCode: `subscribe-save-${discountPercent}-${intervalDays}d`,
+            name: planName,
+            merchantCode: `subscribe-save-${discountPercent}-${intervalDays}d-${Date.now()}`,
             options: ["Delivery every"],
             sellingPlansToCreate: [
               {
@@ -228,11 +296,16 @@ export default function Index() {
   const shopify = useAppBridge();
   const modalRef = useRef<any>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const detailModalRef = useRef<any>(null);
   const [discountPercent, setDiscountPercent] = useState("10");
   const [intervalDays, setIntervalDays] = useState("30");
+  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
 
   const isSubmitting = fetcher.state === "submitting";
   const submittingAction = fetcher.formData?.get("_action");
+  const selectedGroup = data.subscribed
+    ? data.sellingPlanGroups.find((g) => g.id === selectedGroupId)
+    : undefined;
 
   useEffect(() => {
     if (fetcher.data && "userErrors" in fetcher.data) {
@@ -292,6 +365,11 @@ export default function Index() {
         <fetcher.Form method="POST" id="create-plan-form" ref={formRef}>
           <input type="hidden" name="_action" value="create_plan" />
           <s-stack direction="block" gap="base">
+            <s-text-field
+              label="Plan name"
+              name="planName"
+              placeholder={`Subscribe & Save ${discountPercent}%`}
+            />
             <s-box>
               <s-text>Products (select one or more)</s-text>
               <s-stack direction="block" gap="small">
@@ -350,9 +428,6 @@ export default function Index() {
             <s-table-header-row>
               <s-table-header listSlot="primary">Plan name</s-table-header>
               <s-table-header listSlot="secondary" format="numeric">
-                Plans
-              </s-table-header>
-              <s-table-header listSlot="secondary" format="numeric">
                 Active subscribers
               </s-table-header>
               <s-table-header listSlot="inline"></s-table-header>
@@ -361,30 +436,40 @@ export default function Index() {
               {data.sellingPlanGroups.map((g) => (
                 <s-table-row key={g.id}>
                   <s-table-cell>{g.name}</s-table-cell>
-                  <s-table-cell>{g.sellingPlansCount}</s-table-cell>
                   <s-table-cell>
                     <s-badge {...(g.activeSubscribers > 0 ? { tone: "success" } : {})}>
                       {g.activeSubscribers}
                     </s-badge>
                   </s-table-cell>
                   <s-table-cell>
-                    <s-button
-                      variant="tertiary"
-                      tone="critical"
-                      {...(isSubmitting &&
-                      submittingAction === "delete_plan" &&
-                      fetcher.formData?.get("groupId") === g.id
-                        ? { loading: true }
-                        : {})}
-                      onClick={() =>
-                        fetcher.submit(
-                          { _action: "delete_plan", groupId: g.id },
-                          { method: "POST" },
-                        )
-                      }
-                    >
-                      Delete
-                    </s-button>
+                    <s-stack direction="inline" gap="small">
+                      <s-button
+                        variant="tertiary"
+                        onClick={() => {
+                          setSelectedGroupId(g.id);
+                          detailModalRef.current?.showOverlay();
+                        }}
+                      >
+                        Details
+                      </s-button>
+                      <s-button
+                        variant="tertiary"
+                        tone="critical"
+                        {...(isSubmitting &&
+                        submittingAction === "delete_plan" &&
+                        fetcher.formData?.get("groupId") === g.id
+                          ? { loading: true }
+                          : {})}
+                        onClick={() =>
+                          fetcher.submit(
+                            { _action: "delete_plan", groupId: g.id },
+                            { method: "POST" },
+                          )
+                        }
+                      >
+                        Delete
+                      </s-button>
+                    </s-stack>
                   </s-table-cell>
                 </s-table-row>
               ))}
@@ -392,6 +477,44 @@ export default function Index() {
           </s-table>
         )}
       </s-section>
+
+      <s-modal
+        ref={detailModalRef}
+        id="plan-detail-modal"
+        heading={selectedGroup?.name ?? "Plan details"}
+      >
+        {selectedGroup && (
+          <s-stack direction="block" gap="base">
+            <s-text>
+              Created:{" "}
+              {new Date(selectedGroup.createdAt).toLocaleDateString()}
+            </s-text>
+            <s-text>
+              Discount:{" "}
+              {selectedGroup.discountPercent !== null
+                ? `${selectedGroup.discountPercent}%`
+                : "—"}
+            </s-text>
+            <s-text>
+              Delivery every:{" "}
+              {selectedGroup.intervalDays !== null
+                ? `${selectedGroup.intervalDays} days`
+                : "—"}
+            </s-text>
+            <s-text>
+              Products ({selectedGroup.productsCount}):{" "}
+              {selectedGroup.productTitles.join(", ") || "—"}
+            </s-text>
+            <s-text>Active subscribers: {selectedGroup.activeSubscribers}</s-text>
+            <s-text>
+              Cancelled subscribers: {selectedGroup.cancelledSubscribers}
+            </s-text>
+          </s-stack>
+        )}
+        <s-button slot="secondary-actions" command="--hide" commandFor="plan-detail-modal">
+          Close
+        </s-button>
+      </s-modal>
     </s-page>
   );
 }
