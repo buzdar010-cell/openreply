@@ -467,9 +467,9 @@ export default function Index() {
         heading="Plan details"
       >
         {selectedGroup && (
-          <s-stack direction="block" gap="large">
-            <s-stack direction="block" gap="small">
-              <s-box paddingBlock="small-200">
+          <s-stack direction="block" gap="base">
+            <s-stack direction="block" gap="none">
+              <s-box paddingBlock="small-100">
                 <s-stack direction="inline" justifyContent="space-between" alignItems="center">
                   <s-text color="subdued">Name</s-text>
                   <s-text type="strong">{selectedGroup.name}</s-text>
@@ -477,7 +477,7 @@ export default function Index() {
               </s-box>
               <s-divider />
 
-              <s-box paddingBlock="small-200">
+              <s-box paddingBlock="small-100">
                 <s-stack direction="inline" justifyContent="space-between" alignItems="center">
                   <s-text color="subdued">Created</s-text>
                   <s-text type="strong">
@@ -487,7 +487,7 @@ export default function Index() {
               </s-box>
               <s-divider />
 
-              <s-box paddingBlock="small-200">
+              <s-box paddingBlock="small-100">
                 <s-stack direction="inline" justifyContent="space-between" alignItems="center">
                   <s-text color="subdued">Discount</s-text>
                   <s-badge tone="success">
@@ -499,7 +499,7 @@ export default function Index() {
               </s-box>
               <s-divider />
 
-              <s-box paddingBlock="small-200">
+              <s-box paddingBlock="small-100">
                 <s-stack direction="inline" justifyContent="space-between" alignItems="center">
                   <s-text color="subdued">Delivery every</s-text>
                   <s-text type="strong">
@@ -511,7 +511,7 @@ export default function Index() {
               </s-box>
               <s-divider />
 
-              <s-box paddingBlock="small-200">
+              <s-box paddingBlock="small-100">
                 <s-stack direction="inline" justifyContent="space-between" alignItems="center">
                   <s-text color="subdued">Active subscribers</s-text>
                   <s-badge {...(selectedGroup.activeSubscribers > 0 ? { tone: "success" } : {})}>
@@ -521,7 +521,7 @@ export default function Index() {
               </s-box>
               <s-divider />
 
-              <s-box paddingBlock="small-200">
+              <s-box paddingBlock="small-100">
                 <s-stack direction="inline" justifyContent="space-between" alignItems="center">
                   <s-text color="subdued">Cancelled subscribers</s-text>
                   <s-badge {...(selectedGroup.cancelledSubscribers > 0 ? { tone: "critical" } : {})}>
