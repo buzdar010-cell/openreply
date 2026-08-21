@@ -135,7 +135,9 @@ export default function BillingPage() {
                       <s-heading>{tier.label}</s-heading>
                     </s-stack>
                     <s-text type="strong">
-                      {tier.price !== null ? `$${tier.price}/mo` : "Contact us"}
+                      {tier.key === "enterprise"
+                        ? "Contact us"
+                        : `$${tier.price ?? 0}/mo`}
                     </s-text>
                   </s-stack>
                   <s-text color="subdued">
@@ -148,6 +150,7 @@ export default function BillingPage() {
                   {isUpgrade && (
                     <s-button
                       variant="primary"
+                      inlineSize="fill"
                       onClick={() =>
                         fetcher.submit(
                           { plan: tier.billingPlanName! },
