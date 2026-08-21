@@ -18,6 +18,7 @@ interface SellingPlanGroupSummary {
   id: string;
   name: string;
   sellingPlansCount: number;
+  activeSubscribers: number;
 }
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -54,7 +55,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
             node {
               id
               name
-              sellingPlans(first: 5) {
+              sellingPlans(first: 10) {
                 edges { node { id } }
               }
             }
@@ -63,12 +64,49 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       }`,
   );
   const groupsJson = await groupsResponse.json();
-  const sellingPlanGroups: SellingPlanGroupSummary[] =
+  const groups: Array<{ id: string; name: string; planIds: string[] }> =
     groupsJson.data?.sellingPlanGroups.edges.map((e: any) => ({
       id: e.node.id,
       name: e.node.name,
-      sellingPlansCount: e.node.sellingPlans.edges.length,
+      planIds: e.node.sellingPlans.edges.map((se: any) => se.node.id),
     })) ?? [];
+
+  const contractsResponse = await admin.graphql(
+    `#graphql
+      query GetActiveSubscriptionContracts {
+        subscriptionContracts(first: 250, query: "status:active") {
+          edges {
+            node {
+              lines(first: 5) {
+                edges { node { sellingPlanId } }
+              }
+            }
+          }
+        }
+      }`,
+  );
+  const contractsJson = await contractsResponse.json();
+  const subscriberCountByPlanId = new Map<string, number>();
+  for (const edge of contractsJson.data?.subscriptionContracts?.edges ?? []) {
+    for (const lineEdge of edge.node.lines.edges) {
+      const planId = lineEdge.node.sellingPlanId;
+      if (!planId) continue;
+      subscriberCountByPlanId.set(
+        planId,
+        (subscriberCountByPlanId.get(planId) ?? 0) + 1,
+      );
+    }
+  }
+
+  const sellingPlanGroups: SellingPlanGroupSummary[] = groups.map((g) => ({
+    id: g.id,
+    name: g.name,
+    sellingPlansCount: g.planIds.length,
+    activeSubscribers: g.planIds.reduce(
+      (sum, planId) => sum + (subscriberCountByPlanId.get(planId) ?? 0),
+      0,
+    ),
+  }));
 
   return { subscribed: true, products, sellingPlanGroups };
 };
@@ -280,7 +318,9 @@ export default function Index() {
                 alignItems="center"
               >
                 <s-text>
-                  {g.name} — {g.sellingPlansCount} plan(s)
+                  {g.name} — {g.sellingPlansCount} plan(s) —{" "}
+                  {g.activeSubscribers} active subscriber
+                  {g.activeSubscribers === 1 ? "" : "s"}
                 </s-text>
                 <s-button
                   variant="tertiary"
