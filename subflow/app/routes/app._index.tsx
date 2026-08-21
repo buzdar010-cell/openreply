@@ -27,7 +27,7 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
 
   const billingCheck = await billing.check({
     plans: [MONTHLY_PLAN],
-    isTest: import.meta.env.DEV,
+    isTest: true, // TODO: flip to false before public launch — dev/test stores reject real charges
   });
 
   if (!billingCheck.hasActivePayment) {
@@ -121,7 +121,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
   if (intent === "subscribe") {
     await billing.request({
       plan: MONTHLY_PLAN,
-      isTest: import.meta.env.DEV,
+      isTest: true, // TODO: flip to false before public launch — dev/test stores reject real charges
       returnUrl: `${context.cloudflare.env.SHOPIFY_APP_URL}/app`,
     });
     return null;
