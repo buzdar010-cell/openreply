@@ -18,9 +18,10 @@ export default function HelpPage() {
 
       <s-section heading="Billing">
         <s-paragraph>
-          Subflow costs $9.99/month after a 7-day free trial. You can cancel
-          anytime from your Shopify billing settings; there's no separate fee
-          per subscriber or per plan.
+          Subflow is free for up to 100 active subscribers. Past that, plans
+          scale with your subscriber count: $9.99/month up to 250, $24.99/month
+          up to 1,000, and a custom Enterprise plan beyond that. See the
+          Billing tab for your current usage and to upgrade.
         </s-paragraph>
       </s-section>
 

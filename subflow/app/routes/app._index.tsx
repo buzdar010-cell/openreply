@@ -6,14 +6,8 @@ import type {
 import { useFetcher, useLoaderData } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { useEffect, useRef, useState } from "react";
-import {
-  getShopify,
-  GROWTH_PLAN,
-  SCALE_PLAN,
-  PLAN_TIERS,
-  tierForSubscriberCount,
-  type PlanTier,
-} from "../shopify.server";
+import { getShopify } from "../shopify.server";
+import { getBillingStatus } from "../billing.server";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 
 interface ProductOption {
@@ -31,46 +25,6 @@ interface SellingPlanGroupSummary {
   productTitles: string[];
   activeSubscribers: number;
   cancelledSubscribers: number;
-}
-
-async function getBillingStatus(admin: any, billing: any) {
-  // read_own_subscription_contracts is a protected scope pending Shopify's
-  // approval — until then this query is denied, so fail soft to zero
-  // instead of blocking the merchant from using the app.
-  let totalActiveSubscribers = 0;
-  try {
-    const contractsResponse = await admin.graphql(
-      `#graphql
-        query GetActiveSubscriptionContractCount {
-          subscriptionContracts(first: 250, query: "status:active") {
-            edges { node { id } }
-          }
-        }`,
-    );
-    const contractsJson = await contractsResponse.json();
-    totalActiveSubscribers =
-      contractsJson.data?.subscriptionContracts?.edges?.length ?? 0;
-  } catch {
-    // Scope not yet approved — treat as 0 until it is.
-  }
-
-  const billingCheck = await billing.check({
-    plans: [GROWTH_PLAN, SCALE_PLAN],
-    isTest: true, // TODO: flip to false before public launch — dev/test stores reject real charges
-  });
-  const activeNames = new Set(
-    (billingCheck.appSubscriptions ?? []).map((s: any) => s.name),
-  );
-  let currentTier: PlanTier = PLAN_TIERS[0];
-  if (activeNames.has(SCALE_PLAN)) currentTier = PLAN_TIERS[2];
-  else if (activeNames.has(GROWTH_PLAN)) currentTier = PLAN_TIERS[1];
-
-  const needsUpgrade = totalActiveSubscribers > currentTier.maxSubscribers;
-  const nextTier = needsUpgrade
-    ? tierForSubscriberCount(totalActiveSubscribers)
-    : null;
-
-  return { totalActiveSubscribers, currentTier, needsUpgrade, nextTier };
 }
 
 export const loader = async ({ request, context }: LoaderFunctionArgs) => {
@@ -238,27 +192,6 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const intent = formData.get("_action");
 
-  if (intent === "upgrade") {
-    const plan = String(formData.get("plan"));
-    if (plan !== GROWTH_PLAN && plan !== SCALE_PLAN) {
-      return { userErrors: [{ field: ["plan"], message: "Invalid plan." }] };
-    }
-
-    const requestUrl = new URL(request.url);
-    const returnUrl = new URL(`${context.cloudflare.env.SHOPIFY_APP_URL}/app`);
-    const shop = requestUrl.searchParams.get("shop");
-    const host = requestUrl.searchParams.get("host");
-    if (shop) returnUrl.searchParams.set("shop", shop);
-    if (host) returnUrl.searchParams.set("host", host);
-
-    await billing.request({
-      plan,
-      isTest: true, // TODO: flip to false before public launch — dev/test stores reject real charges
-      returnUrl: returnUrl.toString(),
-    });
-    return null;
-  }
-
   if (intent === "create_plan") {
     const { needsUpgrade, currentTier, nextTier } = await getBillingStatus(
       admin,
@@ -403,7 +336,7 @@ export default function Index() {
   }, [fetcher.data, shopify]);
 
   return (
-    <s-page heading="Subflow">
+    <s-page heading="Your subscription plans">
       <s-button slot="primary-action" command="--show" commandFor="create-plan-modal">
         Create plan
       </s-button>
@@ -423,52 +356,13 @@ export default function Index() {
             -subscriber limit. Creating new plans is paused until you
             upgrade — your existing subscribers keep working as normal.
           </s-paragraph>
-          {data.nextTier?.billingPlanName ? (
-            <s-button
-              variant="primary"
-              tone="critical"
-              onClick={() =>
-                fetcher.submit(
-                  { _action: "upgrade", plan: data.nextTier!.billingPlanName! },
-                  { method: "POST" },
-                )
-              }
-              {...(isSubmitting && submittingAction === "upgrade"
-                ? { loading: true }
-                : {})}
-            >
-              Upgrade to {data.nextTier.label} — ${data.nextTier.price}/month
-            </s-button>
-          ) : (
-            <s-text>
-              Contact us to discuss an Enterprise plan for stores over 1,000
-              subscribers.
-            </s-text>
-          )}
+          <s-link href="/app/billing">
+            {data.nextTier?.billingPlanName
+              ? `Upgrade to ${data.nextTier.label} — $${data.nextTier.price}/month`
+              : "Contact us about an Enterprise plan"}
+          </s-link>
         </s-banner>
       )}
-
-      <s-section heading="Plan">
-        <s-grid gridTemplateColumns="1fr 1fr" gap="base">
-          <s-box background="subdued" padding="base" borderRadius="base">
-            <s-stack direction="block" gap="small-100">
-              <s-text color="subdued">Plan</s-text>
-              <s-heading>
-                {data.currentTier.label}
-                {data.currentTier.price ? ` — $${data.currentTier.price}/mo` : ""}
-              </s-heading>
-            </s-stack>
-          </s-box>
-          <s-box background="subdued" padding="base" borderRadius="base">
-            <s-stack direction="block" gap="small-100">
-              <s-text color="subdued">Subscribers</s-text>
-              <s-heading>
-                {data.totalActiveSubscribers} / {data.currentTier.maxSubscribers}
-              </s-heading>
-            </s-stack>
-          </s-box>
-        </s-grid>
-      </s-section>
 
       <s-modal ref={modalRef} id="create-plan-modal" heading="Create a subscription plan">
         <s-paragraph>
