@@ -449,16 +449,25 @@ export default function Index() {
       )}
 
       <s-section heading="Plan">
-        <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-          <s-text>
-            {data.currentTier.label}
-            {data.currentTier.price ? ` — $${data.currentTier.price}/month` : ""}
-          </s-text>
-          <s-badge {...(data.needsUpgrade ? { tone: "warning" } : {})}>
-            {data.totalActiveSubscribers} / {data.currentTier.maxSubscribers}{" "}
-            subscribers
-          </s-badge>
-        </s-stack>
+        <s-grid gridTemplateColumns="1fr 1fr" gap="base">
+          <s-box background="subdued" padding="base" borderRadius="base">
+            <s-stack direction="block" gap="small-100">
+              <s-text color="subdued">Plan</s-text>
+              <s-heading>
+                {data.currentTier.label}
+                {data.currentTier.price ? ` — $${data.currentTier.price}/mo` : ""}
+              </s-heading>
+            </s-stack>
+          </s-box>
+          <s-box background="subdued" padding="base" borderRadius="base">
+            <s-stack direction="block" gap="small-100">
+              <s-text color="subdued">Subscribers</s-text>
+              <s-heading>
+                {data.totalActiveSubscribers} / {data.currentTier.maxSubscribers}
+              </s-heading>
+            </s-stack>
+          </s-box>
+        </s-grid>
       </s-section>
 
       <s-modal ref={modalRef} id="create-plan-modal" heading="Create a subscription plan">
