@@ -336,7 +336,7 @@ export default function Index() {
   }, [fetcher.data, shopify]);
 
   return (
-    <s-page heading="Your subscription plans">
+    <s-page heading="Plans">
       <s-button slot="primary-action" command="--show" commandFor="create-plan-modal">
         Create plan
       </s-button>
