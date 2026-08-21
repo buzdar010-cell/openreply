@@ -4,7 +4,7 @@ import type {
   HeadersFunction,
 } from "react-router";
 import { useFetcher, useLoaderData } from "react-router";
-import { getShopify, GROWTH_PLAN, SCALE_PLAN } from "../shopify.server";
+import { getShopify, GROWTH_PLAN, SCALE_PLAN, PLAN_TIERS } from "../shopify.server";
 import { getBillingStatus } from "../billing.server";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 
@@ -12,7 +12,7 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
   const shopify = getShopify(context.cloudflare.env);
   const { billing, admin } = await shopify.authenticate.admin(request);
   const status = await getBillingStatus(admin, billing);
-  return status;
+  return { ...status, tiers: PLAN_TIERS };
 };
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {
@@ -107,37 +107,58 @@ export default function BillingPage() {
       </s-section>
 
       <s-section heading="Plans & pricing">
-        <s-stack direction="block" gap="small">
-          {[
-            { key: "free", label: "Free", price: "$0/mo", limit: "Up to 100" },
-            { key: "growth", label: "Growth", price: "$9.99/mo", limit: "Up to 250" },
-            { key: "scale", label: "Scale", price: "$24.99/mo", limit: "Up to 1,000" },
-            { key: "enterprise", label: "Enterprise", price: "Contact us", limit: "1,000+" },
-          ].map((tier) => {
+        <s-stack direction="block" gap="base">
+          {data.tiers.map((tier) => {
             const isCurrent = tier.key === data.currentTier.key;
+            const isUpgrade =
+              tier.billingPlanName !== null &&
+              tier.maxSubscribers > data.currentTier.maxSubscribers;
             return (
               <s-box
                 key={tier.key}
                 background={isCurrent ? "strong" : "subdued"}
-                padding="base"
-                borderRadius="base"
-                {...(isCurrent
-                  ? { borderWidth: "base", borderColor: "strong" }
-                  : {})}
+                padding="large"
+                borderRadius="large"
+                borderWidth={isCurrent ? "large" : "small"}
+                borderColor={isCurrent ? "strong" : "subdued"}
               >
-                <s-stack
-                  direction="inline"
-                  justifyContent="space-between"
-                  alignItems="center"
-                >
-                  <s-stack direction="block" gap="small-100">
+                <s-stack direction="block" gap="small">
+                  <s-stack
+                    direction="inline"
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
                     <s-stack direction="inline" gap="small-200" alignItems="center">
+                      {isCurrent && (
+                        <s-icon type="check-circle-filled" tone="success" />
+                      )}
                       <s-heading>{tier.label}</s-heading>
-                      {isCurrent && <s-badge tone="success">Current</s-badge>}
                     </s-stack>
-                    <s-text color="subdued">{tier.limit} subscribers</s-text>
+                    <s-text type="strong">
+                      {tier.price !== null ? `$${tier.price}/mo` : "Contact us"}
+                    </s-text>
                   </s-stack>
-                  <s-text type="strong">{tier.price}</s-text>
+                  <s-text color="subdued">
+                    {tier.maxSubscribers === Infinity
+                      ? "1,000+"
+                      : `Up to ${tier.maxSubscribers}`}{" "}
+                    subscribers
+                  </s-text>
+                  {isCurrent && <s-badge tone="success">Your current plan</s-badge>}
+                  {isUpgrade && (
+                    <s-button
+                      variant="primary"
+                      onClick={() =>
+                        fetcher.submit(
+                          { plan: tier.billingPlanName! },
+                          { method: "POST" },
+                        )
+                      }
+                      {...(isSubmitting ? { loading: true } : {})}
+                    >
+                      Upgrade to {tier.label}
+                    </s-button>
+                  )}
                 </s-stack>
               </s-box>
             );
