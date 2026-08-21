@@ -318,6 +318,10 @@ export default function Index() {
         if (submittingAction === "create_plan") {
           modalRef.current?.hideOverlay();
         }
+        if (submittingAction === "delete_plan") {
+          detailModalRef.current?.hideOverlay();
+          setSelectedGroupId(null);
+        }
       } else {
         shopify.toast.show(fetcher.data.userErrors[0].message, {
           isError: true,
@@ -430,46 +434,25 @@ export default function Index() {
               <s-table-header listSlot="secondary" format="numeric">
                 Active subscribers
               </s-table-header>
-              <s-table-header listSlot="inline"></s-table-header>
             </s-table-header-row>
             <s-table-body>
               {data.sellingPlanGroups.map((g) => (
-                <s-table-row key={g.id}>
-                  <s-table-cell>{g.name}</s-table-cell>
+                <s-table-row key={g.id} clickDelegate={`plan-link-${g.id}`}>
+                  <s-table-cell>
+                    <s-link
+                      id={`plan-link-${g.id}`}
+                      onClick={() => {
+                        setSelectedGroupId(g.id);
+                        detailModalRef.current?.showOverlay();
+                      }}
+                    >
+                      {g.name}
+                    </s-link>
+                  </s-table-cell>
                   <s-table-cell>
                     <s-badge {...(g.activeSubscribers > 0 ? { tone: "success" } : {})}>
                       {g.activeSubscribers}
                     </s-badge>
-                  </s-table-cell>
-                  <s-table-cell>
-                    <s-stack direction="inline" gap="small">
-                      <s-button
-                        variant="tertiary"
-                        onClick={() => {
-                          setSelectedGroupId(g.id);
-                          detailModalRef.current?.showOverlay();
-                        }}
-                      >
-                        Details
-                      </s-button>
-                      <s-button
-                        variant="tertiary"
-                        tone="critical"
-                        {...(isSubmitting &&
-                        submittingAction === "delete_plan" &&
-                        fetcher.formData?.get("groupId") === g.id
-                          ? { loading: true }
-                          : {})}
-                        onClick={() =>
-                          fetcher.submit(
-                            { _action: "delete_plan", groupId: g.id },
-                            { method: "POST" },
-                          )
-                        }
-                      >
-                        Delete
-                      </s-button>
-                    </s-stack>
                   </s-table-cell>
                 </s-table-row>
               ))}
@@ -510,6 +493,26 @@ export default function Index() {
               Cancelled subscribers: {selectedGroup.cancelledSubscribers}
             </s-text>
           </s-stack>
+        )}
+        {selectedGroup && (
+          <s-button
+            slot="primary-action"
+            variant="primary"
+            tone="critical"
+            {...(isSubmitting &&
+            submittingAction === "delete_plan" &&
+            fetcher.formData?.get("groupId") === selectedGroup.id
+              ? { loading: true }
+              : {})}
+            onClick={() =>
+              fetcher.submit(
+                { _action: "delete_plan", groupId: selectedGroup.id },
+                { method: "POST" },
+              )
+            }
+          >
+            Delete plan
+          </s-button>
         )}
         <s-button slot="secondary-actions" command="--hide" commandFor="plan-detail-modal">
           Close
