@@ -5,7 +5,7 @@ import type {
 } from "react-router";
 import { useFetcher, useLoaderData } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getShopify, MONTHLY_PLAN } from "../shopify.server";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 
@@ -226,25 +226,32 @@ export default function Index() {
   const data = useLoaderData<typeof loader>();
   const fetcher = useFetcher<typeof action>();
   const shopify = useAppBridge();
+  const modalRef = useRef<any>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const [discountPercent, setDiscountPercent] = useState("10");
   const [intervalDays, setIntervalDays] = useState("30");
 
   const isSubmitting = fetcher.state === "submitting";
+  const submittingAction = fetcher.formData?.get("_action");
 
   useEffect(() => {
     if (fetcher.data && "userErrors" in fetcher.data) {
       if (fetcher.data.userErrors.length === 0) {
         shopify.toast.show(
-          fetcher.formData?.get("_action") === "delete_plan"
+          submittingAction === "delete_plan"
             ? "Subscription plan deleted"
             : "Subscription plan created",
         );
+        if (submittingAction === "create_plan") {
+          modalRef.current?.hideOverlay();
+        }
       } else {
         shopify.toast.show(fetcher.data.userErrors[0].message, {
           isError: true,
         });
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetcher.data, shopify]);
 
   if (!data.subscribed) {
@@ -273,12 +280,16 @@ export default function Index() {
 
   return (
     <s-page heading="Subflow">
-      <s-section heading="Create a subscription plan">
+      <s-button slot="primary-action" command="--show" commandFor="create-plan-modal">
+        Create plan
+      </s-button>
+
+      <s-modal ref={modalRef} id="create-plan-modal" heading="Create a subscription plan">
         <s-paragraph>
           Pick a product, set a discount and delivery interval, and Subflow
           will add a "Subscribe & Save" option to it at checkout.
         </s-paragraph>
-        <fetcher.Form method="POST">
+        <fetcher.Form method="POST" id="create-plan-form" ref={formRef}>
           <input type="hidden" name="_action" value="create_plan" />
           <s-stack direction="block" gap="base">
             <s-box>
@@ -311,49 +322,74 @@ export default function Index() {
               <s-option value="30">30 days</s-option>
               <s-option value="60">60 days</s-option>
             </s-select>
-            <s-button
-              variant="primary"
-              type="submit"
-              {...(isSubmitting ? { loading: true } : {})}
-            >
-              Create plan
-            </s-button>
           </s-stack>
         </fetcher.Form>
-      </s-section>
+        <s-button
+          slot="primary-action"
+          variant="primary"
+          onClick={() => formRef.current?.requestSubmit()}
+          {...(isSubmitting && submittingAction === "create_plan"
+            ? { loading: true }
+            : {})}
+        >
+          Create plan
+        </s-button>
+        <s-button slot="secondary-actions" command="--hide" commandFor="create-plan-modal">
+          Cancel
+        </s-button>
+      </s-modal>
 
       <s-section heading="Your subscription plans">
         {data.sellingPlanGroups.length === 0 ? (
-          <s-paragraph>No subscription plans created yet.</s-paragraph>
+          <s-paragraph>
+            No subscription plans yet — tap "Create plan" above to add your
+            first "Subscribe & Save" offer.
+          </s-paragraph>
         ) : (
-          <s-stack direction="block" gap="base">
-            {data.sellingPlanGroups.map((g) => (
-              <s-stack
-                key={g.id}
-                direction="inline"
-                gap="base"
-                alignItems="center"
-              >
-                <s-text>
-                  {g.name} — {g.sellingPlansCount} plan(s) —{" "}
-                  {g.activeSubscribers} active subscriber
-                  {g.activeSubscribers === 1 ? "" : "s"}
-                </s-text>
-                <s-button
-                  variant="tertiary"
-                  tone="critical"
-                  onClick={() =>
-                    fetcher.submit(
-                      { _action: "delete_plan", groupId: g.id },
-                      { method: "POST" },
-                    )
-                  }
-                >
-                  Delete
-                </s-button>
-              </s-stack>
-            ))}
-          </s-stack>
+          <s-table variant="auto">
+            <s-table-header-row>
+              <s-table-header listSlot="primary">Plan name</s-table-header>
+              <s-table-header listSlot="secondary" format="numeric">
+                Plans
+              </s-table-header>
+              <s-table-header listSlot="secondary" format="numeric">
+                Active subscribers
+              </s-table-header>
+              <s-table-header listSlot="inline"></s-table-header>
+            </s-table-header-row>
+            <s-table-body>
+              {data.sellingPlanGroups.map((g) => (
+                <s-table-row key={g.id}>
+                  <s-table-cell>{g.name}</s-table-cell>
+                  <s-table-cell>{g.sellingPlansCount}</s-table-cell>
+                  <s-table-cell>
+                    <s-badge {...(g.activeSubscribers > 0 ? { tone: "success" } : {})}>
+                      {g.activeSubscribers}
+                    </s-badge>
+                  </s-table-cell>
+                  <s-table-cell>
+                    <s-button
+                      variant="tertiary"
+                      tone="critical"
+                      {...(isSubmitting &&
+                      submittingAction === "delete_plan" &&
+                      fetcher.formData?.get("groupId") === g.id
+                        ? { loading: true }
+                        : {})}
+                      onClick={() =>
+                        fetcher.submit(
+                          { _action: "delete_plan", groupId: g.id },
+                          { method: "POST" },
+                        )
+                      }
+                    >
+                      Delete
+                    </s-button>
+                  </s-table-cell>
+                </s-table-row>
+              ))}
+            </s-table-body>
+          </s-table>
         )}
       </s-section>
     </s-page>
