@@ -468,30 +468,71 @@ export default function Index() {
       >
         {selectedGroup && (
           <s-stack direction="block" gap="base">
-            <s-text>
-              Created:{" "}
-              {new Date(selectedGroup.createdAt).toLocaleDateString()}
-            </s-text>
-            <s-text>
-              Discount:{" "}
-              {selectedGroup.discountPercent !== null
-                ? `${selectedGroup.discountPercent}%`
-                : "—"}
-            </s-text>
-            <s-text>
-              Delivery every:{" "}
-              {selectedGroup.intervalDays !== null
-                ? `${selectedGroup.intervalDays} days`
-                : "—"}
-            </s-text>
-            <s-text>
-              Products ({selectedGroup.productsCount}):{" "}
-              {selectedGroup.productTitles.join(", ") || "—"}
-            </s-text>
-            <s-text>Active subscribers: {selectedGroup.activeSubscribers}</s-text>
-            <s-text>
-              Cancelled subscribers: {selectedGroup.cancelledSubscribers}
-            </s-text>
+            <s-stack direction="block" gap="small-300">
+              <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                <s-text color="subdued">Created</s-text>
+                <s-text type="strong">
+                  {new Date(selectedGroup.createdAt).toLocaleDateString()}
+                </s-text>
+              </s-stack>
+              <s-divider />
+
+              <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                <s-text color="subdued">Discount</s-text>
+                <s-badge tone="success">
+                  {selectedGroup.discountPercent !== null
+                    ? `${selectedGroup.discountPercent}% off`
+                    : "—"}
+                </s-badge>
+              </s-stack>
+              <s-divider />
+
+              <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                <s-text color="subdued">Delivery every</s-text>
+                <s-text type="strong">
+                  {selectedGroup.intervalDays !== null
+                    ? `${selectedGroup.intervalDays} days`
+                    : "—"}
+                </s-text>
+              </s-stack>
+              <s-divider />
+
+              <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                <s-text color="subdued">Active subscribers</s-text>
+                <s-badge {...(selectedGroup.activeSubscribers > 0 ? { tone: "success" } : {})}>
+                  {selectedGroup.activeSubscribers}
+                </s-badge>
+              </s-stack>
+              <s-divider />
+
+              <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                <s-text color="subdued">Cancelled subscribers</s-text>
+                <s-badge {...(selectedGroup.cancelledSubscribers > 0 ? { tone: "critical" } : {})}>
+                  {selectedGroup.cancelledSubscribers}
+                </s-badge>
+              </s-stack>
+            </s-stack>
+
+            <s-box
+              background="subdued"
+              padding="base"
+              borderRadius="base"
+            >
+              <s-stack direction="block" gap="small-300">
+                <s-text color="subdued">
+                  Products ({selectedGroup.productsCount})
+                </s-text>
+                <s-stack direction="inline" gap="small-200">
+                  {selectedGroup.productTitles.length > 0 ? (
+                    selectedGroup.productTitles.map((title) => (
+                      <s-badge key={title}>{title}</s-badge>
+                    ))
+                  ) : (
+                    <s-text>—</s-text>
+                  )}
+                </s-stack>
+              </s-stack>
+            </s-box>
           </s-stack>
         )}
         {selectedGroup && (
