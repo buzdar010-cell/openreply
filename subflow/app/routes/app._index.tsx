@@ -167,6 +167,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
             sellingPlansToCreate: [
               {
                 name: `Every ${intervalDays} days`,
+                category: "SUBSCRIPTION",
                 options: [`${intervalDays} days`],
                 billingPolicy: {
                   recurring: { interval: "DAY", intervalCount: intervalDays },
