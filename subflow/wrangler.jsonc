@@ -19,7 +19,7 @@
     }
   ],
   "vars": {
-    "SCOPES": "read_products,write_products",
+    "SCOPES": "read_products,write_products,write_own_subscription_contracts",
     "SHOPIFY_APP_URL": "https://subflow.buzdar0003.workers.dev"
   }
 }
