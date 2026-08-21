@@ -126,10 +126,17 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
   const intent = formData.get("_action");
 
   if (intent === "subscribe") {
+    const requestUrl = new URL(request.url);
+    const returnUrl = new URL(`${context.cloudflare.env.SHOPIFY_APP_URL}/app`);
+    const shop = requestUrl.searchParams.get("shop");
+    const host = requestUrl.searchParams.get("host");
+    if (shop) returnUrl.searchParams.set("shop", shop);
+    if (host) returnUrl.searchParams.set("host", host);
+
     await billing.request({
       plan: MONTHLY_PLAN,
       isTest: true, // TODO: flip to false before public launch — dev/test stores reject real charges
-      returnUrl: `${context.cloudflare.env.SHOPIFY_APP_URL}/app`,
+      returnUrl: returnUrl.toString(),
     });
     return null;
   }
