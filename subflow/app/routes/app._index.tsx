@@ -72,31 +72,38 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
       planIds: e.node.sellingPlans.edges.map((se: any) => se.node.id),
     })) ?? [];
 
-  const contractsResponse = await admin.graphql(
-    `#graphql
-      query GetActiveSubscriptionContracts {
-        subscriptionContracts(first: 250, query: "status:active") {
-          edges {
-            node {
-              lines(first: 5) {
-                edges { node { sellingPlanId } }
+  // read_own_subscription_contracts is a protected scope pending Shopify's
+  // approval — until then this query is denied, so fail soft to zero counts
+  // instead of taking down the whole dashboard.
+  const subscriberCountByPlanId = new Map<string, number>();
+  try {
+    const contractsResponse = await admin.graphql(
+      `#graphql
+        query GetActiveSubscriptionContracts {
+          subscriptionContracts(first: 250, query: "status:active") {
+            edges {
+              node {
+                lines(first: 5) {
+                  edges { node { sellingPlanId } }
+                }
               }
             }
           }
-        }
-      }`,
-  );
-  const contractsJson = await contractsResponse.json();
-  const subscriberCountByPlanId = new Map<string, number>();
-  for (const edge of contractsJson.data?.subscriptionContracts?.edges ?? []) {
-    for (const lineEdge of edge.node.lines.edges) {
-      const planId = lineEdge.node.sellingPlanId;
-      if (!planId) continue;
-      subscriberCountByPlanId.set(
-        planId,
-        (subscriberCountByPlanId.get(planId) ?? 0) + 1,
-      );
+        }`,
+    );
+    const contractsJson = await contractsResponse.json();
+    for (const edge of contractsJson.data?.subscriptionContracts?.edges ?? []) {
+      for (const lineEdge of edge.node.lines.edges) {
+        const planId = lineEdge.node.sellingPlanId;
+        if (!planId) continue;
+        subscriberCountByPlanId.set(
+          planId,
+          (subscriberCountByPlanId.get(planId) ?? 0) + 1,
+        );
+      }
     }
+  } catch {
+    // Scope not yet approved — subscriber counts show as 0 until it is.
   }
 
   const sellingPlanGroups: SellingPlanGroupSummary[] = groups.map((g) => ({
