@@ -464,53 +464,71 @@ export default function Index() {
       <s-modal
         ref={detailModalRef}
         id="plan-detail-modal"
-        heading={selectedGroup?.name ?? "Plan details"}
+        heading="Plan details"
       >
         {selectedGroup && (
-          <s-stack direction="block" gap="base">
-            <s-stack direction="block" gap="small-300">
-              <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-                <s-text color="subdued">Created</s-text>
-                <s-text type="strong">
-                  {new Date(selectedGroup.createdAt).toLocaleDateString()}
-                </s-text>
-              </s-stack>
+          <s-stack direction="block" gap="large">
+            <s-stack direction="block" gap="small">
+              <s-box paddingBlock="small-200">
+                <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                  <s-text color="subdued">Name</s-text>
+                  <s-text type="strong">{selectedGroup.name}</s-text>
+                </s-stack>
+              </s-box>
               <s-divider />
 
-              <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-                <s-text color="subdued">Discount</s-text>
-                <s-badge tone="success">
-                  {selectedGroup.discountPercent !== null
-                    ? `${selectedGroup.discountPercent}% off`
-                    : "—"}
-                </s-badge>
-              </s-stack>
+              <s-box paddingBlock="small-200">
+                <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                  <s-text color="subdued">Created</s-text>
+                  <s-text type="strong">
+                    {new Date(selectedGroup.createdAt).toLocaleDateString()}
+                  </s-text>
+                </s-stack>
+              </s-box>
               <s-divider />
 
-              <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-                <s-text color="subdued">Delivery every</s-text>
-                <s-text type="strong">
-                  {selectedGroup.intervalDays !== null
-                    ? `${selectedGroup.intervalDays} days`
-                    : "—"}
-                </s-text>
-              </s-stack>
+              <s-box paddingBlock="small-200">
+                <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                  <s-text color="subdued">Discount</s-text>
+                  <s-badge tone="success">
+                    {selectedGroup.discountPercent !== null
+                      ? `${selectedGroup.discountPercent}% off`
+                      : "—"}
+                  </s-badge>
+                </s-stack>
+              </s-box>
               <s-divider />
 
-              <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-                <s-text color="subdued">Active subscribers</s-text>
-                <s-badge {...(selectedGroup.activeSubscribers > 0 ? { tone: "success" } : {})}>
-                  {selectedGroup.activeSubscribers}
-                </s-badge>
-              </s-stack>
+              <s-box paddingBlock="small-200">
+                <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                  <s-text color="subdued">Delivery every</s-text>
+                  <s-text type="strong">
+                    {selectedGroup.intervalDays !== null
+                      ? `${selectedGroup.intervalDays} days`
+                      : "—"}
+                  </s-text>
+                </s-stack>
+              </s-box>
               <s-divider />
 
-              <s-stack direction="inline" justifyContent="space-between" alignItems="center">
-                <s-text color="subdued">Cancelled subscribers</s-text>
-                <s-badge {...(selectedGroup.cancelledSubscribers > 0 ? { tone: "critical" } : {})}>
-                  {selectedGroup.cancelledSubscribers}
-                </s-badge>
-              </s-stack>
+              <s-box paddingBlock="small-200">
+                <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                  <s-text color="subdued">Active subscribers</s-text>
+                  <s-badge {...(selectedGroup.activeSubscribers > 0 ? { tone: "success" } : {})}>
+                    {selectedGroup.activeSubscribers}
+                  </s-badge>
+                </s-stack>
+              </s-box>
+              <s-divider />
+
+              <s-box paddingBlock="small-200">
+                <s-stack direction="inline" justifyContent="space-between" alignItems="center">
+                  <s-text color="subdued">Cancelled subscribers</s-text>
+                  <s-badge {...(selectedGroup.cancelledSubscribers > 0 ? { tone: "critical" } : {})}>
+                    {selectedGroup.cancelledSubscribers}
+                  </s-badge>
+                </s-stack>
+              </s-box>
             </s-stack>
 
             <s-box
@@ -518,7 +536,7 @@ export default function Index() {
               padding="base"
               borderRadius="base"
             >
-              <s-stack direction="block" gap="small-300">
+              <s-stack direction="block" gap="small">
                 <s-text color="subdued">
                   Products ({selectedGroup.productsCount})
                 </s-text>
