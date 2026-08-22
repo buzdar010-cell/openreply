@@ -8,7 +8,12 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 import { useEffect, useRef, useState } from "react";
 import { getShopify } from "../shopify.server";
 import { getBillingStatus } from "../billing.server";
-import { isNavSetupDismissed, dismissNavSetup } from "../shop-settings.server";
+import {
+  isNavSetupDismissed,
+  dismissNavSetup,
+  isWidgetSetupDismissed,
+  dismissWidgetSetup,
+} from "../shop-settings.server";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 
 interface ProductOption {
@@ -32,6 +37,10 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
   const shopify = getShopify(context.cloudflare.env);
   const { billing, admin, session } = await shopify.authenticate.admin(request);
   const showNavSetupBanner = !(await isNavSetupDismissed(
+    context.cloudflare.env.DB,
+    session.shop,
+  ));
+  const showWidgetSetupBanner = !(await isWidgetSetupDismissed(
     context.cloudflare.env.DB,
     session.shop,
   ));
@@ -189,7 +198,9 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
     needsUpgrade,
     nextTier,
     showNavSetupBanner,
+    showWidgetSetupBanner,
     shop: session.shop,
+    apiKey: context.cloudflare.env.SHOPIFY_API_KEY,
   };
 };
 
@@ -201,6 +212,11 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 
   if (intent === "dismiss_nav_setup") {
     await dismissNavSetup(context.cloudflare.env.DB, session.shop);
+    return null;
+  }
+
+  if (intent === "dismiss_widget_setup") {
+    await dismissWidgetSetup(context.cloudflare.env.DB, session.shop);
     return null;
   }
 
@@ -314,6 +330,7 @@ export default function Index() {
   const formRef = useRef<HTMLFormElement>(null);
   const detailModalRef = useRef<any>(null);
   const dismissModalRef = useRef<any>(null);
+  const widgetDismissModalRef = useRef<any>(null);
   const [discountPercent, setDiscountPercent] = useState("10");
   const [intervalDays, setIntervalDays] = useState("30");
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
@@ -416,6 +433,67 @@ export default function Index() {
           slot="secondary-actions"
           command="--hide"
           commandFor="confirm-nav-dismiss-modal"
+        >
+          Cancel
+        </s-button>
+      </s-modal>
+
+      {data.showWidgetSetupBanner && (
+        <s-banner tone="info" heading="Show the Subscribe & Save option at checkout">
+          <s-paragraph>
+            One-time setup so customers actually see the subscribe option
+            on your product pages. Tap "Add to my theme" below — it opens
+            your theme editor with Subflow's widget already added to a
+            product page. Just tap "Save" there to finish.
+          </s-paragraph>
+          <s-stack direction="inline" gap="small">
+            <s-button
+              variant="primary"
+              href={`https://${data.shop}/admin/themes/current/editor?template=product&addAppBlockId=${data.apiKey}/subscribe_and_save&target=newAppsSection`}
+              target="_blank"
+            >
+              Add to my theme
+            </s-button>
+            <s-button
+              variant="secondary"
+              command="--show"
+              commandFor="confirm-widget-dismiss-modal"
+            >
+              I've done this
+            </s-button>
+          </s-stack>
+        </s-banner>
+      )}
+
+      <s-modal
+        ref={widgetDismissModalRef}
+        id="confirm-widget-dismiss-modal"
+        heading="Confirm setup is done"
+      >
+        <s-paragraph>
+          This reminder won't show again after you confirm. If the widget
+          wasn't actually saved to your theme, customers won't see a
+          subscribe option on your products at all — they'll only be able
+          to buy one-time.
+        </s-paragraph>
+        <s-button
+          slot="primary-action"
+          variant="primary"
+          tone="critical"
+          onClick={() => {
+            fetcher.submit(
+              { _action: "dismiss_widget_setup" },
+              { method: "POST" },
+            );
+            widgetDismissModalRef.current?.hideOverlay();
+          }}
+        >
+          Yes, I've added it
+        </s-button>
+        <s-button
+          slot="secondary-actions"
+          command="--hide"
+          commandFor="confirm-widget-dismiss-modal"
         >
           Cancel
         </s-button>

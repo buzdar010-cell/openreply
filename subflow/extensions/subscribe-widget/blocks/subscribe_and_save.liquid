@@ -1,0 +1,86 @@
+{% assign product = block.settings.product %}
+
+{% if product and product.selling_plan_groups.size > 0 %}
+  {% assign current_variant = product.selected_or_first_available_variant %}
+  <div class="subflow-subscribe-widget" data-subflow-widget {{ block.shopify_attributes }}>
+    <fieldset class="subflow-subscribe-widget__fieldset">
+      <label class="subflow-subscribe-widget__option">
+        <input
+          type="radio"
+          name="subflow_selling_plan"
+          value=""
+          checked
+        >
+        <span>{{ 'subflow.one_time_purchase' | t }} — {{ current_variant.price | money }}</span>
+      </label>
+
+      {% for group in product.selling_plan_groups %}
+        {% for plan in group.selling_plans %}
+          {% assign allocation = current_variant.selling_plan_allocations
+              | where: 'selling_plan.id', plan.id
+              | first %}
+          {% if allocation %}
+            <label class="subflow-subscribe-widget__option">
+              <input
+                type="radio"
+                name="subflow_selling_plan"
+                value="{{ plan.id }}"
+              >
+              <span>
+                {{ plan.name }} — {{ allocation.price | money }}
+                {% if allocation.compare_at_price > allocation.price %}
+                  <s>{{ allocation.compare_at_price | money }}</s>
+                {% endif %}
+              </span>
+            </label>
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+    </fieldset>
+  </div>
+
+  <script>
+    (function () {
+      var widget = document.currentScript.previousElementSibling;
+      if (!widget || !widget.hasAttribute('data-subflow-widget')) {
+        widget = document.querySelector('[data-subflow-widget]');
+      }
+      if (!widget) return;
+
+      function findCartForm() {
+        var form = widget.closest('form[action*="/cart/add"]');
+        if (form) return form;
+        return document.querySelector('form[action*="/cart/add"]');
+      }
+
+      function syncSellingPlan(value) {
+        var form = findCartForm();
+        if (!form) return;
+        var input = form.querySelector('input[name="selling_plan"]');
+        if (!input) {
+          input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = 'selling_plan';
+          form.appendChild(input);
+        }
+        input.value = value;
+      }
+
+      widget.querySelectorAll('input[name="subflow_selling_plan"]').forEach(function (radio) {
+        radio.addEventListener('change', function () {
+          syncSellingPlan(radio.checked ? radio.value : '');
+        });
+      });
+    })();
+  </script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Subflow: Subscribe & Save",
+  "target": "section",
+  "settings": [
+    { "type": "product", "id": "product", "label": "Product", "autofill": true }
+  ]
+}
+{% endschema %}
