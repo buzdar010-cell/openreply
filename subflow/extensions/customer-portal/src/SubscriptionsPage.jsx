@@ -17,6 +17,39 @@ function badgeTone(status) {
   return 'neutral';
 }
 
+function formatMoney(amount, currencyCode) {
+  if (amount == null) return null;
+  try {
+    return new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: currencyCode || 'USD',
+    }).format(Number(amount));
+  } catch {
+    return `${amount} ${currencyCode || ''}`.trim();
+  }
+}
+
+function formatFrequency(interval, intervalCount) {
+  if (!interval) return null;
+  const unit = interval.toLowerCase();
+  const count = intervalCount || 1;
+  const unitLabel = count === 1 ? unit : `${unit}s`;
+  return count === 1 ? `Every ${unitLabel}` : `Every ${count} ${unitLabel}`;
+}
+
+function formatDate(dateString) {
+  if (!dateString) return null;
+  try {
+    return new Intl.DateTimeFormat(undefined, {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    }).format(new Date(dateString));
+  } catch {
+    return dateString;
+  }
+}
+
 const SUCCESS_MESSAGES = {
   pause: 'Your subscription has been paused.',
   resume: 'Your subscription has been resumed.',
@@ -135,10 +168,46 @@ function Extension() {
           return (
             <s-section
               key={contract.id}
-              heading={contract.productNames.join(', ') || 'Subscription'}
+              heading={contract.lines.map((l) => l.title).join(', ') || 'Subscription'}
             >
               <s-stack direction="block" gap="base">
                 <s-badge tone={badgeTone(contract.status)}>{contract.status}</s-badge>
+
+                {contract.lines.map((line, i) => (
+                  <s-stack key={i} direction="inline" gap="small">
+                    {line.imageUrl && (
+                      <s-image
+                        src={line.imageUrl}
+                        alt={line.imageAlt}
+                        aspectRatio="1"
+                        objectFit="cover"
+                        borderRadius="base"
+                      />
+                    )}
+                    <s-stack direction="block" gap="none">
+                      <s-text>
+                        {line.title}
+                        {line.quantity > 1 ? ` × ${line.quantity}` : ''}
+                      </s-text>
+                      <s-text tone="subdued">{formatMoney(line.price, line.currencyCode)}</s-text>
+                    </s-stack>
+                  </s-stack>
+                ))}
+
+                {(formatFrequency(contract.interval, contract.intervalCount) ||
+                  (contract.status === 'ACTIVE' && contract.nextBillingDate)) && (
+                  <s-text tone="subdued">
+                    {[
+                      formatFrequency(contract.interval, contract.intervalCount),
+                      contract.status === 'ACTIVE' && contract.nextBillingDate
+                        ? `Next delivery: ${formatDate(contract.nextBillingDate)}`
+                        : null,
+                    ]
+                      .filter(Boolean)
+                      .join(' · ')}
+                  </s-text>
+                )}
+
                 <s-stack direction="inline" gap="small">
                   {contract.status === 'ACTIVE' && (
                     <s-button

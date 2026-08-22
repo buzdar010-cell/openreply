@@ -25,8 +25,30 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
               node {
                 id
                 status
-                lines(first: 5) {
-                  edges { node { title } }
+                nextBillingDate
+                billingPolicy {
+                  interval
+                  intervalCount
+                }
+                deliveryPrice {
+                  amount
+                  currencyCode
+                }
+                lines(first: 10) {
+                  edges {
+                    node {
+                      title
+                      quantity
+                      currentPrice {
+                        amount
+                        currencyCode
+                      }
+                      variantImage {
+                        url
+                        altText
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -40,7 +62,17 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
     json.data?.customer?.subscriptionContracts?.edges?.map((e: any) => ({
       id: e.node.id,
       status: e.node.status,
-      productNames: e.node.lines.edges.map((le: any) => le.node.title),
+      nextBillingDate: e.node.nextBillingDate,
+      interval: e.node.billingPolicy?.interval,
+      intervalCount: e.node.billingPolicy?.intervalCount,
+      lines: e.node.lines.edges.map((le: any) => ({
+        title: le.node.title,
+        quantity: le.node.quantity,
+        price: le.node.currentPrice?.amount,
+        currencyCode: le.node.currentPrice?.currencyCode,
+        imageUrl: le.node.variantImage?.url ?? null,
+        imageAlt: le.node.variantImage?.altText ?? le.node.title,
+      })),
     })) ?? [];
 
   return cors(new Response(JSON.stringify({ contracts }), {
