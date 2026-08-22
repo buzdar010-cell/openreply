@@ -214,7 +214,7 @@ function Extension() {
                   </s-text>
                 )}
 
-                <s-stack direction="inline" gap="small">
+                <s-stack direction="inline" gap="small" justifyContent="center">
                   {contract.status === 'ACTIVE' && (
                     <s-button
                       variant="primary"
