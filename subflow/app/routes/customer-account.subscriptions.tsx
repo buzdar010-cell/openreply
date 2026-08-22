@@ -83,7 +83,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
       `#graphql
         mutation PauseSubscriptionContract($id: ID!) {
           subscriptionContractPause(subscriptionContractId: $id, actor: CUSTOMER) {
-            contract: subscriptionContract { id status }
+            contract { id status }
             userErrors { field message }
           }
         }`,
@@ -101,7 +101,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
       `#graphql
         mutation ActivateSubscriptionContract($id: ID!) {
           subscriptionContractActivate(subscriptionContractId: $id, actor: CUSTOMER) {
-            contract: subscriptionContract { id status }
+            contract { id status }
             userErrors { field message }
           }
         }`,
@@ -119,7 +119,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
       `#graphql
         mutation CancelSubscriptionContract($id: ID!) {
           subscriptionContractCancel(subscriptionContractId: $id, actor: CUSTOMER) {
-            contract: subscriptionContract { id status }
+            contract { id status }
             userErrors { field message }
           }
         }`,
