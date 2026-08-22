@@ -255,7 +255,7 @@ function Extension() {
                   )}
                   {(contract.status === 'ACTIVE' || contract.status === 'PAUSED') && (
                     <s-button
-                      variant="primary"
+                      variant="secondary"
                       tone="critical"
                       command="--show"
                       commandFor={cancelModalId}
