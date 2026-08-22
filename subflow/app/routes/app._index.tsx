@@ -8,6 +8,7 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 import { useEffect, useRef, useState } from "react";
 import { getShopify } from "../shopify.server";
 import { getBillingStatus } from "../billing.server";
+import { isNavSetupDismissed, dismissNavSetup } from "../shop-settings.server";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 
 interface ProductOption {
@@ -29,7 +30,11 @@ interface SellingPlanGroupSummary {
 
 export const loader = async ({ request, context }: LoaderFunctionArgs) => {
   const shopify = getShopify(context.cloudflare.env);
-  const { billing, admin } = await shopify.authenticate.admin(request);
+  const { billing, admin, session } = await shopify.authenticate.admin(request);
+  const showNavSetupBanner = !(await isNavSetupDismissed(
+    context.cloudflare.env.DB,
+    session.shop,
+  ));
 
   const { totalActiveSubscribers, currentTier, needsUpgrade, nextTier } =
     await getBillingStatus(admin, billing);
@@ -183,14 +188,21 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
     currentTier,
     needsUpgrade,
     nextTier,
+    showNavSetupBanner,
+    shop: session.shop,
   };
 };
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {
   const shopify = getShopify(context.cloudflare.env);
-  const { billing, admin } = await shopify.authenticate.admin(request);
+  const { billing, admin, session } = await shopify.authenticate.admin(request);
   const formData = await request.formData();
   const intent = formData.get("_action");
+
+  if (intent === "dismiss_nav_setup") {
+    await dismissNavSetup(context.cloudflare.env.DB, session.shop);
+    return null;
+  }
 
   if (intent === "create_plan") {
     const { needsUpgrade, currentTier, nextTier } = await getBillingStatus(
@@ -340,6 +352,38 @@ export default function Index() {
       <s-button slot="primary-action" command="--show" commandFor="create-plan-modal">
         Create plan
       </s-button>
+
+      {data.showNavSetupBanner && (
+        <s-banner tone="info" heading="Let customers find their subscriptions">
+          <s-paragraph>
+            One-time setup: add a link to your customer account menu so
+            customers can pause, skip, or cancel their own subscriptions.
+            In Shopify admin, go to Content → Menus → "Customer account
+            main menu" → Add menu item → choose link type "Apps" → pick
+            Subflow → Save.
+          </s-paragraph>
+          <s-stack direction="inline" gap="small">
+            <s-button
+              variant="primary"
+              href={`https://${data.shop}/admin/menus`}
+              target="_blank"
+            >
+              Open menu settings
+            </s-button>
+            <s-button
+              variant="secondary"
+              onClick={() =>
+                fetcher.submit(
+                  { _action: "dismiss_nav_setup" },
+                  { method: "POST" },
+                )
+              }
+            >
+              I've done this
+            </s-button>
+          </s-stack>
+        </s-banner>
+      )}
 
       {data.needsUpgrade && (
         <s-banner
