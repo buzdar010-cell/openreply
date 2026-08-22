@@ -14,6 +14,7 @@ import {
   isWidgetSetupDismissed,
   dismissWidgetSetup,
 } from "../shop-settings.server";
+import { checkThemeCompatibility } from "../theme-compatibility.server";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 
 interface ProductOption {
@@ -204,58 +205,9 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
   // instead of Shopify's default of appending it to the bottom of the page.
   let widgetSetupSectionId: string | null = null;
   if (showWidgetSetupBanner) {
-    try {
-      const themeResponse = await admin.graphql(
-        `#graphql
-          query GetMainThemeProductTemplate {
-            themes(first: 1, roles: [MAIN]) {
-              nodes {
-                files(filenames: ["templates/product.json"]) {
-                  nodes {
-                    body {
-                      ... on OnlineStoreThemeFileBodyText {
-                        content
-                      }
-                      ... on OnlineStoreThemeFileBodyBase64 {
-                        contentBase64
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }`,
-      );
-      const themeJson: any = await themeResponse.json();
-      const body = themeJson.data?.themes?.nodes?.[0]?.files?.nodes?.[0]?.body;
-      const fileContent: string | null =
-        body?.content ?? (body?.contentBase64 ? atob(body.contentBase64) : null);
-      if (fileContent) {
-        const jsonText = fileContent.replace(/^\s*\/\*[\s\S]*?\*\/\s*/, "");
-        const template = JSON.parse(jsonText);
-        const order: string[] = template.order ?? [];
-        const sections = template.sections ?? {};
-        const excludeKeywords = [
-          "recommend",
-          "related",
-          "complementary",
-          "header",
-          "footer",
-          "announcement",
-        ];
-        widgetSetupSectionId =
-          order.find((id) => {
-            const type = String(sections[id]?.type ?? "").toLowerCase();
-            return (
-              type.includes("product") &&
-              !excludeKeywords.some((kw) => type.includes(kw))
-            );
-          }) ?? null;
-      } else {
-        console.error("widgetSetupSectionId: no file content in theme response", JSON.stringify(themeJson));
-      }
-    } catch (err) {
-      console.error("widgetSetupSectionId lookup failed", err);
+    const themeCompatibility = await checkThemeCompatibility(admin);
+    if (themeCompatibility.status === "compatible") {
+      widgetSetupSectionId = themeCompatibility.sectionId;
     }
   }
 

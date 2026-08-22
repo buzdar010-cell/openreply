@@ -8,5 +8,9 @@ CREATE INDEX IF NOT EXISTS sessions_shop_idx ON sessions (shop);
 CREATE TABLE IF NOT EXISTS shop_settings (
   shop TEXT PRIMARY KEY,
   nav_setup_dismissed INTEGER NOT NULL DEFAULT 0,
-  widget_setup_dismissed INTEGER NOT NULL DEFAULT 0
+  widget_setup_dismissed INTEGER NOT NULL DEFAULT 0,
+  onboarding_widget_done INTEGER NOT NULL DEFAULT 0,
+  onboarding_portal_editor_done INTEGER NOT NULL DEFAULT 0,
+  onboarding_portal_menu_done INTEGER NOT NULL DEFAULT 0,
+  onboarding_complete INTEGER NOT NULL DEFAULT 0
 );

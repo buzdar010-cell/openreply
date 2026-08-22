@@ -1,13 +1,22 @@
 import type { HeadersFunction, LoaderFunctionArgs } from "react-router";
-import { Outlet, useLoaderData, useRouteError } from "react-router";
+import { Outlet, redirect, useLoaderData, useRouteError } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { AppProvider } from "@shopify/shopify-app-react-router/react";
 
 import { getShopify } from "../shopify.server";
+import { getOnboardingStatus } from "../shop-settings.server";
 
 export const loader = async ({ request, context }: LoaderFunctionArgs) => {
   const shopify = getShopify(context.cloudflare.env);
-  await shopify.authenticate.admin(request);
+  const { session } = await shopify.authenticate.admin(request);
+
+  const url = new URL(request.url);
+  if (!url.pathname.startsWith("/app/onboarding")) {
+    const status = await getOnboardingStatus(context.cloudflare.env.DB, session.shop);
+    if (!status.complete) {
+      throw redirect("/app/onboarding");
+    }
+  }
 
   return { apiKey: context.cloudflare.env.SHOPIFY_API_KEY || "" };
 };
