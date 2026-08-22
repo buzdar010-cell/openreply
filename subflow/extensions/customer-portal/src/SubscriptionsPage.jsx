@@ -222,8 +222,10 @@ function Extension() {
                       commandFor={skipModalId}
                       {...(isBusy ? { loading: true } : {})}
                     >
-                      <s-icon type="delivery" size="small" />
-                      Skip next delivery
+                      <s-stack direction="inline" gap="small-200">
+                        <s-icon type="delivery" size="small" />
+                        Skip next delivery
+                      </s-stack>
                     </s-button>
                   )}
                   {contract.status === 'ACTIVE' && (
@@ -233,8 +235,10 @@ function Extension() {
                       commandFor={pauseModalId}
                       {...(isBusy ? { loading: true } : {})}
                     >
-                      <s-icon type="clock" size="small" />
-                      Pause
+                      <s-stack direction="inline" gap="small-200">
+                        <s-icon type="clock" size="small" />
+                        Pause
+                      </s-stack>
                     </s-button>
                   )}
                   {contract.status === 'PAUSED' && (
@@ -243,8 +247,10 @@ function Extension() {
                       onClick={() => runAction(contract.id, 'resume')}
                       {...(isBusy ? { loading: true } : {})}
                     >
-                      <s-icon type="check-circle" size="small" />
-                      Resume
+                      <s-stack direction="inline" gap="small-200">
+                        <s-icon type="check-circle" size="small" />
+                        Resume
+                      </s-stack>
                     </s-button>
                   )}
                   {(contract.status === 'ACTIVE' || contract.status === 'PAUSED') && (
@@ -255,8 +261,10 @@ function Extension() {
                       commandFor={cancelModalId}
                       {...(isBusy ? { loading: true } : {})}
                     >
-                      <s-icon type="x-circle" size="small" />
-                      Cancel
+                      <s-stack direction="inline" gap="small-200">
+                        <s-icon type="x-circle" size="small" />
+                        Cancel
+                      </s-stack>
                     </s-button>
                   )}
                 </s-stack>
