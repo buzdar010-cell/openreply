@@ -176,10 +176,13 @@ function Extension() {
                 {contract.lines.map((line, i) => (
                   <s-stack key={i} direction="inline" gap="small">
                     {line.imageUrl && (
-                      <s-thumbnail
+                      <s-image
                         src={line.imageUrl}
                         alt={line.imageAlt}
-                        size="small-200"
+                        aspectRatio="1"
+                        objectFit="cover"
+                        borderRadius="base"
+                        inlineSize="64px"
                       />
                     )}
                     <s-stack direction="block" gap="none">
