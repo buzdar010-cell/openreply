@@ -17,9 +17,35 @@ function badgeTone(status) {
   return 'neutral';
 }
 
+const SUCCESS_MESSAGES = {
+  pause: 'Your subscription has been paused.',
+  resume: 'Your subscription has been resumed.',
+  cancel: 'Your subscription has been cancelled.',
+  skip: 'Your next delivery has been skipped.',
+};
+
+const CONFIRM_COPY = {
+  pause: {
+    heading: 'Pause this subscription?',
+    body: "You won't be charged or receive deliveries until you resume it.",
+    confirmLabel: 'Pause subscription',
+  },
+  cancel: {
+    heading: 'Cancel this subscription?',
+    body: "This can't be undone — you'll need to subscribe again to restart it.",
+    confirmLabel: 'Cancel subscription',
+  },
+  skip: {
+    heading: 'Skip your next delivery?',
+    body: "You won't be charged or receive a delivery for the upcoming cycle. Later deliveries are not affected.",
+    confirmLabel: 'Skip delivery',
+  },
+};
+
 function Extension() {
   const [contracts, setContracts] = useState(null);
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
   const [busyId, setBusyId] = useState(null);
 
   async function authedFetch(path, options = {}) {
@@ -47,9 +73,10 @@ function Extension() {
     loadContracts();
   }, []);
 
-  async function runAction(contractId, intent) {
+  async function runAction(contractId, intent, modalId) {
     setBusyId(contractId);
     setError(null);
+    setSuccessMessage(null);
     try {
       const body = new URLSearchParams({ intent, contractId });
       const res = await authedFetch('/customer-account/subscriptions', {
@@ -64,11 +91,15 @@ function Extension() {
         setError(data.error);
       } else {
         await loadContracts();
+        setSuccessMessage(SUCCESS_MESSAGES[intent] || 'Done.');
       }
     } catch {
       setError('Something went wrong. Please try again.');
     } finally {
       setBusyId(null);
+      if (modalId) {
+        document.getElementById(modalId)?.hideOverlay?.();
+      }
     }
   }
 
@@ -88,6 +119,10 @@ function Extension() {
         </s-banner>
       )}
 
+      {successMessage && (
+        <s-banner tone="success" heading={successMessage} />
+      )}
+
       {contracts && contracts.length === 0 && (
         <s-section>
           <s-text>You don't have any active subscriptions yet.</s-text>
@@ -97,6 +132,9 @@ function Extension() {
       {contracts &&
         contracts.map((contract) => {
           const isBusy = busyId === contract.id;
+          const skipModalId = `confirm-skip-${contract.id}`;
+          const pauseModalId = `confirm-pause-${contract.id}`;
+          const cancelModalId = `confirm-cancel-${contract.id}`;
           return (
             <s-section
               key={contract.id}
@@ -108,7 +146,8 @@ function Extension() {
                   {contract.status === 'ACTIVE' && (
                     <s-button
                       variant="secondary"
-                      onClick={() => runAction(contract.id, 'skip')}
+                      command="--show"
+                      commandFor={skipModalId}
                       {...(isBusy ? { loading: true } : {})}
                     >
                       Skip next delivery
@@ -117,7 +156,8 @@ function Extension() {
                   {contract.status === 'ACTIVE' && (
                     <s-button
                       variant="secondary"
-                      onClick={() => runAction(contract.id, 'pause')}
+                      command="--show"
+                      commandFor={pauseModalId}
                       {...(isBusy ? { loading: true } : {})}
                     >
                       Pause
@@ -136,7 +176,8 @@ function Extension() {
                     <s-button
                       variant="secondary"
                       tone="critical"
-                      onClick={() => runAction(contract.id, 'cancel')}
+                      command="--show"
+                      commandFor={cancelModalId}
                       {...(isBusy ? { loading: true } : {})}
                     >
                       Cancel
@@ -144,9 +185,50 @@ function Extension() {
                   )}
                 </s-stack>
               </s-stack>
+
+              <ConfirmModal
+                id={skipModalId}
+                intent="skip"
+                isBusy={isBusy}
+                onConfirm={() => runAction(contract.id, 'skip', skipModalId)}
+              />
+              <ConfirmModal
+                id={pauseModalId}
+                intent="pause"
+                isBusy={isBusy}
+                onConfirm={() => runAction(contract.id, 'pause', pauseModalId)}
+              />
+              <ConfirmModal
+                id={cancelModalId}
+                intent="cancel"
+                isBusy={isBusy}
+                onConfirm={() => runAction(contract.id, 'cancel', cancelModalId)}
+              />
             </s-section>
           );
         })}
     </s-page>
+  );
+}
+
+function ConfirmModal({ id, intent, isBusy, onConfirm }) {
+  const copy = CONFIRM_COPY[intent];
+  return (
+    <s-modal id={id} heading={copy.heading}>
+      <s-paragraph>{copy.body}</s-paragraph>
+      <s-stack direction="inline" gap="small">
+        <s-button
+          variant="primary"
+          tone="critical"
+          onClick={onConfirm}
+          {...(isBusy ? { loading: true } : {})}
+        >
+          {copy.confirmLabel}
+        </s-button>
+        <s-button command="--hide" commandFor={id}>
+          Never mind
+        </s-button>
+      </s-stack>
+    </s-modal>
   );
 }
