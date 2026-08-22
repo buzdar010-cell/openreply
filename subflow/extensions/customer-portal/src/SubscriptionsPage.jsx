@@ -224,7 +224,7 @@ function Extension() {
                     >
                       <s-stack direction="inline" gap="small-200">
                         <s-icon type="delivery" size="small" />
-                        Skip next delivery
+                        Skip
                       </s-stack>
                     </s-button>
                   )}
