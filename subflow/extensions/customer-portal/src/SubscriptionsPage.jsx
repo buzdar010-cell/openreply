@@ -222,6 +222,7 @@ function Extension() {
                       commandFor={skipModalId}
                       {...(isBusy ? { loading: true } : {})}
                     >
+                      <s-icon type="delivery" size="small" />
                       Skip next delivery
                     </s-button>
                   )}
@@ -232,6 +233,7 @@ function Extension() {
                       commandFor={pauseModalId}
                       {...(isBusy ? { loading: true } : {})}
                     >
+                      <s-icon type="clock" size="small" />
                       Pause
                     </s-button>
                   )}
@@ -241,6 +243,7 @@ function Extension() {
                       onClick={() => runAction(contract.id, 'resume')}
                       {...(isBusy ? { loading: true } : {})}
                     >
+                      <s-icon type="check-circle" size="small" />
                       Resume
                     </s-button>
                   )}
@@ -252,6 +255,7 @@ function Extension() {
                       commandFor={cancelModalId}
                       {...(isBusy ? { loading: true } : {})}
                     >
+                      <s-icon type="x-circle" size="small" />
                       Cancel
                     </s-button>
                   )}
