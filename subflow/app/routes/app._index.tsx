@@ -467,7 +467,7 @@ export default function Index() {
               variant="primary"
               href={
                 data.widgetSetupProductHandle
-                  ? `https://${data.shop}/admin/themes/current/editor?previewPath=${encodeURIComponent(`/products/${data.widgetSetupProductHandle}`)}`
+                  ? `https://${data.shop}/admin/themes/current/editor?previewPath=${encodeURIComponent(`/products/${data.widgetSetupProductHandle}`)}&addAppBlockId=${data.apiKey}/subscribe_and_save&target=newAppsSection`
                   : `https://${data.shop}/admin/themes/current/editor`
               }
               target="_blank"
