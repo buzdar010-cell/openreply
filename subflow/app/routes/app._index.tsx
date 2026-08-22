@@ -19,6 +19,7 @@ import { boundary } from "@shopify/shopify-app-react-router/server";
 interface ProductOption {
   id: string;
   title: string;
+  handle: string;
 }
 
 interface SellingPlanGroupSummary {
@@ -53,7 +54,7 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
       query GetProducts {
         products(first: 20, sortKey: TITLE) {
           edges {
-            node { id title }
+            node { id title handle }
           }
         }
       }`,
@@ -190,6 +191,14 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
     ),
   }));
 
+  const productWithPlanTitles = new Set(
+    groups.flatMap((g) => g.productTitles),
+  );
+  const widgetSetupProductHandle =
+    products.find((p) => productWithPlanTitles.has(p.title))?.handle ??
+    products[0]?.handle ??
+    null;
+
   return {
     products,
     sellingPlanGroups,
@@ -201,6 +210,7 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
     showWidgetSetupBanner,
     shop: session.shop,
     apiKey: context.cloudflare.env.SHOPIFY_API_KEY,
+    widgetSetupProductHandle,
   };
 };
 
@@ -442,23 +452,27 @@ export default function Index() {
         <s-banner tone="info" heading="Show the Subscribe & Save option at checkout">
           <s-paragraph>
             One-time setup so customers actually see the subscribe option
-            on your product pages. Tap "Add to my theme" below — it opens
-            your theme editor with Subflow's widget already added to a
-            product page. Just tap "Save" there to finish.
+            on your product pages. Tap "Open theme editor" below — it opens
+            your theme editor on one of your products.
           </s-paragraph>
-          <s-paragraph>
-            If it lands on a page that says the widget couldn't be added
-            (this can happen on special pages like Gift Cards), tap the
-            product name at the top of the editor and switch to any
-            regular product first, then try again.
-          </s-paragraph>
+          <s-ordered-list>
+            <s-list-item>
+              In the editor, click "Add block" (in the product page section)
+            </s-list-item>
+            <s-list-item>Choose "Apps", then "Subflow: Subscribe & Save"</s-list-item>
+            <s-list-item>Click "Save" in the top right</s-list-item>
+          </s-ordered-list>
           <s-stack direction="inline" gap="small">
             <s-button
               variant="primary"
-              href={`https://${data.shop}/admin/themes/current/editor?template=product&addAppBlockId=${data.apiKey}/subscribe_and_save&target=newAppsSection`}
+              href={
+                data.widgetSetupProductHandle
+                  ? `https://${data.shop}/admin/themes/current/editor?previewPath=${encodeURIComponent(`/products/${data.widgetSetupProductHandle}`)}`
+                  : `https://${data.shop}/admin/themes/current/editor`
+              }
               target="_blank"
             >
-              Add to my theme
+              Open theme editor
             </s-button>
             <s-button
               variant="secondary"
