@@ -199,6 +199,59 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
     products[0]?.handle ??
     null;
 
+  // Best-effort: find the main product-info section in the live theme's
+  // default product template, so the widget lands next to the buy buttons
+  // instead of Shopify's default of appending it to the bottom of the page.
+  let widgetSetupSectionId: string | null = null;
+  if (showWidgetSetupBanner) {
+    try {
+      const themeResponse = await admin.graphql(
+        `#graphql
+          query GetMainThemeProductTemplate {
+            themes(first: 1, roles: [MAIN]) {
+              nodes {
+                files(filenames: ["templates/product.json"]) {
+                  nodes {
+                    body {
+                      ... on OnlineStoreThemeFileBodyText {
+                        content
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }`,
+      );
+      const themeJson: any = await themeResponse.json();
+      const fileContent =
+        themeJson.data?.themes?.nodes?.[0]?.files?.nodes?.[0]?.body?.content;
+      if (fileContent) {
+        const template = JSON.parse(fileContent);
+        const order: string[] = template.order ?? [];
+        const sections = template.sections ?? {};
+        const excludeKeywords = [
+          "recommend",
+          "related",
+          "complementary",
+          "header",
+          "footer",
+          "announcement",
+        ];
+        widgetSetupSectionId =
+          order.find((id) => {
+            const type = String(sections[id]?.type ?? "").toLowerCase();
+            return (
+              type.includes("product") &&
+              !excludeKeywords.some((kw) => type.includes(kw))
+            );
+          }) ?? null;
+      }
+    } catch {
+      // fall back to appending a new apps section at the page bottom
+    }
+  }
+
   return {
     products,
     sellingPlanGroups,
@@ -211,6 +264,7 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
     shop: session.shop,
     apiKey: context.cloudflare.env.SHOPIFY_API_KEY,
     widgetSetupProductHandle,
+    widgetSetupSectionId,
   };
 };
 
@@ -467,7 +521,7 @@ export default function Index() {
               variant="primary"
               href={
                 data.widgetSetupProductHandle
-                  ? `https://${data.shop}/admin/themes/current/editor?previewPath=${encodeURIComponent(`/products/${data.widgetSetupProductHandle}`)}&addAppBlockId=${data.apiKey}/subscribe_and_save&target=newAppsSection`
+                  ? `https://${data.shop}/admin/themes/current/editor?previewPath=${encodeURIComponent(`/products/${data.widgetSetupProductHandle}`)}&addAppBlockId=${data.apiKey}/subscribe_and_save&target=${data.widgetSetupSectionId ?? "newAppsSection"}`
                   : `https://${data.shop}/admin/themes/current/editor`
               }
               target="_blank"
