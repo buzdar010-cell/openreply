@@ -231,7 +231,8 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
       const fileContent: string | null =
         body?.content ?? (body?.contentBase64 ? atob(body.contentBase64) : null);
       if (fileContent) {
-        const template = JSON.parse(fileContent);
+        const jsonText = fileContent.replace(/^\s*\/\*[\s\S]*?\*\/\s*/, "");
+        const template = JSON.parse(jsonText);
         const order: string[] = template.order ?? [];
         const sections = template.sections ?? {};
         const excludeKeywords = [
