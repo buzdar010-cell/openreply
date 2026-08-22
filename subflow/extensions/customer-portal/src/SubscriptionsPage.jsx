@@ -191,10 +191,12 @@ function Extension() {
                       </s-box>
                     )}
                     <s-stack direction="block" gap="none">
-                      <s-text>
-                        {line.title}
-                        {line.quantity > 1 ? ` × ${line.quantity}` : ''}
-                      </s-text>
+                      {(contract.lines.length > 1 || line.quantity > 1) && (
+                        <s-text>
+                          {contract.lines.length > 1 ? line.title : ''}
+                          {line.quantity > 1 ? ` × ${line.quantity}` : ''}
+                        </s-text>
+                      )}
                       <s-text tone="subdued">{formatMoney(line.price, line.currencyCode)}</s-text>
                     </s-stack>
                   </s-stack>
