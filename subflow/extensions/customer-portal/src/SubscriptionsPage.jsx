@@ -182,7 +182,7 @@ function Extension() {
                         aspectRatio="1"
                         objectFit="cover"
                         borderRadius="base"
-                        inlineSize="64px"
+                        style={{ width: '64px', height: '64px', flexShrink: 0 }}
                       />
                     )}
                     <s-stack direction="block" gap="none">
