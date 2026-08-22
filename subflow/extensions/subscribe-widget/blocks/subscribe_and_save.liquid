@@ -16,9 +16,13 @@
 
       {% for group in product.selling_plan_groups %}
         {% for plan in group.selling_plans %}
-          {% assign allocation = current_variant.selling_plan_allocations
-              | where: 'selling_plan.id', plan.id
-              | first %}
+          {% assign allocation = nil %}
+          {% for alloc in current_variant.selling_plan_allocations %}
+            {% if alloc.selling_plan.id == plan.id %}
+              {% assign allocation = alloc %}
+              {% break %}
+            {% endif %}
+          {% endfor %}
           {% if allocation %}
             <label class="subflow-subscribe-widget__option">
               <input
