@@ -401,6 +401,7 @@ export default function Index() {
         <s-button
           slot="primary-action"
           variant="primary"
+          tone="critical"
           onClick={() => {
             fetcher.submit(
               { _action: "dismiss_nav_setup" },
