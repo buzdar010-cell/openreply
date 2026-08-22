@@ -313,6 +313,7 @@ export default function Index() {
   const modalRef = useRef<any>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const detailModalRef = useRef<any>(null);
+  const dismissModalRef = useRef<any>(null);
   const [discountPercent, setDiscountPercent] = useState("10");
   const [intervalDays, setIntervalDays] = useState("30");
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
@@ -357,15 +358,8 @@ export default function Index() {
         <s-banner tone="info" heading="Let customers find their subscriptions">
           <s-paragraph>
             One-time setup so customers can pause, skip, or cancel their
-            own subscriptions. Tap the button below, then:
+            own subscriptions. Tap "Open menu settings" below, then:
           </s-paragraph>
-          <s-button
-            variant="primary"
-            href={`https://${data.shop}/admin/menus`}
-            target="_blank"
-          >
-            Open menu settings
-          </s-button>
           <s-ordered-list>
             <s-list-item>Tap "Customer account main menu"</s-list-item>
             <s-list-item>Tap "Add menu item"</s-list-item>
@@ -374,19 +368,57 @@ export default function Index() {
             <s-list-item>Pick the option with "Subflow" in the name</s-list-item>
             <s-list-item>Tap "Save"</s-list-item>
           </s-ordered-list>
-          <s-button
-            variant="secondary"
-            onClick={() =>
-              fetcher.submit(
-                { _action: "dismiss_nav_setup" },
-                { method: "POST" },
-              )
-            }
-          >
-            I've done this
-          </s-button>
+          <s-stack direction="inline" gap="small">
+            <s-button
+              variant="primary"
+              href={`https://${data.shop}/admin/menus`}
+              target="_blank"
+            >
+              Open menu settings
+            </s-button>
+            <s-button
+              variant="secondary"
+              command="--show"
+              commandFor="confirm-nav-dismiss-modal"
+            >
+              I've done this
+            </s-button>
+          </s-stack>
         </s-banner>
       )}
+
+      <s-modal
+        ref={dismissModalRef}
+        id="confirm-nav-dismiss-modal"
+        heading="Confirm setup is done"
+      >
+        <s-paragraph>
+          This reminder won't show again after you confirm. If the menu
+          item wasn't actually added, customers will have no way to reach
+          their subscriptions page to pause, skip, or cancel — they'll
+          need to contact you directly instead.
+        </s-paragraph>
+        <s-button
+          slot="primary-action"
+          variant="primary"
+          onClick={() => {
+            fetcher.submit(
+              { _action: "dismiss_nav_setup" },
+              { method: "POST" },
+            );
+            dismissModalRef.current?.hideOverlay();
+          }}
+        >
+          Yes, I've added it
+        </s-button>
+        <s-button
+          slot="secondary-actions"
+          command="--hide"
+          commandFor="confirm-nav-dismiss-modal"
+        >
+          Cancel
+        </s-button>
+      </s-modal>
 
       {data.needsUpgrade && (
         <s-banner
