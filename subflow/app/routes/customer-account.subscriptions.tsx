@@ -3,7 +3,10 @@ import { getShopify } from "../shopify.server";
 
 async function getAdminForRequest(shopify: ReturnType<typeof getShopify>, request: Request) {
   const { sessionToken, cors } = await shopify.authenticate.public.customerAccount(request);
-  const shop = new URL(sessionToken.dest).hostname;
+  const dest = sessionToken.dest.includes("://")
+    ? sessionToken.dest
+    : `https://${sessionToken.dest}`;
+  const shop = new URL(dest).hostname;
   const customerId = sessionToken.sub;
   const { admin } = await shopify.unauthenticated.admin(shop);
   return { admin, customerId, cors };
