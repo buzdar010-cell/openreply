@@ -73,7 +73,7 @@ function Extension() {
     loadContracts();
   }, []);
 
-  async function runAction(contractId, intent, modalId) {
+  async function runAction(contractId, intent) {
     setBusyId(contractId);
     setError(null);
     setSuccessMessage(null);
@@ -97,9 +97,6 @@ function Extension() {
       setError('Something went wrong. Please try again.');
     } finally {
       setBusyId(null);
-      if (modalId) {
-        document.getElementById(modalId)?.hideOverlay?.();
-      }
     }
   }
 
@@ -190,19 +187,19 @@ function Extension() {
                 id={skipModalId}
                 intent="skip"
                 isBusy={isBusy}
-                onConfirm={() => runAction(contract.id, 'skip', skipModalId)}
+                onConfirm={() => runAction(contract.id, 'skip')}
               />
               <ConfirmModal
                 id={pauseModalId}
                 intent="pause"
                 isBusy={isBusy}
-                onConfirm={() => runAction(contract.id, 'pause', pauseModalId)}
+                onConfirm={() => runAction(contract.id, 'pause')}
               />
               <ConfirmModal
                 id={cancelModalId}
                 intent="cancel"
                 isBusy={isBusy}
-                onConfirm={() => runAction(contract.id, 'cancel', cancelModalId)}
+                onConfirm={() => runAction(contract.id, 'cancel')}
               />
             </s-section>
           );
@@ -220,6 +217,8 @@ function ConfirmModal({ id, intent, isBusy, onConfirm }) {
         <s-button
           variant="primary"
           tone="critical"
+          command="--hide"
+          commandFor={id}
           onClick={onConfirm}
           {...(isBusy ? { loading: true } : {})}
         >
