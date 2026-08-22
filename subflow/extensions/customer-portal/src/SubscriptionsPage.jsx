@@ -217,7 +217,7 @@ function Extension() {
                 <s-stack direction="inline" gap="small">
                   {contract.status === 'ACTIVE' && (
                     <s-button
-                      variant="secondary"
+                      variant="primary"
                       command="--show"
                       commandFor={skipModalId}
                       {...(isBusy ? { loading: true } : {})}
@@ -230,7 +230,7 @@ function Extension() {
                   )}
                   {contract.status === 'ACTIVE' && (
                     <s-button
-                      variant="secondary"
+                      variant="primary"
                       command="--show"
                       commandFor={pauseModalId}
                       {...(isBusy ? { loading: true } : {})}
@@ -255,7 +255,7 @@ function Extension() {
                   )}
                   {(contract.status === 'ACTIVE' || contract.status === 'PAUSED') && (
                     <s-button
-                      variant="secondary"
+                      variant="primary"
                       tone="critical"
                       command="--show"
                       commandFor={cancelModalId}
