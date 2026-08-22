@@ -356,32 +356,35 @@ export default function Index() {
       {data.showNavSetupBanner && (
         <s-banner tone="info" heading="Let customers find their subscriptions">
           <s-paragraph>
-            One-time setup: add a link to your customer account menu so
-            customers can pause, skip, or cancel their own subscriptions.
-            In Shopify admin, go to Content → Menus → "Customer account
-            main menu" → Add menu item → choose link type "Apps" → pick
-            Subflow → Save.
+            One-time setup so customers can pause, skip, or cancel their
+            own subscriptions. Tap the button below, then:
           </s-paragraph>
-          <s-stack direction="inline" gap="small">
-            <s-button
-              variant="primary"
-              href={`https://${data.shop}/admin/menus`}
-              target="_blank"
-            >
-              Open menu settings
-            </s-button>
-            <s-button
-              variant="secondary"
-              onClick={() =>
-                fetcher.submit(
-                  { _action: "dismiss_nav_setup" },
-                  { method: "POST" },
-                )
-              }
-            >
-              I've done this
-            </s-button>
-          </s-stack>
+          <s-button
+            variant="primary"
+            href={`https://${data.shop}/admin/menus`}
+            target="_blank"
+          >
+            Open menu settings
+          </s-button>
+          <s-ordered-list>
+            <s-list-item>Tap "Customer account main menu"</s-list-item>
+            <s-list-item>Tap "Add menu item"</s-list-item>
+            <s-list-item>Type any label, like "Subscriptions"</s-list-item>
+            <s-list-item>Under link type, choose "Apps"</s-list-item>
+            <s-list-item>Pick the option with "Subflow" in the name</s-list-item>
+            <s-list-item>Tap "Save"</s-list-item>
+          </s-ordered-list>
+          <s-button
+            variant="secondary"
+            onClick={() =>
+              fetcher.submit(
+                { _action: "dismiss_nav_setup" },
+                { method: "POST" },
+              )
+            }
+          >
+            I've done this
+          </s-button>
         </s-banner>
       )}
 
