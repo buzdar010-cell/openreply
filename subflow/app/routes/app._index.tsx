@@ -216,6 +216,9 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
                       ... on OnlineStoreThemeFileBodyText {
                         content
                       }
+                      ... on OnlineStoreThemeFileBodyBase64 {
+                        contentBase64
+                      }
                     }
                   }
                 }
@@ -224,8 +227,9 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
           }`,
       );
       const themeJson: any = await themeResponse.json();
-      const fileContent =
-        themeJson.data?.themes?.nodes?.[0]?.files?.nodes?.[0]?.body?.content;
+      const body = themeJson.data?.themes?.nodes?.[0]?.files?.nodes?.[0]?.body;
+      const fileContent: string | null =
+        body?.content ?? (body?.contentBase64 ? atob(body.contentBase64) : null);
       if (fileContent) {
         const template = JSON.parse(fileContent);
         const order: string[] = template.order ?? [];
@@ -246,9 +250,11 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
               !excludeKeywords.some((kw) => type.includes(kw))
             );
           }) ?? null;
+      } else {
+        console.error("widgetSetupSectionId: no file content in theme response", JSON.stringify(themeJson));
       }
-    } catch {
-      // fall back to appending a new apps section at the page bottom
+    } catch (err) {
+      console.error("widgetSetupSectionId lookup failed", err);
     }
   }
 
