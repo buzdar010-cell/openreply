@@ -446,6 +446,12 @@ export default function Index() {
             your theme editor with Subflow's widget already added to a
             product page. Just tap "Save" there to finish.
           </s-paragraph>
+          <s-paragraph>
+            If it lands on a page that says the widget couldn't be added
+            (this can happen on special pages like Gift Cards), tap the
+            product name at the top of the editor and switch to any
+            regular product first, then try again.
+          </s-paragraph>
           <s-stack direction="inline" gap="small">
             <s-button
               variant="primary"
