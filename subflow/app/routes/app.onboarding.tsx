@@ -1,5 +1,6 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "react-router";
 import { redirect, useFetcher, useLoaderData } from "react-router";
+import { useEffect, useState } from "react";
 import { getShopify } from "../shopify.server";
 import {
   getOnboardingStatus,
@@ -99,11 +100,6 @@ export default function Onboarding() {
 
   const status = fetcher.data?.status ?? data.status;
   const isSubmitting = fetcher.state === "submitting";
-  const submittingIntent = fetcher.formData?.get("_action");
-
-  function markDone(intent: string) {
-    fetcher.submit({ _action: intent }, { method: "POST" });
-  }
 
   if (data.themeStatus === "incompatible") {
     return (
@@ -152,80 +148,199 @@ export default function Onboarding() {
   const checkoutEditorLink = `https://${data.shop}/admin/settings/checkout`;
   const menuLink = `https://${data.shop}/admin/menus`;
 
+  const steps = [
+    {
+      key: "widget",
+      done: status.widgetDone,
+      title: "Add the subscribe widget to your theme",
+      youtubeId: null as string | null,
+      actionLabel: "Open theme editor",
+      actionHref: widgetLink,
+      intent: "mark_widget_done",
+      instructions: [
+        'Tap "Open theme editor" below — it opens your theme editor on one of your products.',
+        'Scroll down the page until you see "Add block" (usually near the price and "Add to cart" button).',
+        'Tap "Add block".',
+        'A panel opens with two tabs: "Blocks" and "Apps". Tap "Apps".',
+        'Find "Subflow: Subscribe & Save" in the list and tap it — it gets added automatically.',
+        'Tap "Save" in the top-right corner.',
+      ],
+    },
+    {
+      key: "portalEditor",
+      done: status.portalEditorDone,
+      title: "Register the customer subscriptions page",
+      youtubeId: null as string | null,
+      actionLabel: "Open checkout & accounts settings",
+      actionHref: checkoutEditorLink,
+      intent: "mark_portal_editor_done",
+      instructions: [
+        'Tap "Open checkout & accounts settings" below.',
+        'Find the "Configurations" card near the top and tap "Edit" on it — this opens the checkout & accounts editor.',
+        'Look for an "Apps" tab or button in that editor.',
+        'Find "Subflow" → "customer-portal" in the list and tap the "+" next to it.',
+        "A pop-up will ask to add it to the account menu — accept it.",
+      ],
+    },
+    {
+      key: "portalMenu",
+      done: status.portalMenuDone,
+      title: "Add the Subscriptions link to the customer account menu",
+      youtubeId: null as string | null,
+      actionLabel: "Open menus",
+      actionHref: menuLink,
+      intent: "mark_portal_menu_done",
+      instructions: [
+        'Tap "Open menus" below.',
+        'Find "Customer account main menu" in the list and tap it.',
+        'Tap "Add menu item".',
+        'Type "Subscriptions" as the label.',
+        'For the link type, choose "Apps".',
+        'Select "Subflow", then the customer-portal page.',
+        'Tap "Save" (and save the menu again if prompted).',
+        "This step is required separately from step 2 — without it, customers have no way to find the page.",
+      ],
+    },
+  ];
+
   return (
-    <s-page heading="Set up Subflow">
-      <s-paragraph>
-        Three one-time steps before your dashboard unlocks — these make sure
-        customers actually see and can manage subscriptions once you start
-        selling.
-      </s-paragraph>
+    <OnboardingWizard
+      steps={steps}
+      complete={status.complete}
+      isSubmitting={isSubmitting}
+      onConfirmStep={(intent) => fetcher.submit({ _action: intent }, { method: "POST" })}
+    />
+  );
+}
 
-      <s-section heading={`${status.widgetDone ? "✓" : "1."} Add the subscribe widget to your theme`}>
-        <s-paragraph>
-          Tap the button below to open your theme editor on one of your
-          products, then: <b>Add block → Apps → Subflow: Subscribe &amp; Save → Save</b>.
-        </s-paragraph>
-        <s-stack direction="inline" gap="small">
-          <s-button variant="primary" href={widgetLink} target="_blank">
-            Open theme editor
-          </s-button>
-          <s-button
-            variant="secondary"
-            onClick={() => markDone("mark_widget_done")}
-            {...(isSubmitting && submittingIntent === "mark_widget_done" ? { loading: true } : {})}
-          >
-            {status.widgetDone ? "Done ✓" : "I've done this"}
-          </s-button>
-        </s-stack>
-      </s-section>
+interface WizardStep {
+  key: string;
+  done: boolean;
+  title: string;
+  youtubeId: string | null;
+  actionLabel: string;
+  actionHref: string;
+  intent: string;
+  instructions: string[];
+}
 
-      <s-section heading={`${status.portalEditorDone ? "✓" : "2."} Register the customer subscriptions page`}>
-        <s-paragraph>
-          Tap the button below, then: <b>Customize → Apps tab → Subflow → customer-portal → tap +</b>.
-          A prompt to add it to the account menu will appear — accept it.
-        </s-paragraph>
-        <s-stack direction="inline" gap="small">
-          <s-button variant="primary" href={checkoutEditorLink} target="_blank">
-            Open checkout &amp; accounts settings
-          </s-button>
-          <s-button
-            variant="secondary"
-            onClick={() => markDone("mark_portal_editor_done")}
-            {...(isSubmitting && submittingIntent === "mark_portal_editor_done" ? { loading: true } : {})}
-          >
-            {status.portalEditorDone ? "Done ✓" : "I've done this"}
-          </s-button>
-        </s-stack>
-      </s-section>
+function OnboardingWizard({
+  steps,
+  complete,
+  isSubmitting,
+  onConfirmStep,
+}: {
+  steps: WizardStep[];
+  complete: boolean;
+  isSubmitting: boolean;
+  onConfirmStep: (intent: string) => void;
+}) {
+  const firstIncomplete = steps.findIndex((s) => !s.done);
+  const [currentIndex, setCurrentIndex] = useState(
+    firstIncomplete === -1 ? steps.length - 1 : firstIncomplete,
+  );
+  const currentStep = steps[currentIndex];
+  const [checked, setChecked] = useState(currentStep.done);
 
-      <s-section heading={`${status.portalMenuDone ? "✓" : "3."} Add the Subscriptions link to the customer account menu`}>
-        <s-paragraph>
-          This step is separate from step 2 and both are required — without
-          this, customers have no way to find the page. Tap the button
-          below, then: <b>Add menu item → label it "Subscriptions" → link type Apps → pick Subflow → Save</b>.
-        </s-paragraph>
-        <s-stack direction="inline" gap="small">
-          <s-button variant="primary" href={menuLink} target="_blank">
-            Open menus
-          </s-button>
-          <s-button
-            variant="secondary"
-            onClick={() => markDone("mark_portal_menu_done")}
-            {...(isSubmitting && submittingIntent === "mark_portal_menu_done" ? { loading: true } : {})}
-          >
-            {status.portalMenuDone ? "Done ✓" : "I've done this"}
-          </s-button>
-        </s-stack>
-      </s-section>
+  useEffect(() => {
+    setChecked(steps[currentIndex]?.done ?? false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentIndex]);
 
-      {status.complete && (
+  const isLastStep = currentIndex === steps.length - 1;
+
+  function handleNext() {
+    if (!currentStep.done && checked) {
+      onConfirmStep(currentStep.intent);
+    }
+    if (!isLastStep) {
+      setCurrentIndex((i) => i + 1);
+    }
+  }
+
+  if (complete) {
+    return (
+      <s-page heading="Set up Subflow">
         <s-banner tone="success" heading="All set!">
-          <s-paragraph>Your dashboard is unlocked.</s-paragraph>
+          <s-paragraph>
+            All three steps are confirmed. Your dashboard is unlocked.
+          </s-paragraph>
           <s-button variant="primary" href="/app">
             Go to dashboard
           </s-button>
         </s-banner>
-      )}
+      </s-page>
+    );
+  }
+
+  return (
+    <s-page heading="Set up Subflow">
+      <s-paragraph tone="neutral">
+        Step {currentIndex + 1} of {steps.length}
+      </s-paragraph>
+
+      <s-section heading={currentStep.title}>
+        <s-box
+          background="subdued"
+          borderRadius="base"
+          blockSize="360px"
+          overflow="hidden"
+        >
+          {currentStep.youtubeId ? (
+            <iframe
+              width="100%"
+              height="360"
+              src={`https://www.youtube.com/embed/${currentStep.youtubeId}`}
+              title={currentStep.title}
+              style={{ border: 0, display: "block" }}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          ) : (
+            <s-stack
+              direction="block"
+              gap="small"
+              blockSize="360px"
+              justifyContent="center"
+              alignItems="center"
+            >
+              <s-text tone="neutral">Video walkthrough coming soon</s-text>
+            </s-stack>
+          )}
+        </s-box>
+
+        <s-ordered-list>
+          {currentStep.instructions.map((line, i) => (
+            <s-list-item key={i}>{line}</s-list-item>
+          ))}
+        </s-ordered-list>
+
+        <s-button variant="primary" href={currentStep.actionHref} target="_blank">
+          {currentStep.actionLabel}
+        </s-button>
+
+        <s-checkbox
+          checked={checked}
+          label="I've completed this step"
+          onChange={(e: any) => setChecked(e.currentTarget.checked)}
+        />
+
+        <s-stack direction="inline" gap="small">
+          {currentIndex > 0 && (
+            <s-button variant="secondary" onClick={() => setCurrentIndex((i) => i - 1)}>
+              Back
+            </s-button>
+          )}
+          <s-button
+            variant="primary"
+            disabled={!checked}
+            onClick={handleNext}
+            {...(isSubmitting ? { loading: true } : {})}
+          >
+            {isLastStep ? "Finish" : "Next"}
+          </s-button>
+        </s-stack>
+      </s-section>
     </s-page>
   );
 }
