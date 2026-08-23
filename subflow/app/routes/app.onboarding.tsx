@@ -15,7 +15,8 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
 
   const status = await getOnboardingStatus(db, session.shop);
   if (status.complete) {
-    throw redirect("/app");
+    const url = new URL(request.url);
+    throw redirect(`/app${url.search}`);
   }
 
   const themeCompatibility = await checkThemeCompatibility(admin);

@@ -14,7 +14,7 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
   if (!url.pathname.startsWith("/app/onboarding")) {
     const status = await getOnboardingStatus(context.cloudflare.env.DB, session.shop);
     if (!status.complete) {
-      throw redirect("/app/onboarding");
+      throw redirect(`/app/onboarding${url.search}`);
     }
   }
 
