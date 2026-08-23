@@ -162,9 +162,10 @@ export default function Onboarding() {
       autoNote: widgetAutoAdded ? "Added automatically when the editor opens" : null,
       instructions: widgetAutoAdded
         ? [
-            'Tap "Open theme editor" below — it opens your theme editor with the Subscribe & Save widget already added, right near the price and buy button.',
-            "Scroll down to confirm you can see it there.",
-            'Tap "Save" in the top-right corner to keep it.',
+            'Tap "Open theme editor" below — it opens your theme editor with the Subscribe & Save widget already added to the page.',
+            "It gets added below the price and buy button, not above — scroll down to find it in the block list on the left.",
+            "Drag it (using the handle on the left of the block) up so it sits directly above the buy button, where customers will actually see it.",
+            'Tap "Save" in the top-right corner.',
           ]
         : [
             'Tap "Open theme editor" below — it opens your theme editor on one of your products.',
@@ -342,12 +343,7 @@ function OnboardingWizard({
 
           <s-divider direction="inline" />
 
-          <s-stack direction="inline" gap="small">
-            {currentIndex > 0 && (
-              <s-button variant="secondary" onClick={() => setCurrentIndex((i) => i - 1)}>
-                Back
-              </s-button>
-            )}
+          <s-stack direction="block" gap="small" alignItems="stretch">
             <s-button
               variant="primary"
               disabled={!checked}
@@ -356,6 +352,11 @@ function OnboardingWizard({
             >
               {isLastStep ? "Finish" : "Next"}
             </s-button>
+            {currentIndex > 0 && (
+              <s-button variant="secondary" onClick={() => setCurrentIndex((i) => i - 1)}>
+                Back
+              </s-button>
+            )}
           </s-stack>
         </s-stack>
       </s-section>
