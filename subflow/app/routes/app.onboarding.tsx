@@ -148,6 +148,8 @@ export default function Onboarding() {
   const checkoutEditorLink = `https://${data.shop}/admin/settings/checkout`;
   const menuLink = `https://${data.shop}/admin/menus`;
 
+  const widgetAutoAdded = Boolean(data.sectionId);
+
   const steps = [
     {
       key: "widget",
@@ -157,14 +159,21 @@ export default function Onboarding() {
       actionLabel: "Open theme editor",
       actionHref: widgetLink,
       intent: "mark_widget_done",
-      instructions: [
-        'Tap "Open theme editor" below — it opens your theme editor on one of your products.',
-        'Scroll down the page until you see "Add block" (usually near the price and "Add to cart" button).',
-        'Tap "Add block".',
-        'A panel opens with two tabs: "Blocks" and "Apps". Tap "Apps".',
-        'Find "Subflow: Subscribe & Save" in the list and tap it — it gets added automatically.',
-        'Tap "Save" in the top-right corner.',
-      ],
+      autoNote: widgetAutoAdded ? "Added automatically when the editor opens" : null,
+      instructions: widgetAutoAdded
+        ? [
+            'Tap "Open theme editor" below — it opens your theme editor with the Subscribe & Save widget already added, right near the price and buy button.',
+            "Scroll down to confirm you can see it there.",
+            'Tap "Save" in the top-right corner to keep it.',
+          ]
+        : [
+            'Tap "Open theme editor" below — it opens your theme editor on one of your products.',
+            'Scroll down the page until you see "Add block" (usually near the price and "Add to cart" button).',
+            'Tap "Add block".',
+            'A panel opens with two tabs: "Blocks" and "Apps". Tap "Apps".',
+            'Find "Subflow: Subscribe & Save" in the list and tap it — it gets added where you tapped.',
+            'Tap "Save" in the top-right corner.',
+          ],
     },
     {
       key: "portalEditor",
@@ -174,6 +183,7 @@ export default function Onboarding() {
       actionLabel: "Open checkout & accounts settings",
       actionHref: checkoutEditorLink,
       intent: "mark_portal_editor_done",
+      autoNote: null as string | null,
       instructions: [
         'Tap "Open checkout & accounts settings" below.',
         'Find the "Configurations" card near the top and tap "Edit" on it — this opens the checkout & accounts editor.',
@@ -190,6 +200,7 @@ export default function Onboarding() {
       actionLabel: "Open menus",
       actionHref: menuLink,
       intent: "mark_portal_menu_done",
+      autoNote: null as string | null,
       instructions: [
         'Tap "Open menus" below.',
         'Find "Customer account main menu" in the list and tap it.',
@@ -221,6 +232,7 @@ interface WizardStep {
   actionLabel: string;
   actionHref: string;
   intent: string;
+  autoNote: string | null;
   instructions: string[];
 }
 
@@ -275,70 +287,76 @@ function OnboardingWizard({
 
   return (
     <s-page heading="Set up Subflow">
-      <s-paragraph tone="neutral">
-        Step {currentIndex + 1} of {steps.length}
-      </s-paragraph>
+      <s-stack direction="inline" gap="small" alignItems="center">
+        <s-badge tone="info" size="large">{`Step ${currentIndex + 1} of ${steps.length}`}</s-badge>
+      </s-stack>
 
-      <s-section heading={currentStep.title}>
-        <s-box
-          background="subdued"
-          borderRadius="base"
-          blockSize="360px"
-          overflow="hidden"
-        >
-          {currentStep.youtubeId ? (
-            <iframe
-              width="100%"
-              height="360"
-              src={`https://www.youtube.com/embed/${currentStep.youtubeId}`}
-              title={currentStep.title}
-              style={{ border: 0, display: "block" }}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          ) : (
-            <s-stack
-              direction="block"
-              gap="small"
-              blockSize="360px"
-              justifyContent="center"
-              alignItems="center"
-            >
-              <s-text tone="neutral">Video walkthrough coming soon</s-text>
-            </s-stack>
-          )}
-        </s-box>
+      <s-section heading={currentStep.title} padding="base">
+        <s-stack direction="block" gap="large">
+          <s-box background="subdued" borderRadius="base" blockSize="360px" overflow="hidden">
+            {currentStep.youtubeId ? (
+              <iframe
+                width="100%"
+                height="360"
+                src={`https://www.youtube.com/embed/${currentStep.youtubeId}`}
+                title={currentStep.title}
+                style={{ border: 0, display: "block" }}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : (
+              <s-stack
+                direction="block"
+                blockSize="360px"
+                justifyContent="center"
+                alignItems="center"
+              >
+                <s-text tone="neutral">Video walkthrough coming soon</s-text>
+              </s-stack>
+            )}
+          </s-box>
 
-        <s-ordered-list>
-          {currentStep.instructions.map((line, i) => (
-            <s-list-item key={i}>{line}</s-list-item>
-          ))}
-        </s-ordered-list>
+          <s-ordered-list>
+            {currentStep.instructions.map((line, i) => (
+              <s-list-item key={i}>{line}</s-list-item>
+            ))}
+          </s-ordered-list>
 
-        <s-button variant="primary" href={currentStep.actionHref} target="_blank">
-          {currentStep.actionLabel}
-        </s-button>
+          <s-divider direction="inline" />
 
-        <s-checkbox
-          checked={checked}
-          label="I've completed this step"
-          onChange={(e: any) => setChecked(e.currentTarget.checked)}
-        />
-
-        <s-stack direction="inline" gap="small">
-          {currentIndex > 0 && (
-            <s-button variant="secondary" onClick={() => setCurrentIndex((i) => i - 1)}>
-              Back
+          <s-stack direction="block" gap="base">
+            {currentStep.autoNote && (
+              <s-badge tone="success" icon="check-circle-filled">
+                {currentStep.autoNote}
+              </s-badge>
+            )}
+            <s-button variant="primary" href={currentStep.actionHref} target="_blank">
+              {currentStep.actionLabel}
             </s-button>
-          )}
-          <s-button
-            variant="primary"
-            disabled={!checked}
-            onClick={handleNext}
-            {...(isSubmitting ? { loading: true } : {})}
-          >
-            {isLastStep ? "Finish" : "Next"}
-          </s-button>
+            <s-checkbox
+              checked={checked}
+              label="I've completed this step"
+              onChange={(e: any) => setChecked(e.currentTarget.checked)}
+            />
+          </s-stack>
+
+          <s-divider direction="inline" />
+
+          <s-stack direction="inline" gap="small">
+            {currentIndex > 0 && (
+              <s-button variant="secondary" onClick={() => setCurrentIndex((i) => i - 1)}>
+                Back
+              </s-button>
+            )}
+            <s-button
+              variant="primary"
+              disabled={!checked}
+              onClick={handleNext}
+              {...(isSubmitting ? { loading: true } : {})}
+            >
+              {isLastStep ? "Finish" : "Next"}
+            </s-button>
+          </s-stack>
         </s-stack>
       </s-section>
     </s-page>
