@@ -337,7 +337,7 @@ function OnboardingWizard({
             <s-checkbox
               checked={checked}
               label="I've completed this step"
-              onChange={(e: any) => setChecked(e.currentTarget.checked)}
+              onInput={(e: any) => setChecked(e.currentTarget.checked)}
             />
           </s-stack>
 
