@@ -325,7 +325,7 @@ function OnboardingWizard({
 
           <s-divider direction="inline" />
 
-          <s-stack direction="block" gap="base">
+          <s-stack direction="block" gap="base" alignItems="center">
             {currentStep.autoNote && (
               <s-badge tone="success" icon="check-circle-filled">
                 {currentStep.autoNote}
@@ -343,7 +343,7 @@ function OnboardingWizard({
 
           <s-divider direction="inline" />
 
-          <s-stack direction="block" gap="small" alignItems="stretch">
+          <s-stack direction="block" gap="small" alignItems="center">
             <s-button
               variant="primary"
               disabled={!checked}
