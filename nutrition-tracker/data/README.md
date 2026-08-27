@@ -1,6 +1,14 @@
-# Pakistani + common Western food database — v7
+# Pakistani + common Western food database — v8
 
-118 dishes: 102 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+131 dishes: 115 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+
+## v8: chutneys, pickles/achaar, and raita — a new category, and a different shape of dish
+
+13 condiments: 5 chutneys (`hari_chutney`, `imli_chutney`, `lehsun_chutney`, `mango_chutney`, `tamatar_chutney`), 7 pickles/achaar (`aam_ka_achaar`, `mixed_achaar`, `nimbu_ka_achaar`, `mirch_ka_achaar`, `lehsun_ka_achaar`, `gajar_ka_achaar`, `shalgam_ka_achaar`), and `raita`. New `condiment` category added for all 13.
+
+These are structurally different from every dish built so far: they're not meals, they're accompaniments, eaten in real portions of 1 tsp–2 tbsp (10-30g), not a bowl or plate. None of them come from a specific published recipe with a stated serving count — pickles and chutneys are made in big batches and eaten a spoonful at a time, so there's no "1 recipe = N servings" to convert. Instead each one is built from realistic small-serving proportions for that condiment, and the `serving_label` says so plainly rather than implying a sourced recipe. Checked against real-world per-tablespoon calorie references for oil-preserved pickles and chutneys and all held up (pickles ~50-65 kcal/tbsp given the oil content, chutneys lower except tamarind's sugar-heavy 94 kcal/2 tbsp) — no corrections needed.
+
+Seven new base ingredients, several for things that had only ever been background flavoring before and needed real nutrition data now that they're a dish's primary ingredient: `mint_coriander_leaves_raw`, `tamarind_pulp`, `garlic_raw`, `raw_green_mango` (unripe keri — nutritionally distinct from the existing ripe `mango_raw`), `lemon_lime_raw`, `green_chili_raw`, `turnip_raw`.
 
 ## v7: regional variants — Sindh, KPK/Pashtun belt, Balochistan, Kashmir/Gilgit-Baltistan
 
@@ -77,7 +85,7 @@ All 14 originally-named "remaining recipes" are now built, across v5 and v6 (see
 
 ## Next steps (not done yet)
 
-- Regional variants are done (v7). Next per the agreed roadmap: chutneys/pickles (achaar), traditional Ramadan/fasting foods, and expanded Western fast food, in that order.
+- Regional variants (v7) and chutneys/pickles/raita (v8) are done. Next per the agreed roadmap: traditional Ramadan/fasting foods, then expanded Western fast food.
 - **Weight-loss / weight-gain goal variants** (added to the roadmap by the user, not built yet): lighter/"diet" and higher-calorie/bulking versions of dishes people actually cook when trying to lose or gain weight — e.g. grilled instead of fried, less oil/ghee, boiled chicken breast versions of curries, protein-added versions for weight gain. Comes after the phases above; not scoped in detail yet.
 - Decide serving-size conventions with real user feedback once logging starts.
 - Turn `dishes.json` into D1 seed data once the app schema exists.

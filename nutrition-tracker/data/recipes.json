@@ -967,5 +967,106 @@
       "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 100 },
       "sugar": 5, "mixed_nuts_dry": 3
     }
+  },
+
+  "hari_chutney": {
+    "category": "condiment",
+    "serving_label": "2 tbsp, mint-coriander chutney (typical accompaniment serving, not from a specific published recipe)",
+    "ingredients": {
+      "mint_coriander_leaves_raw": 28,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 2 }
+    }
+  },
+  "imli_chutney": {
+    "category": "condiment",
+    "serving_label": "2 tbsp, tamarind chutney (typical accompaniment serving, not from a specific published recipe)",
+    "ingredients": { "tamarind_pulp": 15, "sugar": 15 }
+  },
+  "lehsun_chutney": {
+    "category": "condiment",
+    "serving_label": "1 tbsp, garlic chutney (typical accompaniment serving, not from a specific published recipe)",
+    "ingredients": {
+      "garlic_raw": 8,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 }
+    }
+  },
+  "mango_chutney": {
+    "category": "condiment",
+    "serving_label": "2 tbsp, sweet raw-mango (keri) chutney (typical accompaniment serving, not from a specific published recipe)",
+    "ingredients": { "raw_green_mango": 20, "sugar": 10 }
+  },
+  "tamatar_chutney": {
+    "category": "condiment",
+    "serving_label": "2 tbsp, cooked tomato chutney (typical accompaniment serving, not from a specific published recipe)",
+    "ingredients": {
+      "tomato_raw": 25, "sugar": 3,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 2 }
+    }
+  },
+
+  "aam_ka_achaar": {
+    "category": "condiment",
+    "serving_label": "1 tbsp, oil-preserved mango pickle (typical accompaniment serving, not from a specific published recipe)",
+    "ingredients": {
+      "raw_green_mango": 9,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 }
+    }
+  },
+  "mixed_achaar": {
+    "category": "condiment",
+    "serving_label": "1 tbsp, mixed vegetable pickle -- carrot, turnip, cauliflower, garlic, mango (Shikarpuri-style; typical accompaniment serving, not from a specific published recipe)",
+    "ingredients": {
+      "carrot_raw": 3, "turnip_raw": 3, "cauliflower_cooked": 2, "garlic_raw": 2, "raw_green_mango": 2,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+    }
+  },
+  "nimbu_ka_achaar": {
+    "category": "condiment",
+    "serving_label": "1 tbsp, oil-preserved lime/lemon pickle (typical accompaniment serving, not from a specific published recipe)",
+    "ingredients": {
+      "lemon_lime_raw": 10,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+    }
+  },
+  "mirch_ka_achaar": {
+    "category": "condiment",
+    "serving_label": "1 tbsp, oil-preserved green chili pickle (typical accompaniment serving, not from a specific published recipe)",
+    "ingredients": {
+      "green_chili_raw": 9,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 }
+    }
+  },
+  "lehsun_ka_achaar": {
+    "category": "condiment",
+    "serving_label": "1 tbsp, oil-preserved garlic pickle (typical accompaniment serving, not from a specific published recipe)",
+    "ingredients": {
+      "garlic_raw": 9,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 }
+    }
+  },
+  "gajar_ka_achaar": {
+    "category": "condiment",
+    "serving_label": "1 tbsp, oil-preserved carrot pickle (typical accompaniment serving, not from a specific published recipe)",
+    "ingredients": {
+      "carrot_raw": 9,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 }
+    }
+  },
+  "shalgam_ka_achaar": {
+    "category": "condiment",
+    "serving_label": "1 tbsp, oil-preserved turnip pickle (typical accompaniment serving, not from a specific published recipe)",
+    "ingredients": {
+      "turnip_raw": 9,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 }
+    }
+  },
+
+  "raita": {
+    "category": "condiment",
+    "serving_label": "1 small bowl, yogurt with cucumber and mint (typical accompaniment serving, not from a specific published recipe)",
+    "ingredients": {
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 85 },
+      "cucumber_raw": 15
+    }
   }
 }

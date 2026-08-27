@@ -81,5 +81,13 @@
   "green_beans_cooked": { "kcal": 35, "protein_g": 1.9, "carbs_g": 7.9, "fat_g": 0.2, "fiber_g": 3.2 },
   "mixed_nuts_dry": { "kcal": 600, "protein_g": 18.0, "carbs_g": 20.0, "fat_g": 52.0, "fiber_g": 8.0, "note": "generic almond/cashew/walnut average, used for pulao and naan garnish where the exact nut mix varies" },
   "raisins_dry": { "kcal": 299, "protein_g": 3.1, "carbs_g": 79.2, "fat_g": 0.5, "fiber_g": 3.7 },
-  "coconut_desiccated": { "kcal": 660, "protein_g": 6.9, "carbs_g": 23.7, "fat_g": 64.5, "fiber_g": 16.0 }
+  "coconut_desiccated": { "kcal": 660, "protein_g": 6.9, "carbs_g": 23.7, "fat_g": 64.5, "fiber_g": 16.0 },
+
+  "mint_coriander_leaves_raw": { "kcal": 44, "protein_g": 3.3, "carbs_g": 8.0, "fat_g": 0.6, "fiber_g": 3.0, "note": "fresh mint/coriander leaves, blended for hari chutney" },
+  "tamarind_pulp": { "kcal": 239, "protein_g": 2.8, "carbs_g": 62.5, "fat_g": 0.6, "fiber_g": 5.1, "note": "imli, deseeded pulp" },
+  "garlic_raw": { "kcal": 149, "protein_g": 6.4, "carbs_g": 33.1, "fat_g": 0.5, "fiber_g": 2.1, "note": "lehsun, used as a primary ingredient in garlic chutney/pickle rather than background flavoring" },
+  "raw_green_mango": { "kcal": 44, "protein_g": 0.6, "carbs_g": 11.0, "fat_g": 0.2, "fiber_g": 1.7, "note": "unripe keri, distinct from ripe mango_raw -- more tart, far less sugar" },
+  "lemon_lime_raw": { "kcal": 29, "protein_g": 1.1, "carbs_g": 9.3, "fat_g": 0.3, "fiber_g": 2.8, "note": "nimbu" },
+  "green_chili_raw": { "kcal": 40, "protein_g": 2.0, "carbs_g": 9.5, "fat_g": 0.2, "fiber_g": 1.5, "note": "hari mirch" },
+  "turnip_raw": { "kcal": 28, "protein_g": 0.9, "carbs_g": 6.4, "fat_g": 0.1, "fiber_g": 1.8, "note": "shalgam" }
 }

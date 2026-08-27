@@ -2320,6 +2320,253 @@
         "fat_g": 4.9,
         "fiber_g": 0.2
       }
+    },
+    "hari_chutney": {
+      "category": "condiment",
+      "serving_label": "2 tbsp, mint-coriander chutney (typical accompaniment serving, not from a specific published recipe)",
+      "default_serving_g": 30.0,
+      "per_100g": {
+        "kcal": 100.0,
+        "protein_g": 3.08,
+        "carbs_g": 7.47,
+        "fat_g": 7.23,
+        "fiber_g": 2.8
+      },
+      "default_serving": {
+        "kcal": 30.0,
+        "protein_g": 0.9,
+        "carbs_g": 2.2,
+        "fat_g": 2.2,
+        "fiber_g": 0.8
+      }
+    },
+    "imli_chutney": {
+      "category": "condiment",
+      "serving_label": "2 tbsp, tamarind chutney (typical accompaniment serving, not from a specific published recipe)",
+      "default_serving_g": 30.0,
+      "per_100g": {
+        "kcal": 313.0,
+        "protein_g": 1.4,
+        "carbs_g": 81.25,
+        "fat_g": 0.3,
+        "fiber_g": 2.55
+      },
+      "default_serving": {
+        "kcal": 93.9,
+        "protein_g": 0.4,
+        "carbs_g": 24.4,
+        "fat_g": 0.1,
+        "fiber_g": 0.8
+      }
+    },
+    "lehsun_chutney": {
+      "category": "condiment",
+      "serving_label": "1 tbsp, garlic chutney (typical accompaniment serving, not from a specific published recipe)",
+      "default_serving_g": 14.0,
+      "per_100g": {
+        "kcal": 464.0,
+        "protein_g": 3.66,
+        "carbs_g": 18.91,
+        "fat_g": 43.14,
+        "fiber_g": 1.2
+      },
+      "default_serving": {
+        "kcal": 65.0,
+        "protein_g": 0.5,
+        "carbs_g": 2.6,
+        "fat_g": 6.0,
+        "fiber_g": 0.2
+      }
+    },
+    "mango_chutney": {
+      "category": "condiment",
+      "serving_label": "2 tbsp, sweet raw-mango (keri) chutney (typical accompaniment serving, not from a specific published recipe)",
+      "default_serving_g": 30.0,
+      "per_100g": {
+        "kcal": 158.33,
+        "protein_g": 0.4,
+        "carbs_g": 40.67,
+        "fat_g": 0.13,
+        "fiber_g": 1.13
+      },
+      "default_serving": {
+        "kcal": 47.5,
+        "protein_g": 0.1,
+        "carbs_g": 12.2,
+        "fat_g": 0.0,
+        "fiber_g": 0.3
+      }
+    },
+    "tamatar_chutney": {
+      "category": "condiment",
+      "serving_label": "2 tbsp, cooked tomato chutney (typical accompaniment serving, not from a specific published recipe)",
+      "default_serving_g": 30.0,
+      "per_100g": {
+        "kcal": 112.63,
+        "protein_g": 0.75,
+        "carbs_g": 13.25,
+        "fat_g": 6.83,
+        "fiber_g": 1.0
+      },
+      "default_serving": {
+        "kcal": 33.8,
+        "protein_g": 0.2,
+        "carbs_g": 4.0,
+        "fat_g": 2.0,
+        "fiber_g": 0.3
+      }
+    },
+    "aam_ka_achaar": {
+      "category": "condiment",
+      "serving_label": "1 tbsp, oil-preserved mango pickle (typical accompaniment serving, not from a specific published recipe)",
+      "default_serving_g": 15.0,
+      "per_100g": {
+        "kcal": 380.0,
+        "protein_g": 0.36,
+        "carbs_g": 6.6,
+        "fat_g": 40.12,
+        "fiber_g": 1.02
+      },
+      "default_serving": {
+        "kcal": 57.0,
+        "protein_g": 0.1,
+        "carbs_g": 1.0,
+        "fat_g": 6.0,
+        "fiber_g": 0.2
+      }
+    },
+    "mixed_achaar": {
+      "category": "condiment",
+      "serving_label": "1 tbsp, mixed vegetable pickle -- carrot, turnip, cauliflower, garlic, mango (Shikarpuri-style; typical accompaniment serving, not from a specific published recipe)",
+      "default_serving_g": 17.0,
+      "per_100g": {
+        "kcal": 297.82,
+        "protein_g": 1.35,
+        "carbs_g": 8.6,
+        "fat_g": 29.58,
+        "fiber_g": 1.53
+      },
+      "default_serving": {
+        "kcal": 50.6,
+        "protein_g": 0.2,
+        "carbs_g": 1.5,
+        "fat_g": 5.0,
+        "fiber_g": 0.3
+      }
+    },
+    "nimbu_ka_achaar": {
+      "category": "condiment",
+      "serving_label": "1 tbsp, oil-preserved lime/lemon pickle (typical accompaniment serving, not from a specific published recipe)",
+      "default_serving_g": 15.0,
+      "per_100g": {
+        "kcal": 314.0,
+        "protein_g": 0.73,
+        "carbs_g": 6.2,
+        "fat_g": 33.53,
+        "fiber_g": 1.87
+      },
+      "default_serving": {
+        "kcal": 47.1,
+        "protein_g": 0.1,
+        "carbs_g": 0.9,
+        "fat_g": 5.0,
+        "fiber_g": 0.3
+      }
+    },
+    "mirch_ka_achaar": {
+      "category": "condiment",
+      "serving_label": "1 tbsp, oil-preserved green chili pickle (typical accompaniment serving, not from a specific published recipe)",
+      "default_serving_g": 15.0,
+      "per_100g": {
+        "kcal": 377.6,
+        "protein_g": 1.2,
+        "carbs_g": 5.7,
+        "fat_g": 40.12,
+        "fiber_g": 0.9
+      },
+      "default_serving": {
+        "kcal": 56.6,
+        "protein_g": 0.2,
+        "carbs_g": 0.9,
+        "fat_g": 6.0,
+        "fiber_g": 0.1
+      }
+    },
+    "lehsun_ka_achaar": {
+      "category": "condiment",
+      "serving_label": "1 tbsp, oil-preserved garlic pickle (typical accompaniment serving, not from a specific published recipe)",
+      "default_serving_g": 15.0,
+      "per_100g": {
+        "kcal": 443.0,
+        "protein_g": 3.84,
+        "carbs_g": 19.86,
+        "fat_g": 40.3,
+        "fiber_g": 1.26
+      },
+      "default_serving": {
+        "kcal": 66.5,
+        "protein_g": 0.6,
+        "carbs_g": 3.0,
+        "fat_g": 6.0,
+        "fiber_g": 0.2
+      }
+    },
+    "gajar_ka_achaar": {
+      "category": "condiment",
+      "serving_label": "1 tbsp, oil-preserved carrot pickle (typical accompaniment serving, not from a specific published recipe)",
+      "default_serving_g": 15.0,
+      "per_100g": {
+        "kcal": 378.2,
+        "protein_g": 0.54,
+        "carbs_g": 5.76,
+        "fat_g": 40.12,
+        "fiber_g": 1.68
+      },
+      "default_serving": {
+        "kcal": 56.7,
+        "protein_g": 0.1,
+        "carbs_g": 0.9,
+        "fat_g": 6.0,
+        "fiber_g": 0.3
+      }
+    },
+    "shalgam_ka_achaar": {
+      "category": "condiment",
+      "serving_label": "1 tbsp, oil-preserved turnip pickle (typical accompaniment serving, not from a specific published recipe)",
+      "default_serving_g": 15.0,
+      "per_100g": {
+        "kcal": 370.4,
+        "protein_g": 0.54,
+        "carbs_g": 3.84,
+        "fat_g": 40.06,
+        "fiber_g": 1.08
+      },
+      "default_serving": {
+        "kcal": 55.6,
+        "protein_g": 0.1,
+        "carbs_g": 0.6,
+        "fat_g": 6.0,
+        "fiber_g": 0.2
+      }
+    },
+    "raita": {
+      "category": "condiment",
+      "serving_label": "1 small bowl, yogurt with cucumber and mint (typical accompaniment serving, not from a specific published recipe)",
+      "default_serving_g": 100.0,
+      "per_100g": {
+        "kcal": 54.1,
+        "protein_g": 3.08,
+        "carbs_g": 4.54,
+        "fat_g": 2.82,
+        "fiber_g": 0.07
+      },
+      "default_serving": {
+        "kcal": 54.1,
+        "protein_g": 3.1,
+        "carbs_g": 4.5,
+        "fat_g": 2.8,
+        "fiber_g": 0.1
+      }
     }
   }
 }
