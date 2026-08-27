@@ -26,5 +26,18 @@
   "spinach_cooked": { "kcal": 23, "protein_g": 2.9, "carbs_g": 3.8, "fat_g": 0.3, "fiber_g": 2.4 },
   "okra_cooked": { "kcal": 33, "protein_g": 1.9, "carbs_g": 7.5, "fat_g": 0.2, "fiber_g": 3.2 },
   "cauliflower_cooked": { "kcal": 25, "protein_g": 1.8, "carbs_g": 5.0, "fat_g": 0.3, "fiber_g": 2.3 },
-  "wheat_bulgur_haleem_mix_cooked": { "kcal": 150, "protein_g": 5.5, "carbs_g": 30.0, "fat_g": 1.0, "fiber_g": 5.0 }
+  "wheat_bulgur_haleem_mix_cooked": { "kcal": 150, "protein_g": 5.5, "carbs_g": 30.0, "fat_g": 1.0, "fiber_g": 5.0 },
+  "fish_fillet_cooked": { "kcal": 150, "protein_g": 22.0, "carbs_g": 0.0, "fat_g": 6.0, "fiber_g": 0.0, "note": "generic white fish (rohu/similar), pan-fried" },
+  "cream_fresh": { "kcal": 340, "protein_g": 2.1, "carbs_g": 3.0, "fat_g": 35.0, "fiber_g": 0.0 },
+  "carrot_cooked": { "kcal": 35, "protein_g": 0.8, "carbs_g": 8.2, "fat_g": 0.2, "fiber_g": 2.8 },
+  "khoya_mawa": { "kcal": 430, "protein_g": 15.0, "carbs_g": 28.0, "fat_g": 28.0, "fiber_g": 0.0, "note": "reduced/condensed milk solids" },
+  "eggplant_cooked": { "kcal": 35, "protein_g": 0.8, "carbs_g": 8.6, "fat_g": 0.2, "fiber_g": 2.5 },
+  "white_bread_bun": { "kcal": 265, "protein_g": 9.0, "carbs_g": 49.0, "fat_g": 3.5, "fiber_g": 2.5, "note": "refined-flour burger bun" },
+  "cheese_processed": { "kcal": 300, "protein_g": 20.0, "carbs_g": 4.0, "fat_g": 23.0, "fiber_g": 0.0, "note": "mozzarella/processed blend typical on Pakistani pizza" },
+  "maida_refined_flour": { "kcal": 364, "protein_g": 10.0, "carbs_g": 76.0, "fat_g": 1.0, "fiber_g": 2.7, "note": "raw, refined (not whole wheat)" },
+  "pasta_cooked": { "kcal": 131, "protein_g": 5.0, "carbs_g": 25.0, "fat_g": 1.1, "fiber_g": 1.8 },
+  "noodles_cooked": { "kcal": 138, "protein_g": 4.5, "carbs_g": 25.0, "fat_g": 2.1, "fiber_g": 1.2 },
+  "potato_fried_fries": { "kcal": 312, "protein_g": 3.4, "carbs_g": 41.0, "fat_g": 15.0, "fiber_g": 3.8 },
+  "chicken_breaded_fried": { "kcal": 260, "protein_g": 19.0, "carbs_g": 10.0, "fat_g": 16.0, "fiber_g": 0.0, "note": "battered/breaded fried chicken, KFC-style" },
+  "cabbage_raw": { "kcal": 25, "protein_g": 1.3, "carbs_g": 5.8, "fat_g": 0.1, "fiber_g": 2.5 }
 }

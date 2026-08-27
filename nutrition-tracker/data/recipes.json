@@ -109,7 +109,7 @@
   "pakora": {
     "category": "snack",
     "serving_label": "100g",
-    "ingredients": { "besan_gram_flour": 60, "onion_raw": 20, "cooking_oil": 20 }
+    "ingredients": { "besan_gram_flour": 60, "onion_raw": 20, "cooking_oil": 14 }
   },
   "chicken_tikka": {
     "category": "grilled",
@@ -131,9 +131,9 @@
     "serving_label": "2-egg omelette",
     "ingredients": { "egg_cooked": 100, "cooking_oil": 8, "onion_raw": 10 }
   },
-  "halwa_puri_halwa": {
+  "sooji_halwa": {
     "category": "breakfast",
-    "serving_label": "halwa portion",
+    "serving_label": "1 portion (halwa only, not the full halwa-puri-channa combo)",
     "ingredients": { "atta_whole_wheat_flour": 40, "sugar": 25, "ghee": 20 }
   },
   "chai_regular": {
@@ -145,5 +145,107 @@
     "category": "beverage",
     "serving_label": "1 glass (~250ml)",
     "ingredients": { "yogurt_whole_milk": 200, "sugar": 20 }
+  },
+
+  "chapli_kebab": {
+    "category": "grilled",
+    "serving_label": "1 kebab",
+    "ingredients": { "beef_mince_keema_cooked": 120, "tomato_raw": 20, "cooking_oil": 10 }
+  },
+  "beef_korma": {
+    "category": "curry",
+    "serving_label": "1 serving",
+    "ingredients": { "beef_lean_cooked": 130, "yogurt_whole_milk": 30, "cream_fresh": 15, "cooking_oil": 12 }
+  },
+  "chicken_korma": {
+    "category": "curry",
+    "serving_label": "1 serving",
+    "ingredients": { "chicken_thigh_skin_cooked": 130, "yogurt_whole_milk": 30, "cream_fresh": 15, "cooking_oil": 10 }
+  },
+  "aloo_keema": {
+    "category": "curry",
+    "serving_label": "1 serving",
+    "ingredients": { "beef_mince_keema_cooked": 100, "potato_cooked": 100, "onion_raw": 20, "cooking_oil": 10 }
+  },
+  "baingan_bharta": {
+    "category": "vegetable",
+    "serving_label": "1 bowl",
+    "ingredients": { "eggplant_cooked": 180, "onion_raw": 20, "tomato_raw": 25, "cooking_oil": 12 }
+  },
+  "shami_kebab": {
+    "category": "grilled",
+    "serving_label": "2 kebabs",
+    "ingredients": { "beef_mince_keema_cooked": 40, "chana_daal_cooked": 30, "egg_cooked": 10, "cooking_oil": 5 }
+  },
+  "chicken_malai_boti": {
+    "category": "grilled",
+    "serving_label": "2 pieces",
+    "ingredients": { "chicken_breast_cooked": 150, "cream_fresh": 20, "yogurt_whole_milk": 15 }
+  },
+  "fish_fry": {
+    "category": "grilled",
+    "serving_label": "1 fillet",
+    "ingredients": { "fish_fillet_cooked": 150, "besan_gram_flour": 15, "cooking_oil": 12 }
+  },
+  "chana_curry": {
+    "category": "daal_rice",
+    "serving_label": "1 bowl",
+    "ingredients": { "chickpeas_cooked": 200, "onion_raw": 20, "tomato_raw": 30, "cooking_oil": 12 }
+  },
+  "gajar_halwa": {
+    "category": "dessert",
+    "serving_label": "1 portion",
+    "ingredients": { "carrot_cooked": 150, "khoya_mawa": 30, "sugar": 20, "ghee": 12 }
+  },
+  "kheer": {
+    "category": "dessert",
+    "serving_label": "1 bowl",
+    "ingredients": { "rice_white_cooked": 60, "milk_whole": 200, "sugar": 20 }
+  },
+  "gulab_jamun": {
+    "category": "dessert",
+    "serving_label": "2 pieces",
+    "ingredients": { "khoya_mawa": 40, "maida_refined_flour": 15, "sugar": 35, "ghee": 10 }
+  },
+
+  "zinger_burger": {
+    "category": "fast_food",
+    "serving_label": "1 burger",
+    "ingredients": { "white_bread_bun": 80, "chicken_breaded_fried": 110, "cooking_oil": 8 }
+  },
+  "fried_chicken_piece": {
+    "category": "fast_food",
+    "serving_label": "1 piece",
+    "ingredients": { "chicken_breaded_fried": 130 }
+  },
+  "pizza_slice_cheese": {
+    "category": "fast_food",
+    "serving_label": "1 slice (medium pizza)",
+    "ingredients": { "maida_refined_flour": 45, "cheese_processed": 35, "tomato_raw": 20, "cooking_oil": 6 }
+  },
+  "french_fries": {
+    "category": "fast_food",
+    "serving_label": "1 regular serving",
+    "ingredients": { "potato_fried_fries": 130 }
+  },
+  "chicken_shawarma": {
+    "category": "fast_food",
+    "serving_label": "1 roll",
+    "ingredients": { "white_bread_bun": 70, "chicken_breast_cooked": 90, "cream_fresh": 15, "cabbage_raw": 20 }
+  },
+  "white_sauce_pasta": {
+    "category": "fast_food",
+    "serving_label": "1 plate",
+    "ingredients": { "pasta_cooked": 220, "cream_fresh": 40, "cheese_processed": 25, "chicken_breast_cooked": 50 }
+  },
+  "chicken_chowmein": {
+    "category": "fast_food",
+    "serving_label": "1 plate",
+    "ingredients": { "noodles_cooked": 220, "chicken_breast_cooked": 60, "cabbage_raw": 40, "cooking_oil": 12 }
+  },
+  "chicken_manchurian": {
+    "category": "fast_food",
+    "serving_label": "1 serving",
+    "ingredients": { "chicken_breast_cooked": 130, "besan_gram_flour": 20, "cooking_oil": 15, "onion_raw": 15 }
   }
 }
