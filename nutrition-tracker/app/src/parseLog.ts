@@ -22,8 +22,12 @@
  *   2. thinkingConfig.thinkingBudget is set low (128) -- this model can't
  *      fully disable thinking (thinkingBudget: 0 is rejected), but a small
  *      budget keeps the tax minimal for a task this simple.
- *   3. Every call is gated through the shared rate limiter (rateLimiter.ts)
- *      so the app never exceeds the real, measured 15 RPM free-tier ceiling.
+ *   3. Every call is gated through a rate limiter so the app never exceeds
+ *      the real, measured 15 RPM free-tier ceiling. Which limiter -- see
+ *      rateLimiter.ts: callers pass an `acquire` function, defaulting to the
+ *      in-memory bucket (fine for local/Node testing); the real Worker
+ *      passes the Durable Object-backed version, which is the one that's
+ *      actually correct across multiple Worker instances in production.
  *   4. A 429 is retried automatically using the delay Gemini itself reports,
  *      capped at 3 attempts -- the caller never sees a raw rate-limit error.
  */
@@ -31,6 +35,9 @@
 import { z } from "zod";
 import { geminiFlashLiteBucket } from "./rateLimiter.ts";
 import { type Candidate } from "./candidateSearch.ts";
+
+type AcquireFn = () => Promise<void>;
+const defaultAcquire: AcquireFn = () => geminiFlashLiteBucket.acquire();
 
 const MODEL = "gemini-3.1-flash-lite";
 const API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
@@ -94,9 +101,9 @@ function extractRetryDelayMs(errorBody: any): number {
   return 5000; // fallback if the API didn't tell us -- don't hammer it
 }
 
-async function callGemini(parts: GeminiPart[], apiKey: string): Promise<ParsedLogResult> {
+async function callGemini(parts: GeminiPart[], apiKey: string, acquire: AcquireFn): Promise<ParsedLogResult> {
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-    await geminiFlashLiteBucket.acquire(); // never exceed the real 15 RPM ceiling
+    await acquire(); // never exceed the real 15 RPM ceiling
 
     const response = await fetch(`${API_BASE}/${MODEL}:generateContent?key=${apiKey}`, {
       method: "POST",
@@ -125,7 +132,9 @@ async function callGemini(parts: GeminiPart[], apiKey: string): Promise<ParsedLo
       throw new Error(`Gemini API error ${response.status}: ${body}`);
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as {
+      candidates?: { content?: { parts?: { text?: string }[] } }[];
+    };
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!text) throw new Error(`Gemini returned no text content: ${JSON.stringify(data)}`);
 
@@ -143,9 +152,10 @@ export async function parseTextLog(
   userText: string,
   candidates: Candidate[],
   apiKey: string,
+  acquire: AcquireFn = defaultAcquire,
 ): Promise<ParsedLogResult> {
   const prompt = `${SYSTEM_PROMPT}\n\nCandidates:\n${candidateListText(candidates)}\n\nUser said: "${userText}"`;
-  return callGemini([{ text: prompt }], apiKey);
+  return callGemini([{ text: prompt }], apiKey, acquire);
 }
 
 /** Photo log -- base64 image plus optional caption text */
@@ -155,10 +165,12 @@ export async function parsePhotoLog(
   candidates: Candidate[],
   apiKey: string,
   caption?: string,
+  acquire: AcquireFn = defaultAcquire,
 ): Promise<ParsedLogResult> {
   const prompt = `${SYSTEM_PROMPT}\n\nCandidates:\n${candidateListText(candidates)}${caption ? `\n\nUser's caption: "${caption}"` : ""}`;
   return callGemini(
     [{ inline_data: { mime_type: mimeType, data: imageBase64 } }, { text: prompt }],
     apiKey,
+    acquire,
   );
 }

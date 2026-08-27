@@ -5,12 +5,23 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "typecheck": "tsc --noEmit",
+    "test:search": "node --experimental-strip-types test/search_quality.ts",
+    "test:e2e": "node --experimental-strip-types test/test_e2e.ts",
+    "test": "npm run typecheck && npm run test:search",
+    "seed:generate": "python3 scripts/generate_seed.py",
+    "dev": "wrangler dev --local"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260827.1",
+    "@types/node": "^26.4.0",
+    "typescript": "^7.0.2",
+    "wrangler": "^4.127.0"
   }
 }

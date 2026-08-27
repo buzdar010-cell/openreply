@@ -9,15 +9,25 @@
  * busy" without needing separate rush-hour-detection logic -- it's one
  * mechanism, and both behaviors fall out of it naturally.
  *
- * PRODUCTION NOTE: this class holds its state (`tokens`, `lastRefill`) in
- * memory. That's correct for local testing, but Cloudflare Workers run many
- * instances of your code simultaneously across the edge -- an in-memory
- * bucket in one instance doesn't know about requests hitting a different
- * instance, so the real 15/min ceiling wouldn't be enforced correctly across
- * the whole app. In production this state needs to live in a single
- * Cloudflare Durable Object (one authoritative instance all Workers talk to)
- * instead of a plain in-memory object. The token-bucket *logic* below is the
- * same either way -- only where `tokens`/`lastRefill` are stored changes.
+ * This file has two acquire strategies:
+ *   - `TokenBucket` / `geminiFlashLiteBucket`: in-memory, same-process only.
+ *     Correct for local Node testing (test/test_e2e.ts runs outside any
+ *     Workers runtime, so a Durable Object isn't available there at all),
+ *     but WRONG for the real deployed Worker -- Cloudflare runs many
+ *     instances of your code simultaneously across the edge, so an
+ *     in-memory bucket in one instance can't see requests hitting a
+ *     different instance.
+ *   - `acquireViaDurableObject`: the production-correct strategy. Calls out
+ *     to the single GeminiRateLimiterDO instance (rateLimiterDO.ts) that is
+ *     the one shared source of truth every Worker instance talks to. Same
+ *     token-bucket math, just backed by Durable Object storage instead of a
+ *     plain in-memory field.
+ *
+ * parseLog.ts takes an `acquire: () => Promise<void>` function as a
+ * parameter rather than importing one specific strategy, so the real Worker
+ * (src/index.ts) wires up the Durable Object version and local tests wire up
+ * the in-memory version, without parseLog.ts needing to know which runtime
+ * it's in.
  */
 
 export interface TokenBucketOptions {
@@ -71,7 +81,28 @@ export class TokenBucket {
 }
 
 // Matches gemini-3.1-flash-lite's confirmed free-tier limit: 15 requests/minute.
+// Local/Node-only strategy -- see file header. Not safe to use inside the
+// deployed Worker; use acquireViaDurableObject there instead.
 export const geminiFlashLiteBucket = new TokenBucket({
   capacity: 15,
   refillIntervalMs: 60_000 / 15, // one token every 4 seconds
 });
+
+import { GEMINI_LIMITER_ID } from "./rateLimiterDO.ts";
+
+/**
+ * Production strategy: acquires a token from the shared GeminiRateLimiterDO
+ * instance. `namespace` is the Worker's RATE_LIMITER Durable Object binding
+ * (env.RATE_LIMITER). Loops the same way TokenBucket.acquire() does --
+ * ask, and if told to wait, wait exactly that long and ask again.
+ */
+export async function acquireViaDurableObject(namespace: DurableObjectNamespace): Promise<void> {
+  const id = namespace.idFromName(GEMINI_LIMITER_ID);
+  const stub = namespace.get(id);
+  for (;;) {
+    const response = await stub.fetch("https://do/acquire");
+    const { waitMs } = (await response.json()) as { waitMs: number };
+    if (waitMs === 0) return;
+    await new Promise((resolve) => setTimeout(resolve, waitMs));
+  }
+}

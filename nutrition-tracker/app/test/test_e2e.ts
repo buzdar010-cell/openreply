@@ -1,5 +1,5 @@
-import { buildSearchIndex, shortlist, type DishRecord } from "./candidateSearch.ts";
-import { parseTextLog } from "./parseLog.ts";
+import { buildSearchIndex, shortlist, type DishRecord } from "../src/candidateSearch.ts";
+import { parseTextLog } from "../src/parseLog.ts";
 
 const sampleDishes: DishRecord[] = [
   { dish_id: "chicken_karahi", category: "curry", serving_label: "1 serving (~1/4 karahi)" },
