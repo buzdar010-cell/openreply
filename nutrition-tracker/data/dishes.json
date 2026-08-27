@@ -1,0 +1,266 @@
+{
+  "_readme": "Computed dish-level nutrition per typical serving. Derived from ingredients.json + recipes.json via build_dishes.py \u2014 see that script for methodology. Estimates, not lab measurements.",
+  "dishes": {
+    "roti": {
+      "category": "bread",
+      "serving_label": "1 medium roti (~40g)",
+      "kcal": 119.0,
+      "protein_g": 4.2,
+      "carbs_g": 25.2,
+      "fat_g": 0.7,
+      "fiber_g": 3.8
+    },
+    "paratha": {
+      "category": "bread",
+      "serving_label": "1 medium paratha",
+      "kcal": 261.0,
+      "protein_g": 5.4,
+      "carbs_g": 32.4,
+      "fat_g": 12.9,
+      "fiber_g": 5.0
+    },
+    "naan": {
+      "category": "bread",
+      "serving_label": "1 tandoori naan",
+      "kcal": 232.0,
+      "protein_g": 6.6,
+      "carbs_g": 39.6,
+      "fat_g": 6.1,
+      "fiber_g": 6.1
+    },
+    "daal_chawal_masoor": {
+      "category": "daal_rice",
+      "serving_label": "1 plate (daal + rice)",
+      "kcal": 481.8,
+      "protein_g": 20.4,
+      "carbs_g": 79.4,
+      "fat_g": 9.2,
+      "fiber_g": 15.1
+    },
+    "chana_daal": {
+      "category": "daal_rice",
+      "serving_label": "1 bowl",
+      "kcal": 409.6,
+      "protein_g": 18.1,
+      "carbs_g": 57.0,
+      "fat_g": 13.3,
+      "fiber_g": 15.7
+    },
+    "moong_daal": {
+      "category": "daal_rice",
+      "serving_label": "1 bowl",
+      "kcal": 270.0,
+      "protein_g": 14.2,
+      "carbs_g": 39.4,
+      "fat_g": 6.8,
+      "fiber_g": 15.5
+    },
+    "plain_rice": {
+      "category": "daal_rice",
+      "serving_label": "1 plate",
+      "kcal": 260.0,
+      "protein_g": 5.4,
+      "carbs_g": 56.0,
+      "fat_g": 0.6,
+      "fiber_g": 0.8
+    },
+    "chicken_karahi": {
+      "category": "curry",
+      "serving_label": "1 serving (~1/4 karahi)",
+      "kcal": 518.8,
+      "protein_g": 39.5,
+      "carbs_g": 2.5,
+      "fat_g": 39.1,
+      "fiber_g": 0.7
+    },
+    "chicken_curry": {
+      "category": "curry",
+      "serving_label": "1 serving",
+      "kcal": 455.6,
+      "protein_g": 34.9,
+      "carbs_g": 4.2,
+      "fat_g": 33.4,
+      "fiber_g": 0.8
+    },
+    "beef_nihari": {
+      "category": "curry",
+      "serving_label": "1 bowl",
+      "kcal": 585.8,
+      "protein_g": 40.2,
+      "carbs_g": 7.2,
+      "fat_g": 42.7,
+      "fiber_g": 1.1
+    },
+    "mutton_karahi": {
+      "category": "curry",
+      "serving_label": "1 serving",
+      "kcal": 532.9,
+      "protein_g": 37.9,
+      "carbs_g": 2.3,
+      "fat_g": 40.6,
+      "fiber_g": 0.6
+    },
+    "haleem": {
+      "category": "curry",
+      "serving_label": "1 bowl",
+      "kcal": 459.0,
+      "protein_g": 26.8,
+      "carbs_g": 45.0,
+      "fat_g": 18.7,
+      "fiber_g": 7.5
+    },
+    "keema_matar": {
+      "category": "curry",
+      "serving_label": "1 serving",
+      "kcal": 499.6,
+      "protein_g": 36.4,
+      "carbs_g": 2.8,
+      "fat_g": 37.6,
+      "fiber_g": 0.6
+    },
+    "chicken_biryani": {
+      "category": "rice_dish",
+      "serving_label": "1 plate",
+      "kcal": 652.8,
+      "protein_g": 29.9,
+      "carbs_g": 62.3,
+      "fat_g": 30.6,
+      "fiber_g": 0.9
+    },
+    "beef_pulao": {
+      "category": "rice_dish",
+      "serving_label": "1 plate",
+      "kcal": 567.1,
+      "protein_g": 24.1,
+      "carbs_g": 61.6,
+      "fat_g": 23.2,
+      "fiber_g": 0.9
+    },
+    "aloo_sabzi": {
+      "category": "vegetable",
+      "serving_label": "1 bowl",
+      "kcal": 254.6,
+      "protein_g": 3.8,
+      "carbs_g": 38.4,
+      "fat_g": 10.2,
+      "fiber_g": 3.7
+    },
+    "bhindi_fry": {
+      "category": "vegetable",
+      "serving_label": "1 bowl",
+      "kcal": 161.6,
+      "protein_g": 3.0,
+      "carbs_g": 12.6,
+      "fat_g": 12.3,
+      "fiber_g": 5.1
+    },
+    "palak_paneer": {
+      "category": "vegetable",
+      "serving_label": "1 bowl",
+      "kcal": 291.0,
+      "protein_g": 15.7,
+      "carbs_g": 8.6,
+      "fat_g": 22.9,
+      "fiber_g": 3.6
+    },
+    "gobi_aloo": {
+      "category": "vegetable",
+      "serving_label": "1 bowl",
+      "kcal": 205.7,
+      "protein_g": 3.7,
+      "carbs_g": 22.1,
+      "fat_g": 12.4,
+      "fiber_g": 4.2
+    },
+    "chana_chaat": {
+      "category": "snack",
+      "serving_label": "1 bowl",
+      "kcal": 258.5,
+      "protein_g": 13.8,
+      "carbs_g": 43.9,
+      "fat_g": 4.0,
+      "fiber_g": 12.0
+    },
+    "samosa": {
+      "category": "snack",
+      "serving_label": "1 piece",
+      "kcal": 147.1,
+      "protein_g": 3.0,
+      "carbs_g": 20.4,
+      "fat_g": 6.4,
+      "fiber_g": 2.7
+    },
+    "pakora": {
+      "category": "snack",
+      "serving_label": "100g",
+      "kcal": 417.0,
+      "protein_g": 13.4,
+      "carbs_g": 36.7,
+      "fat_g": 24.0,
+      "fiber_g": 6.8
+    },
+    "chicken_tikka": {
+      "category": "grilled",
+      "serving_label": "2 pieces",
+      "kcal": 330.4,
+      "protein_g": 47.2,
+      "carbs_g": 0.9,
+      "fat_g": 14.1,
+      "fiber_g": 0.0
+    },
+    "seekh_kebab": {
+      "category": "grilled",
+      "serving_label": "2 kebabs",
+      "kcal": 254.0,
+      "protein_g": 24.0,
+      "carbs_g": 0.0,
+      "fat_g": 17.0,
+      "fiber_g": 0.0
+    },
+    "boiled_egg": {
+      "category": "breakfast",
+      "serving_label": "1 egg",
+      "kcal": 77.5,
+      "protein_g": 6.5,
+      "carbs_g": 0.6,
+      "fat_g": 5.5,
+      "fiber_g": 0.0
+    },
+    "omelette": {
+      "category": "breakfast",
+      "serving_label": "2-egg omelette",
+      "kcal": 229.7,
+      "protein_g": 13.1,
+      "carbs_g": 2.0,
+      "fat_g": 19.0,
+      "fiber_g": 0.2
+    },
+    "halwa_puri_halwa": {
+      "category": "breakfast",
+      "serving_label": "halwa portion",
+      "kcal": 412.8,
+      "protein_g": 4.8,
+      "carbs_g": 53.8,
+      "fat_g": 20.8,
+      "fiber_g": 4.4
+    },
+    "chai_regular": {
+      "category": "beverage",
+      "serving_label": "1 cup (~200ml)",
+      "kcal": 119.6,
+      "protein_g": 3.8,
+      "carbs_g": 17.8,
+      "fat_g": 4.0,
+      "fiber_g": 0.0
+    },
+    "lassi_sweet": {
+      "category": "beverage",
+      "serving_label": "1 glass (~250ml)",
+      "kcal": 199.4,
+      "protein_g": 7.0,
+      "carbs_g": 29.4,
+      "fat_g": 6.6,
+      "fiber_g": 0.0
+    }
+  }
+}

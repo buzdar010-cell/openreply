@@ -1,0 +1,149 @@
+{
+  "_readme": "Each dish defined as a typical home-cooked recipe: one serving, broken into base ingredients + grams, matching how it's realistically cooked in a Pakistani home kitchen. build_dishes.py sums these against ingredients.json to compute dish-level nutrition. Serving sizes are deliberately 'typical portion', not restaurant-size — should be tuned against real user feedback once people start logging.",
+
+  "roti": {
+    "category": "bread",
+    "serving_label": "1 medium roti (~40g)",
+    "ingredients": { "atta_whole_wheat_flour": 35 }
+  },
+  "paratha": {
+    "category": "bread",
+    "serving_label": "1 medium paratha",
+    "ingredients": { "atta_whole_wheat_flour": 45, "ghee": 12 }
+  },
+  "naan": {
+    "category": "bread",
+    "serving_label": "1 tandoori naan",
+    "ingredients": { "atta_whole_wheat_flour": 55, "ghee": 5 }
+  },
+  "daal_chawal_masoor": {
+    "category": "daal_rice",
+    "serving_label": "1 plate (daal + rice)",
+    "ingredients": { "masoor_daal_cooked": 180, "rice_white_cooked": 150, "ghee": 8, "onion_raw": 15 }
+  },
+  "chana_daal": {
+    "category": "daal_rice",
+    "serving_label": "1 bowl",
+    "ingredients": { "chana_daal_cooked": 200, "ghee": 8, "onion_raw": 15, "tomato_raw": 20 }
+  },
+  "moong_daal": {
+    "category": "daal_rice",
+    "serving_label": "1 bowl",
+    "ingredients": { "moong_daal_cooked": 200, "ghee": 6, "onion_raw": 15 }
+  },
+  "plain_rice": {
+    "category": "daal_rice",
+    "serving_label": "1 plate",
+    "ingredients": { "rice_white_cooked": 200 }
+  },
+  "chicken_karahi": {
+    "category": "curry",
+    "serving_label": "1 serving (~1/4 karahi)",
+    "ingredients": { "chicken_thigh_skin_cooked": 150, "tomato_raw": 40, "cooking_oil": 15, "onion_raw": 10 }
+  },
+  "chicken_curry": {
+    "category": "curry",
+    "serving_label": "1 serving",
+    "ingredients": { "chicken_thigh_skin_cooked": 130, "onion_raw": 25, "tomato_raw": 30, "cooking_oil": 12, "yogurt_whole_milk": 15 }
+  },
+  "beef_nihari": {
+    "category": "curry",
+    "serving_label": "1 bowl",
+    "ingredients": { "beef_lean_cooked": 150, "cooking_oil": 20, "atta_whole_wheat_flour": 10 }
+  },
+  "mutton_karahi": {
+    "category": "curry",
+    "serving_label": "1 serving",
+    "ingredients": { "mutton_curry_cut_cooked": 150, "tomato_raw": 35, "cooking_oil": 15, "onion_raw": 10 }
+  },
+  "haleem": {
+    "category": "curry",
+    "serving_label": "1 bowl",
+    "ingredients": { "wheat_bulgur_haleem_mix_cooked": 150, "chicken_breast_cooked": 60, "ghee": 15 }
+  },
+  "keema_matar": {
+    "category": "curry",
+    "serving_label": "1 serving",
+    "ingredients": { "beef_mince_keema_cooked": 150, "onion_raw": 20, "tomato_raw": 25, "cooking_oil": 12 }
+  },
+  "chicken_biryani": {
+    "category": "rice_dish",
+    "serving_label": "1 plate",
+    "ingredients": { "rice_white_cooked": 220, "chicken_thigh_skin_cooked": 90, "cooking_oil": 15, "yogurt_whole_milk": 15 }
+  },
+  "beef_pulao": {
+    "category": "rice_dish",
+    "serving_label": "1 plate",
+    "ingredients": { "rice_white_cooked": 220, "beef_lean_cooked": 70, "cooking_oil": 12 }
+  },
+  "aloo_sabzi": {
+    "category": "vegetable",
+    "serving_label": "1 bowl",
+    "ingredients": { "potato_cooked": 180, "cooking_oil": 10, "onion_raw": 15, "tomato_raw": 20 }
+  },
+  "bhindi_fry": {
+    "category": "vegetable",
+    "serving_label": "1 bowl",
+    "ingredients": { "okra_cooked": 150, "cooking_oil": 12, "onion_raw": 15 }
+  },
+  "palak_paneer": {
+    "category": "vegetable",
+    "serving_label": "1 bowl",
+    "ingredients": { "spinach_cooked": 150, "paneer": 60, "cooking_oil": 10, "yogurt_whole_milk": 15 }
+  },
+  "gobi_aloo": {
+    "category": "vegetable",
+    "serving_label": "1 bowl",
+    "ingredients": { "cauliflower_cooked": 120, "potato_cooked": 80, "cooking_oil": 12 }
+  },
+  "chana_chaat": {
+    "category": "snack",
+    "serving_label": "1 bowl",
+    "ingredients": { "chickpeas_cooked": 150, "onion_raw": 20, "tomato_raw": 25 }
+  },
+  "samosa": {
+    "category": "snack",
+    "serving_label": "1 piece",
+    "ingredients": { "atta_whole_wheat_flour": 20, "potato_cooked": 30, "cooking_oil": 6 }
+  },
+  "pakora": {
+    "category": "snack",
+    "serving_label": "100g",
+    "ingredients": { "besan_gram_flour": 60, "onion_raw": 20, "cooking_oil": 20 }
+  },
+  "chicken_tikka": {
+    "category": "grilled",
+    "serving_label": "2 pieces",
+    "ingredients": { "chicken_breast_cooked": 150, "yogurt_whole_milk": 20, "cooking_oil": 8 }
+  },
+  "seekh_kebab": {
+    "category": "grilled",
+    "serving_label": "2 kebabs",
+    "ingredients": { "beef_mince_keema_cooked": 100 }
+  },
+  "boiled_egg": {
+    "category": "breakfast",
+    "serving_label": "1 egg",
+    "ingredients": { "egg_cooked": 50 }
+  },
+  "omelette": {
+    "category": "breakfast",
+    "serving_label": "2-egg omelette",
+    "ingredients": { "egg_cooked": 100, "cooking_oil": 8, "onion_raw": 10 }
+  },
+  "halwa_puri_halwa": {
+    "category": "breakfast",
+    "serving_label": "halwa portion",
+    "ingredients": { "atta_whole_wheat_flour": 40, "sugar": 25, "ghee": 20 }
+  },
+  "chai_regular": {
+    "category": "beverage",
+    "serving_label": "1 cup (~200ml)",
+    "ingredients": { "milk_whole": 120, "sugar": 12 }
+  },
+  "lassi_sweet": {
+    "category": "beverage",
+    "serving_label": "1 glass (~250ml)",
+    "ingredients": { "yogurt_whole_milk": 200, "sugar": 20 }
+  }
+}
