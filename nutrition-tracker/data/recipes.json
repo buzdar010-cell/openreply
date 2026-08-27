@@ -716,5 +716,69 @@
       "sugar": 19,
       "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 7 }
     }
+  },
+
+  "rajma_masala": {
+    "category": "daal_rice",
+    "serving_label": "1 bowl, red kidney bean curry (sourced: Tea for Turmeric, 4 servings)",
+    "ingredients": {
+      "kidney_beans_cooked": 130, "onion_raw": 45, "tomato_raw": 67,
+      "cream_fresh": 10,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 17 }
+    }
+  },
+  "matar_paneer": {
+    "category": "vegetable",
+    "serving_label": "1 bowl, peas and paneer curry (sourced: Tea for Turmeric, 4 servings)",
+    "ingredients": {
+      "paneer": 57, "peas_cooked": 41, "onion_raw": 75, "tomato_raw": 90,
+      "cream_fresh": 15,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 19 }
+    }
+  },
+  "dahi_bhalla": {
+    "category": "snack",
+    "serving_label": "1 serving, lentil fritters in spiced yogurt (sourced: Tea for Turmeric, 6 servings)",
+    "ingredients": {
+      "urad_daal_cooked": 38,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 },
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 82 },
+      "milk_whole": 19, "sugar": 8
+    }
+  },
+  "zarda": {
+    "category": "dessert",
+    "serving_label": "1 portion, sweet saffron rice (sourced: Tea for Turmeric, 4 servings)",
+    "ingredients": {
+      "rice_white_cooked": 119,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 7 },
+      "milk_whole": 20, "sugar": 38
+    }
+  },
+  "beef_kofta_curry": {
+    "category": "curry",
+    "serving_label": "1 serving, minced-beef meatball curry — the traditional kofta curry (sourced: Tea for Turmeric, 4 servings). Chicken Kofta was not built as a traditional dish: koftas are traditionally beef/mutton mince, and the only Chicken Kofta recipe found was an explicit Western-fusion version.",
+    "ingredients": {
+      "beef_mince_keema_cooked": 85, "egg_cooked": 12, "onion_raw": 68, "tomato_raw": 50,
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 11 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 14 }
+    }
+  },
+  "sweet_dalia": {
+    "category": "breakfast",
+    "serving_label": "1 bowl, sweet cracked-wheat porridge (sourced: Pakistan Eats, 2 servings)",
+    "ingredients": {
+      "cracked_wheat_dry": 43,
+      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 58 },
+      "sugar": 10
+    }
+  },
+  "prawn_biryani": {
+    "category": "rice_dish",
+    "serving_label": "1 plate (sourced: Pakistan Eats, 6 servings)",
+    "ingredients": {
+      "rice_white_cooked": 198, "prawns_cooked": 64, "onion_raw": 25, "tomato_raw": 50,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 18 }
+    }
   }
 }

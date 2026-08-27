@@ -71,5 +71,9 @@
 
   "peas_cooked": { "kcal": 84, "protein_g": 5.4, "carbs_g": 15.6, "fat_g": 0.2, "fiber_g": 5.5, "note": "matar" },
   "chicken_mince_cooked": { "kcal": 189, "protein_g": 24.0, "carbs_g": 0.0, "fat_g": 10.0, "fiber_g": 0.0, "note": "ground chicken/chicken keema" },
-  "vermicelli_dry": { "kcal": 370, "protein_g": 10.0, "carbs_g": 75.0, "fat_g": 1.5, "fiber_g": 3.0, "note": "seviyan, raw/dry weight before cooking in milk" }
+  "vermicelli_dry": { "kcal": 370, "protein_g": 10.0, "carbs_g": 75.0, "fat_g": 1.5, "fiber_g": 3.0, "note": "seviyan, raw/dry weight before cooking in milk" },
+
+  "kidney_beans_cooked": { "kcal": 127, "protein_g": 8.7, "carbs_g": 22.8, "fat_g": 0.5, "fiber_g": 6.4, "note": "rajma, boiled/cooked" },
+  "cracked_wheat_dry": { "kcal": 342, "protein_g": 12.3, "carbs_g": 75.9, "fat_g": 1.3, "fiber_g": 12.5, "note": "dalia/bulgur, raw dry weight before cooking in milk or water" },
+  "prawns_cooked": { "kcal": 99, "protein_g": 24.0, "carbs_g": 0.2, "fat_g": 0.3, "fiber_g": 0.0, "note": "shrimp/prawns, peeled, cooked" }
 }

@@ -1,6 +1,20 @@
-# Pakistani + common Western food database — v5
+# Pakistani + common Western food database — v6
 
-90 dishes: 74 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+97 dishes: 81 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+
+## v6: the original 14 "remaining recipes" list is now fully cleared
+
+The 6 dishes v5 couldn't find on Pakistan Eats turned out to exist — just not under a site-restricted search on that one domain. A broader search found all of them:
+
+- `rajma_masala` (379 kcal/bowl), `matar_paneer` (451 kcal/bowl), `dahi_bhalla` (186 kcal/serving), `zarda` (377 kcal/portion) — real recipes on **Tea for Turmeric**.
+- `sweet_dalia` (221 kcal/bowl), `prawn_biryani` (499 kcal/plate) — real recipes on **Pakistan Eats**, just not surfaced by the earlier site-search wording.
+- **Chicken Kofta**: still not built, and for a real reason rather than a sourcing gap. Every Chicken Kofta recipe found (including the one flagged in v4) is a Western-fusion take. Traditional Pakistani kofta curry is a beef/mutton mince meatball curry, not a chicken dish — so instead of forcing a chicken version, built `beef_kofta_curry` (401 kcal/serving) as the actual traditional dish, from a real Tea for Turmeric recipe, with a note on the dish itself explaining why chicken wasn't used.
+
+All 7 new dishes checked against real-world reference ranges for these dishes and held up — no corrections needed this batch.
+
+Three new base ingredients were added: `kidney_beans_cooked` (rajma), `cracked_wheat_dry` (dalia, raw/dry weight before cooking in milk), `prawns_cooked` (shrimp/prawns, cooked).
+
+**Roadmap addition (from the user, not built yet):** weight-loss / weight-gain goal variants of dishes — lighter or higher-calorie versions of the same recipes people actually cook when trying to lose or gain weight (e.g. grilled instead of fried, less oil, boiled-chicken-breast curry versions, higher-protein versions). Queued after the phases below.
 
 ## v5: 7 of the 14 "remaining recipes" sourced from Pakistan Eats
 
@@ -40,13 +54,12 @@ Tea for Turmeric started serving a bot-verification page after repeated rapid re
 - Achari Chicken — `teaforturmeric.com/achari-chicken/` (blocked again on this specific URL even with pacing)
 - Chicken Kofta — real recipe exists at `teaforturmeric.com/chicken-kofta/`, but it's a Western-fusion version, not traditional — would need a different, more traditional source instead
 
-Aloo Tikki, Matar Pulao, Hariyali Chicken, Kali Mirch Chicken, Chicken Keema, and Seviyan were sourced from Pakistan Eats in v5 (see above). **Still outstanding**: Rajma Masala, Matar Paneer, Dahi Bhalla, Zarda, Sweet Dalia, Prawn Biryani, and a traditional (non-fusion) Chicken Kofta — not found on Pakistan Eats via site-search, will need a different source.
+All 14 originally-named "remaining recipes" are now built, across v5 and v6 (see v6 above for the last 6 plus the beef-kofta-curry resolution).
 
 ## Next steps (not done yet)
 
-- Come back to Achari Chicken's original Tea for Turmeric URL if useful for cross-checking (already built from Pakistan Eats in v5, so not blocking).
-- Chase down the remaining 6-7 outstanding dishes from a different source.
-- Then: regional variants (Sindh, Pashtun-belt and other regional dishes), chutneys/pickles (achaar), traditional Ramadan/fasting foods, and expanded Western fast food — per the agreed roadmap, in that order.
+- Regional variants (Sindh, Pashtun-belt and other regional dishes), chutneys/pickles (achaar), traditional Ramadan/fasting foods, and expanded Western fast food — per the agreed roadmap, in that order.
+- **Weight-loss / weight-gain goal variants** (added to the roadmap by the user, not built yet): lighter/"diet" and higher-calorie/bulking versions of dishes people actually cook when trying to lose or gain weight — e.g. grilled instead of fried, less oil/ghee, boiled chicken breast versions of curries, protein-added versions for weight gain. Comes after the phases above; not scoped in detail yet.
 - Decide serving-size conventions with real user feedback once logging starts.
 - Turn `dishes.json` into D1 seed data once the app schema exists.
 

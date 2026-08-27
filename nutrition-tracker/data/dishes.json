@@ -1762,6 +1762,139 @@
         "fat_g": 15.8,
         "fiber_g": 0.6
       }
+    },
+    "rajma_masala": {
+      "category": "daal_rice",
+      "serving_label": "1 bowl, red kidney bean curry (sourced: Tea for Turmeric, 4 servings)",
+      "default_serving_g": 269.0,
+      "per_100g": {
+        "kcal": 141.06,
+        "protein_g": 4.69,
+        "carbs_g": 13.66,
+        "fat_g": 7.93,
+        "fiber_g": 3.68
+      },
+      "default_serving": {
+        "kcal": 379.4,
+        "protein_g": 12.6,
+        "carbs_g": 36.7,
+        "fat_g": 21.3,
+        "fiber_g": 9.9
+      }
+    },
+    "matar_paneer": {
+      "category": "vegetable",
+      "serving_label": "1 bowl, peas and paneer curry (sourced: Tea for Turmeric, 4 servings)",
+      "default_serving_g": 297.0,
+      "per_100g": {
+        "kcal": 151.73,
+        "protein_g": 4.86,
+        "carbs_g": 6.53,
+        "fat_g": 12.12,
+        "fiber_g": 1.55
+      },
+      "default_serving": {
+        "kcal": 450.6,
+        "protein_g": 14.4,
+        "carbs_g": 19.4,
+        "fat_g": 36.0,
+        "fiber_g": 4.6
+      }
+    },
+    "dahi_bhalla": {
+      "category": "snack",
+      "serving_label": "1 serving, lentil fritters in spiced yogurt (sourced: Tea for Turmeric, 6 servings)",
+      "default_serving_g": 153.0,
+      "per_100g": {
+        "kcal": 121.25,
+        "protein_g": 4.14,
+        "carbs_g": 12.57,
+        "fat_g": 6.2,
+        "fiber_g": 1.49
+      },
+      "default_serving": {
+        "kcal": 185.5,
+        "protein_g": 6.3,
+        "carbs_g": 19.2,
+        "fat_g": 9.5,
+        "fiber_g": 2.3
+      }
+    },
+    "zarda": {
+      "category": "dessert",
+      "serving_label": "1 portion, sweet saffron rice (sourced: Tea for Turmeric, 4 servings)",
+      "default_serving_g": 184.0,
+      "per_100g": {
+        "kcal": 204.87,
+        "protein_g": 2.09,
+        "carbs_g": 39.28,
+        "fat_g": 4.36,
+        "fiber_g": 0.26
+      },
+      "default_serving": {
+        "kcal": 377.0,
+        "protein_g": 3.9,
+        "carbs_g": 72.3,
+        "fat_g": 8.0,
+        "fiber_g": 0.5
+      }
+    },
+    "beef_kofta_curry": {
+      "category": "curry",
+      "serving_label": "1 serving, minced-beef meatball curry \u2014 the traditional kofta curry (sourced: Tea for Turmeric, 4 servings). Chicken Kofta was not built as a traditional dish: koftas are traditionally beef/mutton mince, and the only Chicken Kofta recipe found was an explicit Western-fusion version.",
+      "default_serving_g": 240.0,
+      "per_100g": {
+        "kcal": 167.15,
+        "protein_g": 9.81,
+        "carbs_g": 3.72,
+        "fat_g": 12.63,
+        "fiber_g": 0.73
+      },
+      "default_serving": {
+        "kcal": 401.2,
+        "protein_g": 23.5,
+        "carbs_g": 8.9,
+        "fat_g": 30.3,
+        "fiber_g": 1.8
+      }
+    },
+    "sweet_dalia": {
+      "category": "breakfast",
+      "serving_label": "1 bowl, sweet cracked-wheat porridge (sourced: Pakistan Eats, 2 servings)",
+      "default_serving_g": 111.0,
+      "per_100g": {
+        "kcal": 199.23,
+        "protein_g": 6.44,
+        "carbs_g": 40.92,
+        "fat_g": 2.23,
+        "fiber_g": 4.84
+      },
+      "default_serving": {
+        "kcal": 221.1,
+        "protein_g": 7.1,
+        "carbs_g": 45.4,
+        "fat_g": 2.5,
+        "fiber_g": 5.4
+      }
+    },
+    "prawn_biryani": {
+      "category": "rice_dish",
+      "serving_label": "1 plate (sourced: Pakistan Eats, 6 servings)",
+      "default_serving_g": 355.0,
+      "per_100g": {
+        "kcal": 140.53,
+        "protein_g": 6.04,
+        "carbs_g": 16.86,
+        "fat_g": 5.33,
+        "fiber_g": 0.51
+      },
+      "default_serving": {
+        "kcal": 498.9,
+        "protein_g": 21.4,
+        "carbs_g": 59.8,
+        "fat_g": 18.9,
+        "fiber_g": 1.8
+      }
     }
   }
 }
