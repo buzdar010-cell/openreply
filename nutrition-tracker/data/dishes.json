@@ -2738,6 +2738,215 @@
         "fat_g": 6.7,
         "fiber_g": 2.7
       }
+    },
+    "mango_shake": {
+      "category": "beverage",
+      "serving_label": "1 glass (~280ml), Pakistan's national summer drink (typical serving, not from a specific published recipe)",
+      "default_serving_g": 280.0,
+      "per_100g": {
+        "kcal": 72.21,
+        "protein_g": 2.06,
+        "carbs_g": 12.57,
+        "fat_g": 1.94,
+        "fiber_g": 0.69
+      },
+      "default_serving": {
+        "kcal": 202.2,
+        "protein_g": 5.8,
+        "carbs_g": 35.2,
+        "fat_g": 5.4,
+        "fiber_g": 1.9
+      }
+    },
+    "oreo_shake": {
+      "category": "beverage",
+      "serving_label": "1 glass (~240ml), blended Oreo cookies and milk -- Pakistan's most popular generic shake flavor; no ice cream ingredient modeled, approximated with cream (typical serving, not from a specific published recipe)",
+      "default_serving_g": 240.0,
+      "per_100g": {
+        "kcal": 154.08,
+        "protein_g": 3.41,
+        "carbs_g": 15.68,
+        "fat_g": 8.72,
+        "fiber_g": 0.5
+      },
+      "default_serving": {
+        "kcal": 369.8,
+        "protein_g": 8.2,
+        "carbs_g": 37.6,
+        "fat_g": 20.9,
+        "fiber_g": 1.2
+      }
+    },
+    "chocolate_shake": {
+      "category": "beverage",
+      "serving_label": "1 glass (~225ml) (typical serving, not from a specific published recipe)",
+      "default_serving_g": 225.0,
+      "per_100g": {
+        "kcal": 106.13,
+        "protein_g": 2.97,
+        "carbs_g": 12.71,
+        "fat_g": 5.11,
+        "fiber_g": 0.27
+      },
+      "default_serving": {
+        "kcal": 238.8,
+        "protein_g": 6.7,
+        "carbs_g": 28.6,
+        "fat_g": 11.5,
+        "fiber_g": 0.6
+      }
+    },
+    "strawberry_shake": {
+      "category": "beverage",
+      "serving_label": "1 glass (~260ml) (typical serving, not from a specific published recipe)",
+      "default_serving_g": 262.0,
+      "per_100g": {
+        "kcal": 64.86,
+        "protein_g": 2.1,
+        "carbs_g": 10.27,
+        "fat_g": 2.0,
+        "fiber_g": 0.76
+      },
+      "default_serving": {
+        "kcal": 169.9,
+        "protein_g": 5.5,
+        "carbs_g": 26.9,
+        "fat_g": 5.2,
+        "fiber_g": 2.0
+      }
+    },
+    "banana_shake": {
+      "category": "beverage",
+      "serving_label": "1 glass (~280ml) (typical serving, not from a specific published recipe)",
+      "default_serving_g": 278.0,
+      "per_100g": {
+        "kcal": 82.47,
+        "protein_g": 2.2,
+        "carbs_g": 15.4,
+        "fat_g": 1.91,
+        "fiber_g": 1.12
+      },
+      "default_serving": {
+        "kcal": 229.3,
+        "protein_g": 6.1,
+        "carbs_g": 42.8,
+        "fat_g": 5.3,
+        "fiber_g": 3.1
+      }
+    },
+    "sugarcane_juice": {
+      "category": "beverage",
+      "serving_label": "1 glass (~250ml), ganne ka ras (typical serving, not from a specific published recipe)",
+      "default_serving_g": 250.0,
+      "per_100g": {
+        "kcal": 65.0,
+        "protein_g": 0.2,
+        "carbs_g": 16.0,
+        "fat_g": 0.0,
+        "fiber_g": 0.0
+      },
+      "default_serving": {
+        "kcal": 162.5,
+        "protein_g": 0.5,
+        "carbs_g": 40.0,
+        "fat_g": 0.0,
+        "fiber_g": 0.0
+      }
+    },
+    "fresh_lime_soda": {
+      "category": "beverage",
+      "serving_label": "1 glass (~250ml), sweet nimbu soda (typical serving, not from a specific published recipe)",
+      "default_serving_g": 45.0,
+      "per_100g": {
+        "kcal": 148.33,
+        "protein_g": 0.73,
+        "carbs_g": 39.53,
+        "fat_g": 0.2,
+        "fiber_g": 1.87
+      },
+      "default_serving": {
+        "kcal": 66.8,
+        "protein_g": 0.3,
+        "carbs_g": 17.8,
+        "fat_g": 0.1,
+        "fiber_g": 0.8
+      }
+    },
+    "fresh_orange_juice": {
+      "category": "beverage",
+      "serving_label": "1 glass (~250ml) (typical serving, not from a specific published recipe)",
+      "default_serving_g": 250.0,
+      "per_100g": {
+        "kcal": 45.0,
+        "protein_g": 0.7,
+        "carbs_g": 10.4,
+        "fat_g": 0.2,
+        "fiber_g": 0.2
+      },
+      "default_serving": {
+        "kcal": 112.5,
+        "protein_g": 1.8,
+        "carbs_g": 26.0,
+        "fat_g": 0.5,
+        "fiber_g": 0.5
+      }
+    },
+    "cold_coffee": {
+      "category": "beverage",
+      "serving_label": "1 glass (~225ml) (typical serving, not from a specific published recipe)",
+      "default_serving_g": 225.0,
+      "per_100g": {
+        "kcal": 95.13,
+        "protein_g": 2.94,
+        "carbs_g": 11.07,
+        "fat_g": 4.49,
+        "fiber_g": 0.0
+      },
+      "default_serving": {
+        "kcal": 214.1,
+        "protein_g": 6.6,
+        "carbs_g": 24.9,
+        "fat_g": 10.1,
+        "fiber_g": 0.0
+      }
+    },
+    "cola_soft_drink": {
+      "category": "beverage",
+      "serving_label": "1 glass/can (~300ml), generic cola/soft drink (typical serving, not from a specific published recipe)",
+      "default_serving_g": 300.0,
+      "per_100g": {
+        "kcal": 42.0,
+        "protein_g": 0.0,
+        "carbs_g": 10.6,
+        "fat_g": 0.0,
+        "fiber_g": 0.0
+      },
+      "default_serving": {
+        "kcal": 126.0,
+        "protein_g": 0.0,
+        "carbs_g": 31.8,
+        "fat_g": 0.0,
+        "fiber_g": 0.0
+      }
+    },
+    "iced_tea": {
+      "category": "beverage",
+      "serving_label": "1 glass (~250ml), sweetened (typical serving, not from a specific published recipe)",
+      "default_serving_g": 20.0,
+      "per_100g": {
+        "kcal": 387.0,
+        "protein_g": 0.0,
+        "carbs_g": 100.0,
+        "fat_g": 0.0,
+        "fiber_g": 0.0
+      },
+      "default_serving": {
+        "kcal": 77.4,
+        "protein_g": 0.0,
+        "carbs_g": 20.0,
+        "fat_g": 0.0,
+        "fiber_g": 0.0
+      }
     }
   }
 }

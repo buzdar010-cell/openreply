@@ -1137,5 +1137,84 @@
       "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 200 },
       "sugar": 5
     }
+  },
+
+  "mango_shake": {
+    "category": "beverage",
+    "serving_label": "1 glass (~280ml), Pakistan's national summer drink (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "mango_raw": 120,
+      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 150 },
+      "sugar": 10
+    }
+  },
+  "oreo_shake": {
+    "category": "beverage",
+    "serving_label": "1 glass (~240ml), blended Oreo cookies and milk -- Pakistan's most popular generic shake flavor; no ice cream ingredient modeled, approximated with cream (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "oreo_cookie": 40,
+      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 180 },
+      "cream_fresh": 20
+    }
+  },
+  "chocolate_shake": {
+    "category": "beverage",
+    "serving_label": "1 glass (~225ml) (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "chocolate_syrup": 30,
+      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 180 },
+      "cream_fresh": 15
+    }
+  },
+  "strawberry_shake": {
+    "category": "beverage",
+    "serving_label": "1 glass (~260ml) (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "strawberry_raw": 100,
+      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 150 },
+      "sugar": 12
+    }
+  },
+  "banana_shake": {
+    "category": "beverage",
+    "serving_label": "1 glass (~280ml) (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "banana_raw": 120,
+      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 150 },
+      "sugar": 8
+    }
+  },
+  "sugarcane_juice": {
+    "category": "beverage",
+    "serving_label": "1 glass (~250ml), ganne ka ras (typical serving, not from a specific published recipe)",
+    "ingredients": { "sugarcane_juice": 250 }
+  },
+  "fresh_lime_soda": {
+    "category": "beverage",
+    "serving_label": "1 glass (~250ml), sweet nimbu soda (typical serving, not from a specific published recipe)",
+    "ingredients": { "lemon_lime_raw": 30, "sugar": 15 }
+  },
+  "fresh_orange_juice": {
+    "category": "beverage",
+    "serving_label": "1 glass (~250ml) (typical serving, not from a specific published recipe)",
+    "ingredients": { "orange_juice_fresh": 250 }
+  },
+  "cold_coffee": {
+    "category": "beverage",
+    "serving_label": "1 glass (~225ml) (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 200 },
+      "sugar": 15, "cream_fresh": 10
+    }
+  },
+  "cola_soft_drink": {
+    "category": "beverage",
+    "serving_label": "1 glass/can (~300ml), generic cola/soft drink (typical serving, not from a specific published recipe)",
+    "ingredients": { "cola_soft_drink": 300 }
+  },
+  "iced_tea": {
+    "category": "beverage",
+    "serving_label": "1 glass (~250ml), sweetened (typical serving, not from a specific published recipe)",
+    "ingredients": { "sugar": 20 }
   }
 }

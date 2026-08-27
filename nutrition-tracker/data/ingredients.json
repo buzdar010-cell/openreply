@@ -91,5 +91,12 @@
   "green_chili_raw": { "kcal": 40, "protein_g": 2.0, "carbs_g": 9.5, "fat_g": 0.2, "fiber_g": 1.5, "note": "hari mirch" },
   "turnip_raw": { "kcal": 28, "protein_g": 0.9, "carbs_g": 6.4, "fat_g": 0.1, "fiber_g": 1.8, "note": "shalgam" },
 
-  "rose_syrup_concentrate": { "kcal": 260, "protein_g": 0.1, "carbs_g": 65.0, "fat_g": 0.0, "fiber_g": 0.0, "note": "Rooh Afza-style concentrated sugar syrup, undiluted" }
+  "rose_syrup_concentrate": { "kcal": 260, "protein_g": 0.1, "carbs_g": 65.0, "fat_g": 0.0, "fiber_g": 0.0, "note": "Rooh Afza-style concentrated sugar syrup, undiluted" },
+
+  "chocolate_syrup": { "kcal": 260, "protein_g": 2.0, "carbs_g": 65.0, "fat_g": 1.0, "fiber_g": 2.0 },
+  "oreo_cookie": { "kcal": 480, "protein_g": 5.0, "carbs_g": 71.0, "fat_g": 20.0, "fiber_g": 3.0 },
+  "strawberry_raw": { "kcal": 32, "protein_g": 0.7, "carbs_g": 7.7, "fat_g": 0.3, "fiber_g": 2.0 },
+  "sugarcane_juice": { "kcal": 65, "protein_g": 0.2, "carbs_g": 16.0, "fat_g": 0.0, "fiber_g": 0.0, "note": "ganne ka ras" },
+  "cola_soft_drink": { "kcal": 42, "protein_g": 0.0, "carbs_g": 10.6, "fat_g": 0.0, "fiber_g": 0.0, "note": "generic carbonated cola/soft drink" },
+  "orange_juice_fresh": { "kcal": 45, "protein_g": 0.7, "carbs_g": 10.4, "fat_g": 0.2, "fiber_g": 0.2, "note": "distinct from kinnow_orange_raw -- juice only, no pulp/peel fiber" }
 }

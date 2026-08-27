@@ -1,6 +1,18 @@
-# Pakistani + common Western food database — v9
+# Pakistani + common Western food database — v10
 
-140 dishes: 124 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+151 dishes: 135 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+
+## v10: milkshakes and general drinks
+
+A user-added roadmap item, separate from the original Ramadan/regional/condiment plan. 11 dishes: 5 milkshakes (`mango_shake`, `oreo_shake`, `chocolate_shake`, `strawberry_shake`, `banana_shake`) and 6 general drinks (`sugarcane_juice`, `fresh_lime_soda`, `fresh_orange_juice`, `cold_coffee`, `cola_soft_drink`, `iced_tea`). Scoped against the 7 beverages already in the database (`chai_regular`, `lassi_sweet`, `rooh_afza_sharbat`, `jaljeera`, `date_milk_shake`, `kashmiri_chai`, `peshawari_kahwa`) first — skipped a Dates & Almond shake since it would have overlapped `date_milk_shake` too closely.
+
+`mango_shake` gets a special call-out: it's genuinely Pakistan's national summer drink, served at every juice shop from Karachi to Peshawar, May through September — confirmed via research, not assumed.
+
+Same tier as v8/v9: typical realistic serving proportions, not converted from a specific published recipe with a stated serving count — `serving_label` says so on each one. No ice cream ingredient is modeled anywhere in the database, so `oreo_shake` and any other shake that would normally use it is approximated with milk + cream instead, noted explicitly on `oreo_shake`'s label.
+
+Checked against real-world references and several landed within a few kcal of known values: `cola_soft_drink` (126 kcal/300ml vs. ~118 kcal for a real 300ml cola), `fresh_orange_juice` (112 kcal/250ml, matching real OJ almost exactly), `sugarcane_juice` (162 kcal/250ml, right in the real 150-180 kcal range). No corrections needed.
+
+Six new base ingredients: `chocolate_syrup`, `oreo_cookie`, `strawberry_raw`, `sugarcane_juice`, `cola_soft_drink`, `orange_juice_fresh` (distinct from the existing `kinnow_orange_raw`, which is whole-fruit nutrition, not juice-only).
 
 ## v9: Ramadan / iftar & sehri foods
 
@@ -95,7 +107,7 @@ All 14 originally-named "remaining recipes" are now built, across v5 and v6 (see
 
 ## Next steps (not done yet)
 
-- Regional variants (v7), chutneys/pickles/raita (v8), and Ramadan foods (v9) are done. Next per the agreed roadmap: expanded Western fast food.
+- Regional variants (v7), chutneys/pickles/raita (v8), Ramadan foods (v9), and milkshakes/drinks (v10) are done. Next per the agreed roadmap: expanded Western fast food.
 - **Weight-loss / weight-gain goal variants** (added to the roadmap by the user, not built yet): lighter/"diet" and higher-calorie/bulking versions of dishes people actually cook when trying to lose or gain weight — e.g. grilled instead of fried, less oil/ghee, boiled chicken breast versions of curries, protein-added versions for weight gain. Comes after the phases above; not scoped in detail yet.
 - Decide serving-size conventions with real user feedback once logging starts.
 - Turn `dishes.json` into D1 seed data once the app schema exists.
