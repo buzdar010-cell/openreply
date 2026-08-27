@@ -1629,6 +1629,139 @@
         "fat_g": 25.1,
         "fiber_g": 4.0
       }
+    },
+    "achari_chicken": {
+      "category": "curry",
+      "serving_label": "1 serving, pickling-spice chicken curry (sourced: Pakistan Eats, 4 servings)",
+      "default_serving_g": 249.0,
+      "per_100g": {
+        "kcal": 176.02,
+        "protein_g": 12.31,
+        "carbs_g": 2.75,
+        "fat_g": 13.02,
+        "fiber_g": 0.64
+      },
+      "default_serving": {
+        "kcal": 438.3,
+        "protein_g": 30.7,
+        "carbs_g": 6.8,
+        "fat_g": 32.4,
+        "fiber_g": 1.6
+      }
+    },
+    "matar_pulao": {
+      "category": "rice_dish",
+      "serving_label": "1 plate, peas pulao (sourced: Pakistan Eats, 4 servings)",
+      "default_serving_g": 370.0,
+      "per_100g": {
+        "kcal": 155.0,
+        "protein_g": 2.66,
+        "carbs_g": 23.44,
+        "fat_g": 5.39,
+        "fiber_g": 1.01
+      },
+      "default_serving": {
+        "kcal": 573.5,
+        "protein_g": 9.8,
+        "carbs_g": 86.7,
+        "fat_g": 19.9,
+        "fiber_g": 3.7
+      }
+    },
+    "chicken_keema": {
+      "category": "curry",
+      "serving_label": "1 serving, minced chicken curry (sourced: Pakistan Eats, 4 servings)",
+      "default_serving_g": 245.0,
+      "per_100g": {
+        "kcal": 149.77,
+        "protein_g": 11.53,
+        "carbs_g": 2.72,
+        "fat_g": 10.41,
+        "fiber_g": 0.66
+      },
+      "default_serving": {
+        "kcal": 366.9,
+        "protein_g": 28.3,
+        "carbs_g": 6.7,
+        "fat_g": 25.5,
+        "fiber_g": 1.6
+      }
+    },
+    "hariyali_chicken": {
+      "category": "curry",
+      "serving_label": "1 serving, green herb-yogurt chicken (sourced: Pakistan Eats, 4 servings)",
+      "default_serving_g": 223.0,
+      "per_100g": {
+        "kcal": 183.82,
+        "protein_g": 17.14,
+        "carbs_g": 1.92,
+        "fat_g": 11.69,
+        "fiber_g": 0.0
+      },
+      "default_serving": {
+        "kcal": 409.9,
+        "protein_g": 38.2,
+        "carbs_g": 4.3,
+        "fat_g": 26.1,
+        "fiber_g": 0.0
+      }
+    },
+    "kali_mirch_chicken": {
+      "category": "curry",
+      "serving_label": "1 serving, black pepper chicken curry (sourced: Pakistan Eats, 6 servings)",
+      "default_serving_g": 152.0,
+      "per_100g": {
+        "kcal": 264.43,
+        "protein_g": 15.72,
+        "carbs_g": 2.18,
+        "fat_g": 21.58,
+        "fiber_g": 0.28
+      },
+      "default_serving": {
+        "kcal": 401.9,
+        "protein_g": 23.9,
+        "carbs_g": 3.3,
+        "fat_g": 32.8,
+        "fiber_g": 0.4
+      }
+    },
+    "aloo_tikki": {
+      "category": "snack",
+      "serving_label": "1 patty (sourced: Pakistan Eats, 6 patties)",
+      "default_serving_g": 100.0,
+      "per_100g": {
+        "kcal": 164.17,
+        "protein_g": 2.62,
+        "carbs_g": 16.77,
+        "fat_g": 9.96,
+        "fiber_g": 1.49
+      },
+      "default_serving": {
+        "kcal": 164.2,
+        "protein_g": 2.6,
+        "carbs_g": 16.8,
+        "fat_g": 10.0,
+        "fiber_g": 1.5
+      }
+    },
+    "seviyan": {
+      "category": "dessert",
+      "serving_label": "1 bowl, sweet vermicelli (sourced: Pakistan Eats, 8 servings)",
+      "default_serving_g": 303.0,
+      "per_100g": {
+        "kcal": 120.2,
+        "protein_g": 3.35,
+        "carbs_g": 15.06,
+        "fat_g": 5.21,
+        "fiber_g": 0.19
+      },
+      "default_serving": {
+        "kcal": 364.2,
+        "protein_g": 10.2,
+        "carbs_g": 45.6,
+        "fat_g": 15.8,
+        "fiber_g": 0.6
+      }
     }
   }
 }

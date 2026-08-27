@@ -652,5 +652,69 @@
       "besan_gram_flour": 30, "onion_raw": 31, "potato_cooked": 13,
       "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 21 }
     }
+  },
+
+  "achari_chicken": {
+    "category": "curry",
+    "serving_label": "1 serving, pickling-spice chicken curry (sourced: Pakistan Eats, 4 servings)",
+    "ingredients": {
+      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_thigh_skin_cooked", "grams": 113 },
+      "onion_raw": 38, "tomato_raw": 80,
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 4 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 14 }
+    }
+  },
+  "matar_pulao": {
+    "category": "rice_dish",
+    "serving_label": "1 plate, peas pulao (sourced: Pakistan Eats, 4 servings)",
+    "ingredients": {
+      "rice_white_cooked": 277, "peas_cooked": 36, "onion_raw": 38,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 19 }
+    }
+  },
+  "chicken_keema": {
+    "category": "curry",
+    "serving_label": "1 serving, minced chicken curry (sourced: Pakistan Eats, 4 servings)",
+    "ingredients": {
+      "chicken_mince_cooked": 113, "onion_raw": 38, "tomato_raw": 80,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 14 }
+    }
+  },
+  "hariyali_chicken": {
+    "category": "curry",
+    "serving_label": "1 serving, green herb-yogurt chicken (sourced: Pakistan Eats, 4 servings)",
+    "ingredients": {
+      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_breast_cooked", "grams": 113 },
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 91 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 19 }
+    }
+  },
+  "kali_mirch_chicken": {
+    "category": "curry",
+    "serving_label": "1 serving, black pepper chicken curry (sourced: Pakistan Eats, 6 servings)",
+    "ingredients": {
+      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_thigh_skin_cooked", "grams": 88 },
+      "onion_raw": 25,
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 21 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 18 }
+    }
+  },
+  "aloo_tikki": {
+    "category": "snack",
+    "serving_label": "1 patty (sourced: Pakistan Eats, 6 patties)",
+    "ingredients": {
+      "potato_cooked": 83, "egg_cooked": 8,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 9 }
+    }
+  },
+  "seviyan": {
+    "category": "dessert",
+    "serving_label": "1 bowl, sweet vermicelli (sourced: Pakistan Eats, 8 servings)",
+    "ingredients": {
+      "vermicelli_dry": 19,
+      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 258 },
+      "sugar": 19,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 7 }
+    }
   }
 }

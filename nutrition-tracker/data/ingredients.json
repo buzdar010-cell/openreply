@@ -67,5 +67,9 @@
   "bottle_gourd_cooked": { "kcal": 14, "protein_g": 0.6, "carbs_g": 3.4, "fat_g": 0.0, "fiber_g": 1.2, "note": "lauki/ghiya" },
 
   "urad_daal_cooked": { "kcal": 105, "protein_g": 7.5, "carbs_g": 17.0, "fat_g": 0.4, "fiber_g": 6.0, "note": "maash ki dal" },
-  "methi_leaves_cooked": { "kcal": 35, "protein_g": 4.0, "carbs_g": 6.0, "fat_g": 0.5, "fiber_g": 3.0, "note": "fresh fenugreek leaves, cooked — distinct from the dried kasuri methi entry" }
+  "methi_leaves_cooked": { "kcal": 35, "protein_g": 4.0, "carbs_g": 6.0, "fat_g": 0.5, "fiber_g": 3.0, "note": "fresh fenugreek leaves, cooked — distinct from the dried kasuri methi entry" },
+
+  "peas_cooked": { "kcal": 84, "protein_g": 5.4, "carbs_g": 15.6, "fat_g": 0.2, "fiber_g": 5.5, "note": "matar" },
+  "chicken_mince_cooked": { "kcal": 189, "protein_g": 24.0, "carbs_g": 0.0, "fat_g": 10.0, "fiber_g": 0.0, "note": "ground chicken/chicken keema" },
+  "vermicelli_dry": { "kcal": 370, "protein_g": 10.0, "carbs_g": 75.0, "fat_g": 1.5, "fiber_g": 3.0, "note": "seviyan, raw/dry weight before cooking in milk" }
 }

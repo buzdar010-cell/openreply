@@ -1,6 +1,16 @@
-# Pakistani + common Western food database — v4
+# Pakistani + common Western food database — v5
 
-83 dishes: 67 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+90 dishes: 74 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+
+## v5: 7 of the 14 "remaining recipes" sourced from Pakistan Eats
+
+Went back to the list of 14 named-but-unbuilt dishes from v4. Rather than keep hammering Tea for Turmeric, pulled these from **Pakistan Eats** (pakistaneats.com) instead — real published recipes with stated ingredient quantities and serving counts, same conversion method as the Tea for Turmeric batches (grams ÷ servings).
+
+Built this pass: `achari_chicken` (438 kcal/serving), `matar_pulao` (574 kcal/plate), `chicken_keema` (367 kcal/serving), `hariyali_chicken` (410 kcal/serving), `kali_mirch_chicken` (402 kcal/serving), `aloo_tikki` (164 kcal/patty), `seviyan` (364 kcal/bowl). All checked against real-world reference ranges for these dishes and held up — no corrections needed this batch (unlike v1's samosa/pakora/kebab fixes).
+
+Three new base ingredients were needed and added to `ingredients.json`: `peas_cooked` (matar, for matar_pulao), `chicken_mince_cooked` (ground chicken, for chicken_keema — distinct from the existing beef mince entry), `vermicelli_dry` (seviyan, raw/dry weight before cooking in milk).
+
+**Still not found** (searched Pakistan Eats directly, no match): Rajma Masala, Matar Paneer, Dahi Bhalla, Zarda, Sweet Dalia, Prawn Biryani, and a *traditional* (non-fusion) Chicken Kofta — the recipe found on Tea for Turmeric in v4 was Western-fusion (panko, mozzarella, olive oil) and wasn't built for that reason. These 6-7 will need a different source in a future pass.
 
 ## v4: the rest of the confirmed-URL batch, plus a real inconsistency found
 
@@ -30,12 +40,13 @@ Tea for Turmeric started serving a bot-verification page after repeated rapid re
 - Achari Chicken — `teaforturmeric.com/achari-chicken/` (blocked again on this specific URL even with pacing)
 - Chicken Kofta — real recipe exists at `teaforturmeric.com/chicken-kofta/`, but it's a Western-fusion version, not traditional — would need a different, more traditional source instead
 
-Also named as existing (from the earlier roundup and Pakistan Eats' homepage) but not yet URL-confirmed for a direct fetch: Rajma Masala, Matar Paneer, Dahi Bhalla, Aloo Tikki, Matar Pulao, Zarda, Hariyali Chicken, Kali Mirch Chicken, Chicken Keema, Prawn Biryani, Seviyan, Sweet Dalia.
+Aloo Tikki, Matar Pulao, Hariyali Chicken, Kali Mirch Chicken, Chicken Keema, and Seviyan were sourced from Pakistan Eats in v5 (see above). **Still outstanding**: Rajma Masala, Matar Paneer, Dahi Bhalla, Zarda, Sweet Dalia, Prawn Biryani, and a traditional (non-fusion) Chicken Kofta — not found on Pakistan Eats via site-search, will need a different source.
 
 ## Next steps (not done yet)
 
-- Come back to the 8 confirmed-URL dishes above once the rate limit has cooled off, or pull them from Pakistan Eats/another source instead.
-- Chase down the remaining named-but-unconfirmed dishes.
+- Come back to Achari Chicken's original Tea for Turmeric URL if useful for cross-checking (already built from Pakistan Eats in v5, so not blocking).
+- Chase down the remaining 6-7 outstanding dishes from a different source.
+- Then: regional variants (Sindh, Pashtun-belt and other regional dishes), chutneys/pickles (achaar), traditional Ramadan/fasting foods, and expanded Western fast food — per the agreed roadmap, in that order.
 - Decide serving-size conventions with real user feedback once logging starts.
 - Turn `dishes.json` into D1 seed data once the app schema exists.
 
