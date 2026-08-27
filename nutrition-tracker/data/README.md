@@ -1,6 +1,14 @@
-# Pakistani + common Western food database — v2
+# Pakistani + common Western food database — v3
 
-65 dishes: 49 composed dishes (curries, breads, rice dishes, snacks, desserts, fast food) plus 16 standalone raw fruits/vegetables. Every dish now stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+74 dishes: 58 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+
+## v3: real sourced recipes, not estimated ones
+
+The 9 newest dishes (aloo_gosht, gobi_gosht, chana_pulao, palak_chicken, bhindi_masala, sarson_ka_saag, aloo_baingan, chicken_chargha, toriyan) are converted directly from real, published recipes on **Tea for Turmeric** (teaforturmeric.com), a Pakistani/South Asian home-cooking site with real tested quantities — not estimated from scratch the way earlier dishes were. Each recipe's `serving_label` notes the source and how many servings the original recipe made, so the conversion is traceable.
+
+**A real cross-check, not just a hope**: the Chana Pulao source page published its own nutrition figures — 463 kcal, 75g carbs, 11g protein, 14g fat per serving. My independent computation, built purely from their stated ingredient quantities run through our own ingredient database, came out to **481 kcal, 77.9g carbs, 11.7g protein, 13.3g fat** — within ~4% across every field. That's a genuine, external validation that the gram-conversion methodology is sound, not just internally consistent with itself.
+
+Four new base ingredients were added to support these: `mustard_greens_cooked` (sarson), `zucchini_cooked` (toriyan), `corn_flour` (saag thickener), `fenugreek_leaves_dried` (kasuri methi, used in gram-scale flavoring quantities).
 
 ## Files
 

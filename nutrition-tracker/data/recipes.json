@@ -490,5 +490,83 @@
     "category": "vegetable_raw",
     "serving_label": "1 bowl",
     "ingredients": { "cucumber_raw": 80, "tomato_raw": 50, "onion_raw": 30 }
+  },
+
+  "aloo_gosht": {
+    "category": "curry",
+    "serving_label": "1 bowl (sourced: Tea for Turmeric, 4 servings)",
+    "ingredients": {
+      "mutton_curry_cut_cooked": 130, "potato_cooked": 50, "onion_raw": 38, "tomato_raw": 30,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 17 },
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 4 }
+    }
+  },
+  "gobi_gosht": {
+    "category": "curry",
+    "serving_label": "1 bowl (sourced: Tea for Turmeric, 5 servings)",
+    "ingredients": {
+      "mutton_curry_cut_cooked": 114, "cauliflower_cooked": 132, "onion_raw": 30, "tomato_raw": 24,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 15 }
+    }
+  },
+  "chana_pulao": {
+    "category": "rice_dish",
+    "serving_label": "1 plate (sourced: Tea for Turmeric, 4 servings)",
+    "ingredients": {
+      "rice_white_cooked": 200, "chickpeas_cooked": 65, "onion_raw": 44,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 11 }
+    }
+  },
+  "palak_chicken": {
+    "category": "curry",
+    "serving_label": "1 bowl (sourced: Tea for Turmeric, 4 servings)",
+    "ingredients": {
+      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_thigh_skin_cooked", "grams": 114 },
+      "spinach_cooked": 144, "onion_raw": 38, "tomato_raw": 33,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 26 },
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 11 }
+    }
+  },
+  "bhindi_masala": {
+    "category": "vegetable",
+    "serving_label": "1 bowl (sourced: Tea for Turmeric, 4 servings)",
+    "ingredients": {
+      "okra_cooked": 114, "onion_raw": 75, "tomato_raw": 53,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 14 }
+    }
+  },
+  "sarson_ka_saag": {
+    "category": "vegetable",
+    "serving_label": "1 bowl (sourced: Tea for Turmeric, 4 servings)",
+    "ingredients": {
+      "mustard_greens_cooked": 114, "spinach_cooked": 57, "corn_flour": 8, "onion_raw": 25,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 24 }
+    }
+  },
+  "aloo_baingan": {
+    "category": "vegetable",
+    "serving_label": "1 bowl (sourced: Tea for Turmeric, 4 servings)",
+    "ingredients": {
+      "eggplant_cooked": 113, "potato_cooked": 106, "onion_raw": 61, "tomato_raw": 75,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 14 }
+    }
+  },
+  "chicken_chargha": {
+    "category": "grilled",
+    "serving_label": "1/4 chicken, roasted with potatoes (sourced: Tea for Turmeric, 4 servings)",
+    "ingredients": {
+      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "blend": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "grams": 160 },
+      "potato_cooked": 125,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 21 },
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 20 }
+    }
+  },
+  "toriyan": {
+    "category": "vegetable",
+    "serving_label": "1 bowl, zucchini/courgette curry (sourced: Tea for Turmeric, 4 servings)",
+    "ingredients": {
+      "zucchini_cooked": 128, "onion_raw": 75, "tomato_raw": 30,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 19 }
+    }
   }
 }
