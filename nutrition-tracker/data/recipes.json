@@ -1,5 +1,5 @@
 {
-  "_readme": "Each dish defined as a typical home-cooked recipe: one serving, broken into base ingredients + grams. An ingredient entry is either a plain number (fixed grams of that exact ingredient) or an object describing a swappable role: {\"role\": \"<label>\", \"options\": [...], \"default\": \"<ingredient_id>\", \"grams\": N} picks one specific default ingredient, while {\"role\": \"<label>\", \"options\": [...], \"blend\": [...], \"grams\": N} averages across the blend list when no specific option is named (used for chicken roast, where a generic 'quarter' with no cut specified is genuinely a mix, not one true default). 'portion_presets' (optional) maps a size name to its total gram weight, letting one dish support multiple real portion sizes (e.g. pizza slice size, chicken roast quarter/half/full) instead of guessing one fixed weight. build_dishes.py resolves all of this into per-100g values plus the default serving.",
+  "_readme": "Each dish defined as a typical home-cooked recipe: one serving, broken into base ingredients + grams. An ingredient entry is either a plain number (fixed grams of that exact ingredient) or an object describing a swappable role: {\"role\": \"<label>\", \"options\": [...], \"default\": \"<ingredient_id>\", \"grams\": N} picks one specific default ingredient, while {\"role\": \"<label>\", \"options\": [...], \"blend\": [...], \"grams\": N} averages across the blend list when no specific option is named (used for chicken roast, where a generic 'quarter' with no cut specified is genuinely a mix, not one true default). 'portion_presets' (optional) maps a size name to its total gram weight, letting one dish support multiple real portion sizes (e.g. pizza slice size, chicken roast quarter/half/full) instead of guessing one fixed weight. build_dishes.py resolves all of this into per-100g values plus the default serving. PROCESS RULE (added after this was found to lapse twice): any new dish with genuine real-world piece-count variance (gol gappay, wings, kebabs, nuggets), size variance (roll, cone, bread), or plate-size variance (rice/biryani/pulao) MUST get portion_presets in the same batch it's added -- do not defer this to a later cleanup pass, because that pass has already been skipped twice (v13-onward additions, then v14-v15 additions).",
   "roti": {
     "category": "bread",
     "serving_label": "1 medium roti (~40g) (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
@@ -3640,10 +3640,11 @@
 
   "gol_gappay": {
     "category": "snack",
-    "serving_label": "6 pieces, crispy fried shells with chickpea-potato filling and tamarind water -- the most iconic Pakistani street snack (typical serving, not from a specific published recipe)",
+    "serving_label": "6 pieces, crispy fried shells with chickpea-potato filling and tamarind-mint water -- the most iconic Pakistani street snack (typical serving, not from a specific published recipe)",
+    "portion_presets": { "four_pieces": 55, "six_pieces": 83, "ten_pieces": 138 },
     "ingredients": {
       "atta_whole_wheat_flour": 15, "chickpeas_cooked": 20, "potato_cooked": 20,
-      "tamarind_pulp": 10, "onion_raw": 5,
+      "tamarind_pulp": 10, "mint_coriander_leaves_raw": 8, "onion_raw": 5,
       "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
     }
   },
@@ -3658,6 +3659,7 @@
   "dahi_puri": {
     "category": "snack",
     "serving_label": "6 pieces, crispy puri shells with chickpea-potato filling, yogurt, and tamarind chutney -- distinct from the existing dahi_bhalla, which is fried lentil dumplings not puri shells (typical serving, not from a specific published recipe)",
+    "portion_presets": { "four_pieces": 74, "six_pieces": 111, "eight_pieces": 148 },
     "ingredients": {
       "atta_whole_wheat_flour": 15, "chickpeas_cooked": 20, "potato_cooked": 20,
       "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 40 },
@@ -3678,16 +3680,18 @@
   "chicken_tikka_roll": {
     "category": "fast_food",
     "serving_label": "1 roll, Lahore's signature street wrap -- tikka boti in a lachha paratha with green chutney, onions, and a fried-egg seal (typical serving, not from a specific published recipe)",
+    "portion_presets": { "regular_roll": 215, "large_roll": 280 },
     "ingredients": {
       "flour": { "role": "flour", "options": ["atta_whole_wheat_flour", "maida_refined_flour", "atta_multigrain"], "default": "atta_whole_wheat_flour", "grams": 50 },
-      "chicken_breast_cooked": 100, "egg_cooked": 25, "onion_raw": 15,
+      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_breast_cooked", "grams": 100 },
+      "egg_cooked": 25, "onion_raw": 15,
       "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 10 },
       "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 15 }
     }
   },
   "bhutta": {
     "category": "snack",
-    "serving_label": "1 corn on the cob, roasted/boiled with butter and spices",
+    "serving_label": "1 corn on the cob, roasted/boiled with butter and spices (typical serving, not from a specific published recipe)",
     "ingredients": {
       "corn_on_cob_cooked": 150,
       "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
@@ -3695,12 +3699,51 @@
   },
   "ice_gola": {
     "category": "dessert",
-    "serving_label": "1 cone, shaved ice with flavored syrup -- ice itself isn't counted (0 kcal), only the syrup",
+    "serving_label": "1 cone, shaved ice with flavored syrup -- ice itself isn't counted (0 kcal), only the syrup (typical serving, not from a specific published recipe)",
+    "portion_presets": { "small_cone": 20, "regular_cone": 30, "large_cone": 45 },
     "ingredients": { "rose_syrup_concentrate": 25, "sugar": 5 }
   },
   "roasted_peanuts": {
     "category": "snack",
-    "serving_label": "1 handful (~30g), lightly salted street-vendor style",
+    "serving_label": "1 handful (~30g), lightly salted street-vendor style (typical serving, not from a specific published recipe)",
+    "portion_presets": { "small_handful": 20, "regular_handful": 30, "large_handful": 50 },
     "ingredients": { "peanuts_roasted": 30 }
+  },
+
+  "malai_kofta": {
+    "category": "curry",
+    "serving_label": "1 serving, vegetarian potato-paneer koftas in a creamy curry -- verified missing from the database (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "potato_cooked": 60, "paneer": 40, "cream_fresh": 20, "onion_raw": 20, "tomato_raw": 25,
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 15 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 }
+    }
+  },
+  "daal_makhani": {
+    "category": "daal_rice",
+    "serving_label": "1 bowl, rich butter-and-cream black lentil curry -- distinct from the lighter maash_ki_daal/kali_daal already in the database; verified missing (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "urad_daal_cooked": 80, "kidney_beans_cooked": 20, "cream_fresh": 25, "tomato_raw": 20, "onion_raw": 15,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 15 }
+    }
+  },
+  "chicken_handi": {
+    "category": "curry",
+    "serving_label": "1 serving, restaurant-style creamy chicken curry -- richer than the existing chicken_karahi, verified missing (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_thigh_skin_cooked", "grams": 150 },
+      "cream_fresh": 25, "tomato_raw": 40, "onion_raw": 15,
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 20 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 15 }
+    }
+  },
+  "mutton_handi": {
+    "category": "curry",
+    "serving_label": "1 serving, restaurant-style creamy mutton curry -- richer than the existing mutton_karahi, verified missing (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "mutton_curry_cut_cooked": 150, "cream_fresh": 25, "tomato_raw": 40, "onion_raw": 15,
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 20 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 15 }
+    }
   }
 }

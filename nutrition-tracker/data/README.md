@@ -1,6 +1,22 @@
-# Pakistani + common Western food database — v15
+# Pakistani + common Western food database — v16
 
-224 dishes: 208 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+228 dishes: 212 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+
+## v16: fixing the 5 gaps from a second self-audit
+
+A second critical pass on v15 (rated 8/10) found 5 real issues, mostly about whether v14's fixes actually stuck as durable practice rather than one-time patches. All 5 fixed:
+
+**1. `portion_presets` had reverted to being ignored** on every dish built since the v14 fix (14 dishes across v14/v15, 0 with presets). Added presets to the 6 dishes with genuine variance: `gol_gappay`, `dahi_puri` (piece count), `chicken_tikka_roll`, `ice_gola` (size), `roasted_peanuts` (handful size). More importantly, added an explicit process rule to `recipes.json`'s own `_readme`: any new dish with genuine piece-count, size, or plate-size variance must get `portion_presets` in the same batch it's added, because deferring it has now lapsed twice. Coverage: 11 -> 16 dishes, but the real fix is the rule, not just the count.
+
+**2. `chicken_tikka_roll` didn't use the swappable `protein_cut` role**, unlike `chicken_tikka` itself despite modeling the same chicken. Fixed to use the role.
+
+**3. `gol_gappay`'s pani was missing its mint-coriander component**, modeling only tamarind water. Added `mint_coriander_leaves_raw` (8g) alongside the tamarind -- both are real components of gol gappay pani, not alternatives.
+
+**4. The "Full audit log (cumulative)" table was stale**, missing 3 real corrections made since v1 (the daal-portion fixes, `sindhi_biryani`, `mamtu`) despite its own header claiming to be cumulative. Updated with all 3, and added a note to keep it current going forward.
+
+**5. 4 more real, verified-missing dishes built**: `malai_kofta` (vegetarian potato-paneer kofta curry), `daal_makhani` (rich butter-and-cream black lentil, distinct from the lighter `maash_ki_daal`/`kali_daal`), `chicken_handi` and `mutton_handi` (restaurant-style creamy curries, richer than the existing karahi dishes). All checked against real-world calorie ranges and held up.
+
+**One thing this audit pass caught on its own, not from the prior review**: 3 dishes from v15 (`bhutta`, `ice_gola`, `roasted_peanuts`) had slipped through without confidence-tier language despite v14's fix supposedly covering the whole database. Caught by re-running the same validation script, not manual review -- fixed immediately. Worth noting as evidence the validation script itself is doing real work, not just the review being repeated by hand.
 
 ## v15: Pakistani street food
 
@@ -244,16 +260,21 @@ These aren't composed recipes; the ingredient *is* the loggable item. Two things
 
 ## Full audit log (cumulative)
 
+This table was labeled "cumulative" since v1 but wasn't actually kept current -- a v16 self-audit caught that it was missing three real corrections made in v5/v7. Fixed now; keep this updated going forward.
+
 | Item | Issue found | Fix | Reference basis |
 |---|---|---|---|
 | Samosa | 227 kcal | oil 15g -> 6g | ~130-150 kcal/piece |
 | Pakora | 417 kcal/100g | oil 20g -> 14g | ~300-380 kcal/100g |
 | Shami kebab (2pc) | 363 kcal | portions resized to real small-kebab weights | ~150-200 kcal/2pc |
 | Chicken roast (full) | 2282 kcal | portion weights recalibrated from bone-in to edible-meat basis | consistency with own ingredient data |
+| chana_daal / moong_daal / daal_chawal_masoor | daal portion 180-200g/bowl (a hearty standalone-bowl assumption) | corrected to 55-65g, eaten as one part of a plate with roti, per direct user confirmation | user's own description of how daal is actually eaten |
+| Sindhi biryani | 870 kcal / 572g plate | scaled down ~0.66x to 575 kcal / 379g | source recipe's stated "8 servings" was really a family-gathering batch size; rescaled to match this database's other biryani/pulao plate sizes |
+| Mamtu | "4 dumplings" at 25g/dumpling | rescaled to ~40g/dumpling (425 kcal/160g total) | too small to be a real steamed dumpling |
 
 `halwa_puri_halwa` was also renamed to `sooji_halwa` in v1 since it only modeled the halwa component, not the full combo the old name implied.
 
-Every other dish (61 of 65) was checked against known reference ranges and held up — including the richer/riskier ones (nihari, korma, karahi, biryani, gulab jamun, the fast-food entries).
+Every other dish (61 of 65) was checked against known reference ranges and held up — including the richer/riskier ones (nihari, korma, karahi, biryani, gulab jamun, the fast-food entries). This line describes the state as of v1; see the v3-v15 sections above and v16 below for everything checked and corrected in later batches.
 
 ## Known limitations — unchanged from v1, still true
 

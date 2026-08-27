@@ -5323,25 +5323,57 @@
     },
     "gol_gappay": {
       "category": "snack",
-      "serving_label": "6 pieces, crispy fried shells with chickpea-potato filling and tamarind water -- the most iconic Pakistani street snack (typical serving, not from a specific published recipe)",
-      "default_serving_g": 75.0,
+      "serving_label": "6 pieces, crispy fried shells with chickpea-potato filling and tamarind-mint water -- the most iconic Pakistani street snack (typical serving, not from a specific published recipe)",
+      "default_serving_g": 83.0,
       "per_100g": {
-        "kcal": 228.4,
-        "protein_g": 5.73,
-        "carbs_g": 36.02,
-        "fat_g": 7.87,
-        "fiber_g": 5.5,
-        "sugar_g": 7.24,
-        "sodium_mg": 8.47
+        "kcal": 210.63,
+        "protein_g": 5.49,
+        "carbs_g": 33.32,
+        "fat_g": 7.17,
+        "fiber_g": 5.26,
+        "sugar_g": 6.63,
+        "sodium_mg": 12.08
       },
       "default_serving": {
-        "kcal": 171.3,
-        "protein_g": 4.3,
-        "carbs_g": 27.0,
-        "fat_g": 5.9,
-        "fiber_g": 4.1,
-        "sugar_g": 5.4,
-        "sodium_mg": 6.4
+        "kcal": 174.8,
+        "protein_g": 4.6,
+        "carbs_g": 27.7,
+        "fat_g": 6.0,
+        "fiber_g": 4.4,
+        "sugar_g": 5.5,
+        "sodium_mg": 10.0
+      },
+      "portion_presets": {
+        "four_pieces": {
+          "grams": 55,
+          "kcal": 115.8,
+          "protein_g": 3.0,
+          "carbs_g": 18.3,
+          "fat_g": 3.9,
+          "fiber_g": 2.9,
+          "sugar_g": 3.6,
+          "sodium_mg": 6.6
+        },
+        "six_pieces": {
+          "grams": 83,
+          "kcal": 174.8,
+          "protein_g": 4.6,
+          "carbs_g": 27.7,
+          "fat_g": 6.0,
+          "fiber_g": 4.4,
+          "sugar_g": 5.5,
+          "sodium_mg": 10.0
+        },
+        "ten_pieces": {
+          "grams": 138,
+          "kcal": 290.7,
+          "protein_g": 7.6,
+          "carbs_g": 46.0,
+          "fat_g": 9.9,
+          "fiber_g": 7.3,
+          "sugar_g": 9.1,
+          "sodium_mg": 16.7
+        }
       }
     },
     "bun_kebab": {
@@ -5388,6 +5420,38 @@
         "fiber_g": 3.9,
         "sugar_g": 9.3,
         "sodium_mg": 24.0
+      },
+      "portion_presets": {
+        "four_pieces": {
+          "grams": 74,
+          "kcal": 133.7,
+          "protein_g": 3.7,
+          "carbs_g": 20.1,
+          "fat_g": 4.8,
+          "fiber_g": 2.6,
+          "sugar_g": 6.2,
+          "sodium_mg": 16.0
+        },
+        "six_pieces": {
+          "grams": 111,
+          "kcal": 200.5,
+          "protein_g": 5.6,
+          "carbs_g": 30.2,
+          "fat_g": 7.2,
+          "fiber_g": 3.9,
+          "sugar_g": 9.3,
+          "sodium_mg": 24.0
+        },
+        "eight_pieces": {
+          "grams": 148,
+          "kcal": 267.4,
+          "protein_g": 7.4,
+          "carbs_g": 40.2,
+          "fat_g": 9.6,
+          "fiber_g": 5.3,
+          "sugar_g": 12.4,
+          "sodium_mg": 32.0
+        }
       }
     },
     "papri_chaat": {
@@ -5434,11 +5498,33 @@
         "fiber_g": 5.8,
         "sugar_g": 2.4,
         "sodium_mg": 112.7
+      },
+      "portion_presets": {
+        "regular_roll": {
+          "grams": 215,
+          "kcal": 520.9,
+          "protein_g": 40.8,
+          "carbs_g": 38.1,
+          "fat_g": 22.7,
+          "fiber_g": 5.8,
+          "sugar_g": 2.4,
+          "sodium_mg": 112.7
+        },
+        "large_roll": {
+          "grams": 280,
+          "kcal": 678.3,
+          "protein_g": 53.1,
+          "carbs_g": 49.7,
+          "fat_g": 29.6,
+          "fiber_g": 7.5,
+          "sugar_g": 3.1,
+          "sodium_mg": 146.8
+        }
       }
     },
     "bhutta": {
       "category": "snack",
-      "serving_label": "1 corn on the cob, roasted/boiled with butter and spices",
+      "serving_label": "1 corn on the cob, roasted/boiled with butter and spices (typical serving, not from a specific published recipe)",
       "default_serving_g": 155.0,
       "per_100g": {
         "kcal": 121.42,
@@ -5461,7 +5547,7 @@
     },
     "ice_gola": {
       "category": "dessert",
-      "serving_label": "1 cone, shaved ice with flavored syrup -- ice itself isn't counted (0 kcal), only the syrup",
+      "serving_label": "1 cone, shaved ice with flavored syrup -- ice itself isn't counted (0 kcal), only the syrup (typical serving, not from a specific published recipe)",
       "default_serving_g": 30.0,
       "per_100g": {
         "kcal": 281.17,
@@ -5480,11 +5566,43 @@
         "fiber_g": 0.0,
         "sugar_g": 21.2,
         "sodium_mg": 2.5
+      },
+      "portion_presets": {
+        "small_cone": {
+          "grams": 20,
+          "kcal": 56.2,
+          "protein_g": 0.0,
+          "carbs_g": 14.2,
+          "fat_g": 0.0,
+          "fiber_g": 0.0,
+          "sugar_g": 14.2,
+          "sodium_mg": 1.7
+        },
+        "regular_cone": {
+          "grams": 30,
+          "kcal": 84.4,
+          "protein_g": 0.0,
+          "carbs_g": 21.2,
+          "fat_g": 0.0,
+          "fiber_g": 0.0,
+          "sugar_g": 21.2,
+          "sodium_mg": 2.5
+        },
+        "large_cone": {
+          "grams": 45,
+          "kcal": 126.5,
+          "protein_g": 0.0,
+          "carbs_g": 31.9,
+          "fat_g": 0.0,
+          "fiber_g": 0.0,
+          "sugar_g": 31.9,
+          "sodium_mg": 3.7
+        }
       }
     },
     "roasted_peanuts": {
       "category": "snack",
-      "serving_label": "1 handful (~30g), lightly salted street-vendor style",
+      "serving_label": "1 handful (~30g), lightly salted street-vendor style (typical serving, not from a specific published recipe)",
       "default_serving_g": 30.0,
       "per_100g": {
         "kcal": 567.0,
@@ -5503,6 +5621,130 @@
         "fiber_g": 2.5,
         "sugar_g": 1.2,
         "sodium_mg": 69.0
+      },
+      "portion_presets": {
+        "small_handful": {
+          "grams": 20,
+          "kcal": 113.4,
+          "protein_g": 5.2,
+          "carbs_g": 3.2,
+          "fat_g": 9.8,
+          "fiber_g": 1.7,
+          "sugar_g": 0.8,
+          "sodium_mg": 46.0
+        },
+        "regular_handful": {
+          "grams": 30,
+          "kcal": 170.1,
+          "protein_g": 7.7,
+          "carbs_g": 4.8,
+          "fat_g": 14.8,
+          "fiber_g": 2.5,
+          "sugar_g": 1.2,
+          "sodium_mg": 69.0
+        },
+        "large_handful": {
+          "grams": 50,
+          "kcal": 283.5,
+          "protein_g": 12.9,
+          "carbs_g": 8.1,
+          "fat_g": 24.6,
+          "fiber_g": 4.2,
+          "sugar_g": 2.0,
+          "sodium_mg": 115.0
+        }
+      }
+    },
+    "malai_kofta": {
+      "category": "curry",
+      "serving_label": "1 serving, vegetarian potato-paneer koftas in a creamy curry -- verified missing from the database (typical serving, not from a specific published recipe)",
+      "default_serving_g": 192.0,
+      "per_100g": {
+        "kcal": 184.34,
+        "protein_g": 5.07,
+        "carbs_g": 9.19,
+        "fat_g": 14.39,
+        "fiber_g": 0.9,
+        "sugar_g": 1.96,
+        "sodium_mg": 13.1
+      },
+      "default_serving": {
+        "kcal": 353.9,
+        "protein_g": 9.7,
+        "carbs_g": 17.6,
+        "fat_g": 27.6,
+        "fiber_g": 1.7,
+        "sugar_g": 3.8,
+        "sodium_mg": 25.2
+      }
+    },
+    "daal_makhani": {
+      "category": "daal_rice",
+      "serving_label": "1 bowl, rich butter-and-cream black lentil curry -- distinct from the lighter maash_ki_daal/kali_daal already in the database; verified missing (typical serving, not from a specific published recipe)",
+      "default_serving_g": 175.0,
+      "per_100g": {
+        "kcal": 193.71,
+        "protein_g": 4.92,
+        "carbs_g": 12.05,
+        "fat_g": 13.84,
+        "fiber_g": 3.76,
+        "sugar_g": 1.58,
+        "sodium_mg": 7.29
+      },
+      "default_serving": {
+        "kcal": 339.0,
+        "protein_g": 8.6,
+        "carbs_g": 21.1,
+        "fat_g": 24.2,
+        "fiber_g": 6.6,
+        "sugar_g": 2.8,
+        "sodium_mg": 12.8
+      }
+    },
+    "chicken_handi": {
+      "category": "curry",
+      "serving_label": "1 serving, restaurant-style creamy chicken curry -- richer than the existing chicken_karahi, verified missing (typical serving, not from a specific published recipe)",
+      "default_serving_g": 265.0,
+      "per_100g": {
+        "kcal": 233.21,
+        "protein_g": 15.38,
+        "carbs_g": 1.75,
+        "fat_g": 18.3,
+        "fiber_g": 0.28,
+        "sugar_g": 1.27,
+        "sodium_mg": 52.28
+      },
+      "default_serving": {
+        "kcal": 618.0,
+        "protein_g": 40.8,
+        "carbs_g": 4.6,
+        "fat_g": 48.5,
+        "fiber_g": 0.7,
+        "sugar_g": 3.4,
+        "sodium_mg": 138.5
+      }
+    },
+    "mutton_handi": {
+      "category": "curry",
+      "serving_label": "1 serving, restaurant-style creamy mutton curry -- richer than the existing mutton_karahi, verified missing (typical serving, not from a specific published recipe)",
+      "default_serving_g": 265.0,
+      "per_100g": {
+        "kcal": 238.87,
+        "protein_g": 14.81,
+        "carbs_g": 1.75,
+        "fat_g": 18.87,
+        "fiber_g": 0.28,
+        "sugar_g": 1.27,
+        "sodium_mg": 43.79
+      },
+      "default_serving": {
+        "kcal": 633.0,
+        "protein_g": 39.2,
+        "carbs_g": 4.6,
+        "fat_g": 50.0,
+        "fiber_g": 0.7,
+        "sugar_g": 3.4,
+        "sodium_mg": 116.0
       }
     }
   }
