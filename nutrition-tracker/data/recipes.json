@@ -26,27 +26,27 @@
   },
   "daal_chawal_masoor": {
     "category": "daal_rice",
-    "serving_label": "1 plate (daal + rice)",
+    "serving_label": "1 plate (daal + rice) — daal portion corrected to match real recipe serving math",
     "ingredients": {
-      "masoor_daal_cooked": 180, "rice_white_cooked": 150,
+      "masoor_daal_cooked": 55, "rice_white_cooked": 150,
       "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 8 },
       "onion_raw": 15
     }
   },
   "chana_daal": {
     "category": "daal_rice",
-    "serving_label": "1 bowl",
+    "serving_label": "1 plate, eaten with roti (portion corrected to match real recipe serving math, not a standalone bowl)",
     "ingredients": {
-      "chana_daal_cooked": 200,
+      "chana_daal_cooked": 65,
       "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 8 },
       "onion_raw": 15, "tomato_raw": 20
     }
   },
   "moong_daal": {
     "category": "daal_rice",
-    "serving_label": "1 bowl",
+    "serving_label": "1 plate, eaten with roti (portion corrected to match real recipe serving math, not a standalone bowl)",
     "ingredients": {
-      "moong_daal_cooked": 200,
+      "moong_daal_cooked": 55,
       "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 6 },
       "onion_raw": 15
     }

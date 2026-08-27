@@ -60,59 +60,59 @@
     },
     "daal_chawal_masoor": {
       "category": "daal_rice",
-      "serving_label": "1 plate (daal + rice)",
-      "default_serving_g": 353.0,
+      "serving_label": "1 plate (daal + rice) \u2014 daal portion corrected to match real recipe serving math",
+      "default_serving_g": 228.0,
       "per_100g": {
-        "kcal": 136.49,
-        "protein_g": 5.78,
-        "carbs_g": 22.49,
-        "fat_g": 2.6,
-        "fiber_g": 4.27
+        "kcal": 147.72,
+        "protein_g": 4.02,
+        "carbs_g": 23.86,
+        "fat_g": 3.81,
+        "fiber_g": 2.28
       },
       "default_serving": {
-        "kcal": 481.8,
-        "protein_g": 20.4,
-        "carbs_g": 79.4,
-        "fat_g": 9.2,
-        "fiber_g": 15.1
+        "kcal": 336.8,
+        "protein_g": 9.2,
+        "carbs_g": 54.4,
+        "fat_g": 8.7,
+        "fiber_g": 5.2
       }
     },
     "chana_daal": {
       "category": "daal_rice",
-      "serving_label": "1 bowl",
-      "default_serving_g": 243.0,
+      "serving_label": "1 plate, eaten with roti (portion corrected to match real recipe serving math, not a standalone bowl)",
+      "default_serving_g": 108.0,
       "per_100g": {
-        "kcal": 168.56,
-        "protein_g": 7.47,
-        "carbs_g": 23.45,
-        "fat_g": 5.45,
-        "fiber_g": 6.46
+        "kcal": 174.26,
+        "protein_g": 5.68,
+        "carbs_g": 18.5,
+        "fat_g": 9.02,
+        "fiber_g": 5.03
       },
       "default_serving": {
-        "kcal": 409.6,
-        "protein_g": 18.1,
-        "carbs_g": 57.0,
-        "fat_g": 13.3,
-        "fiber_g": 15.7
+        "kcal": 188.2,
+        "protein_g": 6.1,
+        "carbs_g": 20.0,
+        "fat_g": 9.7,
+        "fiber_g": 5.4
       }
     },
     "moong_daal": {
       "category": "daal_rice",
-      "serving_label": "1 bowl",
-      "default_serving_g": 221.0,
+      "serving_label": "1 plate, eaten with roti (portion corrected to match real recipe serving math, not a standalone bowl)",
+      "default_serving_g": 76.0,
       "per_100g": {
-        "kcal": 122.17,
-        "protein_g": 6.41,
-        "carbs_g": 17.83,
-        "fat_g": 3.08,
-        "fiber_g": 6.99
+        "kcal": 154.93,
+        "protein_g": 5.28,
+        "carbs_g": 15.59,
+        "fat_g": 8.2,
+        "fiber_g": 5.84
       },
       "default_serving": {
-        "kcal": 270.0,
-        "protein_g": 14.2,
-        "carbs_g": 39.4,
-        "fat_g": 6.8,
-        "fiber_g": 15.5
+        "kcal": 117.8,
+        "protein_g": 4.0,
+        "carbs_g": 11.8,
+        "fat_g": 6.2,
+        "fiber_g": 4.4
       }
     },
     "plain_rice": {
