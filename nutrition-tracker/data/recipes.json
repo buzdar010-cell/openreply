@@ -1362,5 +1362,106 @@
       "whey_protein_powder": 30,
       "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 240 }
     }
+  },
+
+  "boiled_chicken": {
+    "category": "grilled",
+    "serving_label": "1 serving (~150g), plain boiled chicken breast, minimal spices -- a common Pakistani diet staple, distinct in context from grilled_chicken_breast though nutritionally similar",
+    "ingredients": { "chicken_breast_cooked": 150 }
+  },
+  "daal_soup_diet": {
+    "category": "daal_rice",
+    "serving_label": "1 bowl, thin daal with no oil/tarka -- the diet version of daal described directly by the user",
+    "ingredients": { "masoor_daal_cooked": 40 }
+  },
+  "chicken_yakhni_soup": {
+    "category": "curry",
+    "serving_label": "1 bowl, clear chicken broth soup, no oil (typical serving, not from a specific published recipe)",
+    "ingredients": { "chicken_breast_cooked": 50, "onion_raw": 10 }
+  },
+  "tandoori_grilled_fish": {
+    "category": "grilled",
+    "serving_label": "1 fillet (~150g), tandoori-spiced, no oil (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "fish_fillet_cooked": 150,
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_low_fat", "grams": 10 }
+    }
+  },
+  "roasted_chana": {
+    "category": "snack",
+    "serving_label": "1 handful (~30g), dry-roasted chickpeas",
+    "ingredients": { "roasted_chana": 30 }
+  },
+
+  "desi_ghee_paratha": {
+    "category": "bread",
+    "serving_label": "1 paratha, extra-ghee weight-gain version (regular paratha uses 12g ghee; this uses more)",
+    "ingredients": {
+      "flour": { "role": "flour", "options": ["atta_whole_wheat_flour", "maida_refined_flour", "atta_multigrain"], "default": "atta_whole_wheat_flour", "grams": 45 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 25 }
+    }
+  },
+  "banana_nut_milk_shake": {
+    "category": "beverage",
+    "serving_label": "1 glass (~365ml), traditional Pakistani mass-gain shake -- banana, dates, milk, nuts, honey",
+    "ingredients": {
+      "banana_raw": 120, "dates_raw": 20,
+      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 200 },
+      "mixed_nuts_dry": 15, "honey": 10
+    }
+  },
+  "full_cream_nutty_lassi": {
+    "category": "beverage",
+    "serving_label": "1 glass (~260ml), mass-gain lassi with nuts",
+    "ingredients": {
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 200 },
+      "milk_whole": 30, "sugar": 20, "mixed_nuts_dry": 10
+    }
+  },
+
+  "egg_white_omelette": {
+    "category": "breakfast",
+    "serving_label": "1 omelette (~130g), diet version made with egg whites only",
+    "ingredients": {
+      "egg_white_cooked": 120, "onion_raw": 10,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 2 }
+    }
+  },
+  "grilled_chicken_veg_stirfry": {
+    "category": "fast_food",
+    "serving_label": "1 bowl, zero/minimal-oil chicken and vegetable stir-fry (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "chicken_breast_cooked": 120, "cabbage_raw": 40, "carrot_raw": 30,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 3 }
+    }
+  },
+  "protein_oats": {
+    "category": "breakfast",
+    "serving_label": "1 bowl, oats mixed with a scoop of whey protein",
+    "ingredients": {
+      "oats_dry": 40, "whey_protein_powder": 30,
+      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 100 }
+    }
+  },
+
+  "mass_gainer_shake": {
+    "category": "beverage",
+    "serving_label": "1 glass (~420ml), protein + peanut butter + banana + oats blended with milk",
+    "ingredients": {
+      "whey_protein_powder": 30, "peanut_butter": 20, "banana_raw": 100, "oats_dry": 20,
+      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 250 }
+    }
+  },
+  "trail_mix": {
+    "category": "snack",
+    "serving_label": "1 handful (~35g), nuts and dried fruit",
+    "ingredients": { "mixed_nuts_dry": 20, "raisins_dry": 15 }
+  },
+  "bulking_rice_bowl": {
+    "category": "rice_dish",
+    "serving_label": "1 bowl, rice with chicken, avocado, and a peanut butter drizzle -- a high-calorie balanced weight-gain meal",
+    "ingredients": {
+      "rice_white_cooked": 250, "chicken_breast_cooked": 120, "avocado_raw": 50, "peanut_butter": 10
+    }
   }
 }

@@ -1,6 +1,21 @@
-# Pakistani + common Western food database — v11
+# Pakistani + common Western food database — v12
 
-177 dishes: 161 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+191 dishes: 175 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+
+## v12: weight-loss / weight-gain variants — Pakistan-specific and global
+
+Research first: most Pakistani "diet foods" (daal, eggs, fish, chana, dahi, sabzi, grilled chicken, oats, whole wheat roti) were already in the database from earlier batches, so this batch is specific lighter-prep or higher-cal variants and a few genuinely new items, not a wholesale new category. 14 dishes:
+
+**Pakistan-specific weight loss (5):** `boiled_chicken`, `daal_soup_diet` (the thin, no-oil daal the user directly described when we fixed the daal portions earlier in this project), `chicken_yakhni_soup`, `tandoori_grilled_fish`, `roasted_chana`
+**Pakistan-specific weight gain (3):** `desi_ghee_paratha` (540 kcal/100g vs. regular paratha's 458 kcal/100g -- more than double the ghee, 25g vs. 12g), `banana_nut_milk_shake` (the traditional Pakistani mass-gain shake), `full_cream_nutty_lassi`
+**Global weight loss (3):** `egg_white_omelette`, `grilled_chicken_veg_stirfry` (zero/minimal oil), `protein_oats`
+**Global weight gain (3):** `mass_gainer_shake`, `trail_mix`, `bulking_rice_bowl`
+
+`boiled_chicken` is nutritionally near-identical to v11's `grilled_chicken_breast` (same base ingredient) -- kept as a separate entry because it's a distinct, commonly-searched term in Pakistani diet culture, not because the numbers differ.
+
+Same tier as v9/v10: typical realistic serving proportions, not from a specific published recipe. All 14 checked against real-world references for diet/bulking foods (a diet daal soup landing at just 46 kcal, a mass gainer shake at 557 kcal, trail mix's density matching real trail mix almost exactly at ~470 kcal/100g) and held up -- no corrections needed.
+
+Two new base ingredients: `honey`, `roasted_chana` (dry-roasted, distinct from the existing boiled `chickpeas_cooked`).
 
 ## v11: the universal baseline — foods with nothing to do with Pakistan or any region
 
@@ -121,8 +136,8 @@ All 14 originally-named "remaining recipes" are now built, across v5 and v6 (see
 
 ## Next steps (not done yet)
 
-- Regional variants (v7), chutneys/pickles/raita (v8), Ramadan foods (v9), milkshakes/drinks (v10), and the generic fitness-app baseline (v11) are done. That closes out the original roadmap's "normal stuff every app has" item.
-- **Weight-loss / weight-gain goal variants, both Pakistan-specific and global** (up next, per the user): lighter/"diet" and higher-calorie/bulking versions of dishes people actually eat when trying to lose or gain weight — e.g. grilled instead of fried, less oil/ghee, boiled chicken breast versions of curries, protein-added versions for weight gain, on both the Pakistani dish set and the v11 generic staples. Not scoped in detail yet.
+- Regional variants (v7), chutneys/pickles/raita (v8), Ramadan foods (v9), milkshakes/drinks (v10), the generic fitness-app baseline (v11), and weight-loss/weight-gain variants (v12) are all done. Every roadmap item the user laid out across this whole project is now built.
+- No further content phases currently queued -- next real milestone is wiring this database into the actual app (see below), or a new phase if the user identifies one.
 - Decide serving-size conventions with real user feedback once logging starts.
 - Turn `dishes.json` into D1 seed data once the app schema exists.
 
