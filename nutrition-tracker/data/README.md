@@ -1,6 +1,25 @@
-# Pakistani + common Western food database — v6
+# Pakistani + common Western food database — v7
 
-97 dishes: 81 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+118 dishes: 102 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+
+## v7: regional variants — Sindh, KPK/Pashtun belt, Balochistan, Kashmir/Gilgit-Baltistan
+
+Everything up to v6 was Punjab-leaning (most "generic Pakistani" home cooking is Punjabi). This batch adds 21 dishes distinct to the other regions, scoped and confirmed with the user first.
+
+**5 sourced from real recipes with real quantities** (grams ÷ stated servings, same methodology as every prior batch):
+- `sindhi_biryani` (Fauzia's Kitchen Fun, 8 servings), `sai_bhaji` (Archana's Kitchen, 4 servings), `sindhi_kadhi` (Whiskaffair, 6 servings) — Sindh
+- `kabuli_pulao` (The Foreign Fork, 6 servings) — KPK/Pashtun belt
+- `kashmiri_pulao` (Veg Recipes of India, 3 servings) — Kashmir
+
+**16 built by analogy to an already-sourced dish**, not independently sourced — each one's `serving_label` says so explicitly and names which dish it's modeled on: `koki`, `palla_machi`, `took_aloo` (Sindh); `peshawari_naan`, `charsi_tikka`, `peshawari_kahwa`, `kachalo`, `peshawari_falooda` (KPK); `sajji`, `balochi_rosh`, `kaak`, `dampukht` (Balochistan); `mamtu`, `thukpa`, `ghoshtaba`, `kashmiri_chai` (Kashmir/Gilgit-Baltistan). This is a lower-confidence tier than the sourced dishes, same as `aloo_chicken`/`arvi_gosht`/`lauki_gosht` in v3 — real, commonly-eaten dishes, but ratios estimated rather than measured from a published recipe.
+
+Two things skipped rather than forced: Khaddi Kebab and Landhi (Balochistan) don't translate to a loggable single-serving dish — one is a whole lamb roasted in a trench, the other is preserved dried meat. Prapu and Chapshoro (Gilgit-Baltistan) were skipped for lack of any reliable nutrition reference for their apricot-oil/walnut-paste bases.
+
+**Two corrections made during the audit pass**, same discipline as every prior batch — flagged and fixed, not silently accepted:
+- `sindhi_biryani` initially computed to 870 kcal for a 572g "plate" — the source recipe (5 cups rice, 1kg meat, 4 potatoes ÷ 8) is sized for a family gathering, and dividing straight through produced an oversized single serving next to every other biryani/pulao in the database. Scaled down ~0.66x to 575 kcal / 379g, matching chicken_biryani (653/340g) and yakhni_pulao (600/374g).
+- `mamtu`: "4 dumplings" at 100g total worked out to 25g/dumpling, too small for a real steamed dumpling. Rescaled to ~40g/dumpling (425 kcal/160g total).
+
+Five new base ingredients: `dried_plums_prunes` (aloo bukhara, Sindhi biryani), `green_beans_cooked` (sai bhaji), `mixed_nuts_dry` (generic almond/cashew/walnut average — used across pulaos and naan garnish rather than adding a separate ingredient per nut type), `raisins_dry`, `coconut_desiccated` (Peshawari naan filling).
 
 ## v6: the original 14 "remaining recipes" list is now fully cleared
 
@@ -58,7 +77,7 @@ All 14 originally-named "remaining recipes" are now built, across v5 and v6 (see
 
 ## Next steps (not done yet)
 
-- Regional variants (Sindh, Pashtun-belt and other regional dishes), chutneys/pickles (achaar), traditional Ramadan/fasting foods, and expanded Western fast food — per the agreed roadmap, in that order.
+- Regional variants are done (v7). Next per the agreed roadmap: chutneys/pickles (achaar), traditional Ramadan/fasting foods, and expanded Western fast food, in that order.
 - **Weight-loss / weight-gain goal variants** (added to the roadmap by the user, not built yet): lighter/"diet" and higher-calorie/bulking versions of dishes people actually cook when trying to lose or gain weight — e.g. grilled instead of fried, less oil/ghee, boiled chicken breast versions of curries, protein-added versions for weight gain. Comes after the phases above; not scoped in detail yet.
 - Decide serving-size conventions with real user feedback once logging starts.
 - Turn `dishes.json` into D1 seed data once the app schema exists.

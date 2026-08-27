@@ -75,5 +75,11 @@
 
   "kidney_beans_cooked": { "kcal": 127, "protein_g": 8.7, "carbs_g": 22.8, "fat_g": 0.5, "fiber_g": 6.4, "note": "rajma, boiled/cooked" },
   "cracked_wheat_dry": { "kcal": 342, "protein_g": 12.3, "carbs_g": 75.9, "fat_g": 1.3, "fiber_g": 12.5, "note": "dalia/bulgur, raw dry weight before cooking in milk or water" },
-  "prawns_cooked": { "kcal": 99, "protein_g": 24.0, "carbs_g": 0.2, "fat_g": 0.3, "fiber_g": 0.0, "note": "shrimp/prawns, peeled, cooked" }
+  "prawns_cooked": { "kcal": 99, "protein_g": 24.0, "carbs_g": 0.2, "fat_g": 0.3, "fiber_g": 0.0, "note": "shrimp/prawns, peeled, cooked" },
+
+  "dried_plums_prunes": { "kcal": 240, "protein_g": 2.2, "carbs_g": 63.9, "fat_g": 0.4, "fiber_g": 7.1, "note": "aloo bukhara, used in Sindhi biryani" },
+  "green_beans_cooked": { "kcal": 35, "protein_g": 1.9, "carbs_g": 7.9, "fat_g": 0.2, "fiber_g": 3.2 },
+  "mixed_nuts_dry": { "kcal": 600, "protein_g": 18.0, "carbs_g": 20.0, "fat_g": 52.0, "fiber_g": 8.0, "note": "generic almond/cashew/walnut average, used for pulao and naan garnish where the exact nut mix varies" },
+  "raisins_dry": { "kcal": 299, "protein_g": 3.1, "carbs_g": 79.2, "fat_g": 0.5, "fiber_g": 3.7 },
+  "coconut_desiccated": { "kcal": 660, "protein_g": 6.9, "carbs_g": 23.7, "fat_g": 64.5, "fiber_g": 16.0 }
 }

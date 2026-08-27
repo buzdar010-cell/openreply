@@ -1895,6 +1895,431 @@
         "fat_g": 18.9,
         "fiber_g": 1.8
       }
+    },
+    "sindhi_biryani": {
+      "category": "rice_dish",
+      "serving_label": "1 plate, tangy potato-and-prune biryani (sourced: Fauzia's Kitchen Fun, 8 servings; portion scaled down ~0.66x from the literal recipe/8 math, which implied a 572g plate \u2014 a family-style-batch artifact, not a real single serving; scaled to match this database's other biryani/pulao plate sizes)",
+      "default_serving_g": 379.0,
+      "per_100g": {
+        "kcal": 151.67,
+        "protein_g": 5.85,
+        "carbs_g": 19.04,
+        "fat_g": 5.68,
+        "fiber_g": 0.68
+      },
+      "default_serving": {
+        "kcal": 574.8,
+        "protein_g": 22.2,
+        "carbs_g": 72.1,
+        "fat_g": 21.5,
+        "fiber_g": 2.6
+      }
+    },
+    "sai_bhaji": {
+      "category": "vegetable",
+      "serving_label": "1 bowl, Sindhi spinach-lentil-vegetable curry (sourced: Archana's Kitchen, 4 servings)",
+      "default_serving_g": 197.0,
+      "per_100g": {
+        "kcal": 105.19,
+        "protein_g": 2.98,
+        "carbs_g": 10.23,
+        "fat_g": 6.25,
+        "fiber_g": 2.99
+      },
+      "default_serving": {
+        "kcal": 207.2,
+        "protein_g": 5.9,
+        "carbs_g": 20.2,
+        "fat_g": 12.3,
+        "fiber_g": 5.9
+      }
+    },
+    "sindhi_kadhi": {
+      "category": "curry",
+      "serving_label": "1 bowl, tangy besan-vegetable curry, no yogurt (sourced: Whiskaffair, 6 servings)",
+      "default_serving_g": 89.0,
+      "per_100g": {
+        "kcal": 213.71,
+        "protein_g": 3.42,
+        "carbs_g": 13.75,
+        "fat_g": 16.61,
+        "fiber_g": 2.83
+      },
+      "default_serving": {
+        "kcal": 190.2,
+        "protein_g": 3.0,
+        "carbs_g": 12.2,
+        "fat_g": 14.8,
+        "fiber_g": 2.5
+      }
+    },
+    "koki": {
+      "category": "bread",
+      "serving_label": "1 koki, thick spiced Sindhi flatbread with onion (built by analogy to roti/paratha \u2014 not independently sourced)",
+      "default_serving_g": 75.0,
+      "per_100g": {
+        "kcal": 392.0,
+        "protein_g": 7.42,
+        "carbs_g": 45.06,
+        "fat_g": 21.22,
+        "fiber_g": 6.94
+      },
+      "default_serving": {
+        "kcal": 294.0,
+        "protein_g": 5.6,
+        "carbs_g": 33.8,
+        "fat_g": 15.9,
+        "fiber_g": 5.2
+      }
+    },
+    "palla_machi": {
+      "category": "curry",
+      "serving_label": "1 serving, Sindhi fish curry (built by analogy to chicken_curry using generic fish fillet \u2014 real Palla/Hilsa isn't in our ingredient set; not independently sourced)",
+      "default_serving_g": 212.0,
+      "per_100g": {
+        "kcal": 153.6,
+        "protein_g": 14.0,
+        "carbs_g": 1.98,
+        "fat_g": 9.61,
+        "fiber_g": 0.37
+      },
+      "default_serving": {
+        "kcal": 325.6,
+        "protein_g": 29.7,
+        "carbs_g": 4.2,
+        "fat_g": 20.4,
+        "fiber_g": 0.8
+      }
+    },
+    "took_aloo": {
+      "category": "vegetable",
+      "serving_label": "1 bowl, thin-fried Sindhi potatoes (built by analogy to aloo_sabzi \u2014 not independently sourced)",
+      "default_serving_g": 175.0,
+      "per_100g": {
+        "kcal": 152.63,
+        "protein_g": 1.69,
+        "carbs_g": 17.76,
+        "fat_g": 8.66,
+        "fiber_g": 1.64
+      },
+      "default_serving": {
+        "kcal": 267.1,
+        "protein_g": 3.0,
+        "carbs_g": 31.1,
+        "fat_g": 15.2,
+        "fiber_g": 2.9
+      }
+    },
+    "kabuli_pulao": {
+      "category": "rice_dish",
+      "serving_label": "1 plate, lamb pulao with carrots and raisins (sourced: The Foreign Fork, 6 servings)",
+      "default_serving_g": 288.0,
+      "per_100g": {
+        "kcal": 210.43,
+        "protein_g": 7.32,
+        "carbs_g": 23.1,
+        "fat_g": 9.77,
+        "fiber_g": 0.9
+      },
+      "default_serving": {
+        "kcal": 606.0,
+        "protein_g": 21.1,
+        "carbs_g": 66.5,
+        "fat_g": 28.1,
+        "fiber_g": 2.6
+      }
+    },
+    "peshawari_naan": {
+      "category": "bread",
+      "serving_label": "1 naan, stuffed with coconut/almond/raisin filling (filling ratios estimated from typical recipes \u2014 exact source quantities not found, not independently sourced)",
+      "default_serving_g": 85.0,
+      "per_100g": {
+        "kcal": 436.81,
+        "protein_g": 8.61,
+        "carbs_g": 64.29,
+        "fat_g": 16.31,
+        "fiber_g": 4.08
+      },
+      "default_serving": {
+        "kcal": 371.3,
+        "protein_g": 7.3,
+        "carbs_g": 54.6,
+        "fat_g": 13.9,
+        "fiber_g": 3.5
+      }
+    },
+    "charsi_tikka": {
+      "category": "grilled",
+      "serving_label": "2 pieces, Peshawari-style grilled mutton (built by analogy to chicken_tikka/chapli_kebab \u2014 not independently sourced)",
+      "default_serving_g": 175.0,
+      "per_100g": {
+        "kcal": 278.6,
+        "protein_g": 21.73,
+        "carbs_g": 0.4,
+        "fat_g": 20.57,
+        "fiber_g": 0.0
+      },
+      "default_serving": {
+        "kcal": 487.5,
+        "protein_g": 38.0,
+        "carbs_g": 0.7,
+        "fat_g": 36.0,
+        "fiber_g": 0.0
+      }
+    },
+    "peshawari_kahwa": {
+      "category": "beverage",
+      "serving_label": "1 cup (~150ml), green tea with cardamom and almonds (built by analogy to chai_regular \u2014 tea itself is ~0 kcal; not independently sourced)",
+      "default_serving_g": 11.0,
+      "per_100g": {
+        "kcal": 445.09,
+        "protein_g": 4.91,
+        "carbs_g": 78.18,
+        "fat_g": 14.18,
+        "fiber_g": 2.18
+      },
+      "default_serving": {
+        "kcal": 49.0,
+        "protein_g": 0.5,
+        "carbs_g": 8.6,
+        "fat_g": 1.6,
+        "fiber_g": 0.2
+      }
+    },
+    "kachalo": {
+      "category": "snack",
+      "serving_label": "1 bowl, boiled taro chaat with tamarind-yogurt (built by analogy to chana_chaat \u2014 not independently sourced)",
+      "default_serving_g": 173.0,
+      "per_100g": {
+        "kcal": 110.87,
+        "protein_g": 1.71,
+        "carbs_g": 25.25,
+        "fat_g": 0.47,
+        "fiber_g": 3.55
+      },
+      "default_serving": {
+        "kcal": 191.8,
+        "protein_g": 3.0,
+        "carbs_g": 43.7,
+        "fat_g": 0.8,
+        "fiber_g": 6.1
+      }
+    },
+    "peshawari_falooda": {
+      "category": "dessert",
+      "serving_label": "1 glass, rose milk with vermicelli and cream (no ice cream ingredient modeled \u2014 approximated with cream; not independently sourced)",
+      "default_serving_g": 210.0,
+      "per_100g": {
+        "kcal": 146.62,
+        "protein_g": 3.06,
+        "carbs_g": 16.95,
+        "fat_g": 7.43,
+        "fiber_g": 0.14
+      },
+      "default_serving": {
+        "kcal": 307.9,
+        "protein_g": 6.4,
+        "carbs_g": 35.6,
+        "fat_g": 15.6,
+        "fiber_g": 0.3
+      }
+    },
+    "sajji": {
+      "category": "grilled",
+      "serving_label": "1 quarter, whole roasted chicken with Balochi spice marinade (built by analogy to chicken_roast/chicken_chargha \u2014 not independently sourced)",
+      "default_serving_g": 113.0,
+      "per_100g": {
+        "kcal": 227.06,
+        "protein_g": 25.47,
+        "carbs_g": 0.33,
+        "fat_g": 13.33,
+        "fiber_g": 0.0
+      },
+      "default_serving": {
+        "kcal": 256.6,
+        "protein_g": 28.8,
+        "carbs_g": 0.4,
+        "fat_g": 15.1,
+        "fiber_g": 0.0
+      },
+      "portion_presets": {
+        "quarter": {
+          "grams": 190,
+          "kcal": 431.4,
+          "protein_g": 48.4,
+          "carbs_g": 0.6,
+          "fat_g": 25.3,
+          "fiber_g": 0.0
+        },
+        "half": {
+          "grams": 375,
+          "kcal": 851.5,
+          "protein_g": 95.5,
+          "carbs_g": 1.2,
+          "fat_g": 50.0,
+          "fiber_g": 0.0
+        },
+        "full": {
+          "grams": 750,
+          "kcal": 1703.0,
+          "protein_g": 191.0,
+          "carbs_g": 2.5,
+          "fat_g": 100.0,
+          "fiber_g": 0.0
+        }
+      }
+    },
+    "balochi_rosh": {
+      "category": "curry",
+      "serving_label": "1 bowl, minimally-spiced Balochi lamb curry (built by analogy to mutton_karahi, lighter on spices/oil \u2014 not independently sourced)",
+      "default_serving_g": 170.0,
+      "per_100g": {
+        "kcal": 283.76,
+        "protein_g": 22.12,
+        "carbs_g": 0.55,
+        "fat_g": 20.89,
+        "fiber_g": 0.1
+      },
+      "default_serving": {
+        "kcal": 482.4,
+        "protein_g": 37.6,
+        "carbs_g": 0.9,
+        "fat_g": 35.5,
+        "fiber_g": 0.2
+      }
+    },
+    "kaak": {
+      "category": "bread",
+      "serving_label": "1 piece, hard trench-baked Balochi bread (built by analogy to roti/naan \u2014 not independently sourced)",
+      "default_serving_g": 53.0,
+      "per_100g": {
+        "kcal": 370.79,
+        "protein_g": 11.32,
+        "carbs_g": 67.92,
+        "fat_g": 7.55,
+        "fiber_g": 10.38
+      },
+      "default_serving": {
+        "kcal": 196.5,
+        "protein_g": 6.0,
+        "carbs_g": 36.0,
+        "fat_g": 4.0,
+        "fiber_g": 5.5
+      }
+    },
+    "dampukht": {
+      "category": "curry",
+      "serving_label": "1 serving, slow-cooked Balochi meat curry (built by analogy to mutton_korma \u2014 not independently sourced)",
+      "default_serving_g": 197.0,
+      "per_100g": {
+        "kcal": 261.06,
+        "protein_g": 19.47,
+        "carbs_g": 1.19,
+        "fat_g": 19.38,
+        "fiber_g": 0.13
+      },
+      "default_serving": {
+        "kcal": 514.3,
+        "protein_g": 38.4,
+        "carbs_g": 2.3,
+        "fat_g": 38.2,
+        "fiber_g": 0.3
+      }
+    },
+    "mamtu": {
+      "category": "snack",
+      "serving_label": "4 dumplings, steamed meat-filled dumplings from Gilgit-Baltistan (built by analogy to samosa/shami_kebab, no frying oil since steamed \u2014 portions sized to ~40g/dumpling, a realistic steamed-dumpling weight; not independently sourced)",
+      "default_serving_g": 160.0,
+      "per_100g": {
+        "kcal": 265.6,
+        "protein_g": 17.51,
+        "carbs_g": 23.73,
+        "fat_g": 10.51,
+        "fiber_g": 0.98
+      },
+      "default_serving": {
+        "kcal": 425.0,
+        "protein_g": 28.0,
+        "carbs_g": 38.0,
+        "fat_g": 16.8,
+        "fiber_g": 1.6
+      }
+    },
+    "thukpa": {
+      "category": "fast_food",
+      "serving_label": "1 bowl, noodle soup (built by analogy to chicken_chowmein, lighter on oil since it's a soup \u2014 not independently sourced)",
+      "default_serving_g": 236.0,
+      "per_100g": {
+        "kcal": 154.25,
+        "protein_g": 10.85,
+        "carbs_g": 16.38,
+        "fat_g": 4.8,
+        "fiber_g": 0.97
+      },
+      "default_serving": {
+        "kcal": 364.0,
+        "protein_g": 25.6,
+        "carbs_g": 38.7,
+        "fat_g": 11.3,
+        "fiber_g": 2.3
+      }
+    },
+    "ghoshtaba": {
+      "category": "curry",
+      "serving_label": "1 serving, Kashmiri pounded-mutton meatballs in yogurt gravy (built by analogy to beef_kofta_curry, using mince as a stand-in for pounded mutton \u2014 not independently sourced)",
+      "default_serving_g": 172.0,
+      "per_100g": {
+        "kcal": 254.19,
+        "protein_g": 17.56,
+        "carbs_g": 1.09,
+        "fat_g": 19.6,
+        "fiber_g": 0.0
+      },
+      "default_serving": {
+        "kcal": 437.2,
+        "protein_g": 30.2,
+        "carbs_g": 1.9,
+        "fat_g": 33.7,
+        "fiber_g": 0.0
+      }
+    },
+    "kashmiri_pulao": {
+      "category": "rice_dish",
+      "serving_label": "1 plate, sweet-savory rice with nuts (sourced: Veg Recipes of India, 3 servings)",
+      "default_serving_g": 210.0,
+      "per_100g": {
+        "kcal": 231.05,
+        "protein_g": 3.32,
+        "carbs_g": 23.15,
+        "fat_g": 13.7,
+        "fiber_g": 0.97
+      },
+      "default_serving": {
+        "kcal": 485.2,
+        "protein_g": 7.0,
+        "carbs_g": 48.6,
+        "fat_g": 28.8,
+        "fiber_g": 2.0
+      }
+    },
+    "kashmiri_chai": {
+      "category": "beverage",
+      "serving_label": "1 cup (~200ml), Kashmiri pink tea with pistachio garnish (built by analogy to chai_regular \u2014 not independently sourced)",
+      "default_serving_g": 108.0,
+      "per_100g": {
+        "kcal": 91.06,
+        "protein_g": 3.46,
+        "carbs_g": 9.63,
+        "fat_g": 4.5,
+        "fiber_g": 0.22
+      },
+      "default_serving": {
+        "kcal": 98.3,
+        "protein_g": 3.7,
+        "carbs_g": 10.4,
+        "fat_g": 4.9,
+        "fiber_g": 0.2
+      }
     }
   }
 }

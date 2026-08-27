@@ -780,5 +780,192 @@
       "rice_white_cooked": 198, "prawns_cooked": 64, "onion_raw": 25, "tomato_raw": 50,
       "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 18 }
     }
+  },
+
+  "sindhi_biryani": {
+    "category": "rice_dish",
+    "serving_label": "1 plate, tangy potato-and-prune biryani (sourced: Fauzia's Kitchen Fun, 8 servings; portion scaled down ~0.66x from the literal recipe/8 math, which implied a 572g plate — a family-style-batch artifact, not a real single serving; scaled to match this database's other biryani/pulao plate sizes)",
+    "ingredients": {
+      "rice_white_cooked": 197,
+      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_thigh_skin_cooked", "grams": 56 },
+      "potato_cooked": 50, "tomato_raw": 33, "dried_plums_prunes": 7,
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 25 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 11 }
+    }
+  },
+  "sai_bhaji": {
+    "category": "vegetable",
+    "serving_label": "1 bowl, Sindhi spinach-lentil-vegetable curry (sourced: Archana's Kitchen, 4 servings)",
+    "ingredients": {
+      "spinach_cooked": 35, "methi_leaves_cooked": 5, "chana_daal_cooked": 40,
+      "carrot_cooked": 10, "bottle_gourd_cooked": 12, "green_beans_cooked": 9,
+      "onion_raw": 50, "tomato_raw": 25,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 11 }
+    }
+  },
+  "sindhi_kadhi": {
+    "category": "curry",
+    "serving_label": "1 bowl, tangy besan-vegetable curry, no yogurt (sourced: Whiskaffair, 6 servings)",
+    "ingredients": {
+      "potato_cooked": 15, "carrot_cooked": 7, "okra_cooked": 13, "eggplant_cooked": 15,
+      "besan_gram_flour": 10, "tomato_raw": 15,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 14 }
+    }
+  },
+  "koki": {
+    "category": "bread",
+    "serving_label": "1 koki, thick spiced Sindhi flatbread with onion (built by analogy to roti/paratha — not independently sourced)",
+    "ingredients": {
+      "flour": { "role": "flour", "options": ["atta_whole_wheat_flour", "maida_refined_flour", "atta_multigrain"], "default": "atta_whole_wheat_flour", "grams": 45 },
+      "onion_raw": 15,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 15 }
+    }
+  },
+  "palla_machi": {
+    "category": "curry",
+    "serving_label": "1 serving, Sindhi fish curry (built by analogy to chicken_curry using generic fish fillet — real Palla/Hilsa isn't in our ingredient set; not independently sourced)",
+    "ingredients": {
+      "fish_fillet_cooked": 130, "onion_raw": 25, "tomato_raw": 30,
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 15 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 }
+    }
+  },
+  "took_aloo": {
+    "category": "vegetable",
+    "serving_label": "1 bowl, thin-fried Sindhi potatoes (built by analogy to aloo_sabzi — not independently sourced)",
+    "ingredients": {
+      "potato_cooked": 150, "onion_raw": 10,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 15 }
+    }
+  },
+
+  "kabuli_pulao": {
+    "category": "rice_dish",
+    "serving_label": "1 plate, lamb pulao with carrots and raisins (sourced: The Foreign Fork, 6 servings)",
+    "ingredients": {
+      "rice_white_cooked": 167, "mutton_curry_cut_cooked": 58, "carrot_cooked": 21,
+      "raisins_dry": 21, "mixed_nuts_dry": 7,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 14 }
+    }
+  },
+  "peshawari_naan": {
+    "category": "bread",
+    "serving_label": "1 naan, stuffed with coconut/almond/raisin filling (filling ratios estimated from typical recipes — exact source quantities not found, not independently sourced)",
+    "ingredients": {
+      "flour": { "role": "flour", "options": ["atta_whole_wheat_flour", "maida_refined_flour", "atta_multigrain"], "default": "maida_refined_flour", "grams": 55 },
+      "coconut_desiccated": 8, "mixed_nuts_dry": 6, "raisins_dry": 6, "sugar": 5,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 5 }
+    }
+  },
+  "charsi_tikka": {
+    "category": "grilled",
+    "serving_label": "2 pieces, Peshawari-style grilled mutton (built by analogy to chicken_tikka/chapli_kebab — not independently sourced)",
+    "ingredients": {
+      "mutton_curry_cut_cooked": 150,
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 15 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 10 }
+    }
+  },
+  "peshawari_kahwa": {
+    "category": "beverage",
+    "serving_label": "1 cup (~150ml), green tea with cardamom and almonds (built by analogy to chai_regular — tea itself is ~0 kcal; not independently sourced)",
+    "ingredients": { "sugar": 8, "mixed_nuts_dry": 3 }
+  },
+  "kachalo": {
+    "category": "snack",
+    "serving_label": "1 bowl, boiled taro chaat with tamarind-yogurt (built by analogy to chana_chaat — not independently sourced)",
+    "ingredients": {
+      "taro_cooked": 150,
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 20 },
+      "sugar": 3
+    }
+  },
+  "peshawari_falooda": {
+    "category": "dessert",
+    "serving_label": "1 glass, rose milk with vermicelli and cream (no ice cream ingredient modeled — approximated with cream; not independently sourced)",
+    "ingredients": {
+      "vermicelli_dry": 10,
+      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 150 },
+      "sugar": 20, "cream_fresh": 30
+    }
+  },
+
+  "sajji": {
+    "category": "grilled",
+    "serving_label": "1 quarter, whole roasted chicken with Balochi spice marinade (built by analogy to chicken_roast/chicken_chargha — not independently sourced)",
+    "portion_presets": { "quarter": 190, "half": 375, "full": 750 },
+    "ingredients": {
+      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "blend": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "grams": 100 },
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 8 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+    }
+  },
+  "balochi_rosh": {
+    "category": "curry",
+    "serving_label": "1 bowl, minimally-spiced Balochi lamb curry (built by analogy to mutton_karahi, lighter on spices/oil — not independently sourced)",
+    "ingredients": {
+      "mutton_curry_cut_cooked": 150, "onion_raw": 10,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 10 }
+    }
+  },
+  "kaak": {
+    "category": "bread",
+    "serving_label": "1 piece, hard trench-baked Balochi bread (built by analogy to roti/naan — not independently sourced)",
+    "ingredients": {
+      "flour": { "role": "flour", "options": ["atta_whole_wheat_flour", "maida_refined_flour", "atta_multigrain"], "default": "atta_whole_wheat_flour", "grams": 50 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 3 }
+    }
+  },
+  "dampukht": {
+    "category": "curry",
+    "serving_label": "1 serving, slow-cooked Balochi meat curry (built by analogy to mutton_korma — not independently sourced)",
+    "ingredients": {
+      "mutton_curry_cut_cooked": 150, "onion_raw": 15,
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 20 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 }
+    }
+  },
+
+  "mamtu": {
+    "category": "snack",
+    "serving_label": "4 dumplings, steamed meat-filled dumplings from Gilgit-Baltistan (built by analogy to samosa/shami_kebab, no frying oil since steamed — portions sized to ~40g/dumpling, a realistic steamed-dumpling weight; not independently sourced)",
+    "ingredients": {
+      "beef_mince_keema_cooked": 96, "maida_refined_flour": 48, "onion_raw": 16
+    }
+  },
+  "thukpa": {
+    "category": "fast_food",
+    "serving_label": "1 bowl, noodle soup (built by analogy to chicken_chowmein, lighter on oil since it's a soup — not independently sourced)",
+    "ingredients": {
+      "noodles_cooked": 150,
+      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_breast_cooked", "grams": 60 },
+      "cabbage_raw": 20,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 }
+    }
+  },
+  "ghoshtaba": {
+    "category": "curry",
+    "serving_label": "1 serving, Kashmiri pounded-mutton meatballs in yogurt gravy (built by analogy to beef_kofta_curry, using mince as a stand-in for pounded mutton — not independently sourced)",
+    "ingredients": {
+      "beef_mince_keema_cooked": 120,
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 40 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 12 }
+    }
+  },
+  "kashmiri_pulao": {
+    "category": "rice_dish",
+    "serving_label": "1 plate, sweet-savory rice with nuts (sourced: Veg Recipes of India, 3 servings)",
+    "ingredients": {
+      "rice_white_cooked": 158, "mixed_nuts_dry": 14, "onion_raw": 17,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 21 }
+    }
+  },
+  "kashmiri_chai": {
+    "category": "beverage",
+    "serving_label": "1 cup (~200ml), Kashmiri pink tea with pistachio garnish (built by analogy to chai_regular — not independently sourced)",
+    "ingredients": {
+      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 100 },
+      "sugar": 5, "mixed_nuts_dry": 3
+    }
   }
 }
