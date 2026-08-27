@@ -123,5 +123,12 @@
   "whey_protein_powder": { "kcal": 400, "protein_g": 80.0, "carbs_g": 10.0, "fat_g": 5.0, "fiber_g": 1.0 },
 
   "honey": { "kcal": 304, "protein_g": 0.3, "carbs_g": 82.4, "fat_g": 0.0, "fiber_g": 0.2 },
-  "roasted_chana": { "kcal": 364, "protein_g": 19.3, "carbs_g": 61.0, "fat_g": 6.0, "fiber_g": 17.0, "note": "dry-roasted chickpeas, distinct from boiled chickpeas_cooked" }
+  "roasted_chana": { "kcal": 364, "protein_g": 19.3, "carbs_g": 61.0, "fat_g": 6.0, "fiber_g": 17.0, "note": "dry-roasted chickpeas, distinct from boiled chickpeas_cooked" },
+
+  "pepperoni": { "kcal": 494, "protein_g": 23.0, "carbs_g": 1.9, "fat_g": 44.0, "fiber_g": 0.0 },
+  "chicken_wing_cooked": { "kcal": 203, "protein_g": 30.5, "carbs_g": 0.0, "fat_g": 8.1, "fiber_g": 0.0, "note": "roasted/baked, meat and skin" },
+  "hot_dog_sausage": { "kcal": 290, "protein_g": 10.4, "carbs_g": 4.2, "fat_g": 26.0, "fiber_g": 0.0 },
+  "tortilla_chips": { "kcal": 489, "protein_g": 7.0, "carbs_g": 63.0, "fat_g": 25.0, "fiber_g": 4.5 },
+  "mozzarella_stick_breaded_fried": { "kcal": 306, "protein_g": 15.0, "carbs_g": 20.0, "fat_g": 19.0, "fiber_g": 1.0 },
+  "veggie_patty": { "kcal": 180, "protein_g": 9.0, "carbs_g": 18.0, "fat_g": 8.0, "fiber_g": 5.0, "note": "bean/vegetable-based burger patty" }
 }

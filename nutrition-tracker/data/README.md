@@ -1,6 +1,21 @@
-# Pakistani + common Western food database — v12
+# Pakistani + common Western food database — v13
 
-191 dishes: 175 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+210 dishes: 194 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+
+## v13: expanded fast food — burgers, pizza, pasta, fries, sandwiches, wings
+
+The `fast_food` category was thin going into this batch: one burger (the fried `zinger_burger`), one pizza topping (cheese), one pasta (white sauce), plain fries only. 19 new dishes fill it out:
+
+**Burgers (4):** `beef_burger`, `cheeseburger`, `grilled_chicken_burger` (distinct from the existing fried zinger), `veggie_burger`
+**Pizza (3):** `pepperoni_pizza_slice`, `chicken_tikka_pizza_slice` (one of the most popular toppings in Pakistan specifically, not just a Western import), `vegetable_pizza_slice`
+**Pasta (2):** `red_sauce_pasta` (distinct from the existing `white_sauce_pasta`), `mac_and_cheese`
+**Fries (2):** `loaded_fries` (distinct from plain `french_fries`), `onion_rings`
+**Sandwiches (3):** `grilled_chicken_sandwich`, `club_sandwich`, `fried_chicken_sandwich`
+**Wings & other (5):** `chicken_wings`, `chicken_nuggets`, `hot_dog`, `nachos`, `mozzarella_sticks`
+
+Same tier as v9-v12: typical realistic serving proportions, not converted from a specific published recipe. All 19 checked against real-world fast-food calorie ranges and held up -- the cheeseburger, fried chicken sandwich, chicken wings, and mac and cheese all landed within normal real-world ranges for those exact items. No corrections needed.
+
+Six new base ingredients: `pepperoni`, `chicken_wing_cooked` (distinct from breast/thigh -- higher skin/fat ratio), `hot_dog_sausage`, `tortilla_chips`, `mozzarella_stick_breaded_fried`, `veggie_patty`. Reused existing ingredients where they already fit: `beef_mince_keema_cooked` for burger/loaded-fries patties, `chicken_breaded_fried` for nuggets, `whole_wheat_bread` (from v11) for sandwiches.
 
 ## v12: weight-loss / weight-gain variants — Pakistan-specific and global
 
@@ -136,7 +151,7 @@ All 14 originally-named "remaining recipes" are now built, across v5 and v6 (see
 
 ## Next steps (not done yet)
 
-- Regional variants (v7), chutneys/pickles/raita (v8), Ramadan foods (v9), milkshakes/drinks (v10), the generic fitness-app baseline (v11), and weight-loss/weight-gain variants (v12) are all done. Every roadmap item the user laid out across this whole project is now built.
+- Regional variants (v7), chutneys/pickles/raita (v8), Ramadan foods (v9), milkshakes/drinks (v10), the generic fitness-app baseline (v11), weight-loss/weight-gain variants (v12), and expanded fast food (v13) are all done. Every roadmap item laid out across this whole project is now built.
 - No further content phases currently queued -- next real milestone is wiring this database into the actual app (see below), or a new phase if the user identifies one.
 - Decide serving-size conventions with real user feedback once logging starts.
 - Turn `dishes.json` into D1 seed data once the app schema exists.

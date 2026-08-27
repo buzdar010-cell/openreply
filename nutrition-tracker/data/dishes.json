@@ -3707,6 +3707,367 @@
         "fat_g": 17.4,
         "fiber_g": 4.9
       }
+    },
+    "beef_burger": {
+      "category": "fast_food",
+      "serving_label": "1 burger, plain beef patty (typical serving, not from a specific published recipe)",
+      "default_serving_g": 205.0,
+      "per_100g": {
+        "kcal": 251.71,
+        "protein_g": 15.32,
+        "carbs_g": 19.77,
+        "fat_g": 12.11,
+        "fiber_g": 1.12
+      },
+      "default_serving": {
+        "kcal": 516.0,
+        "protein_g": 31.4,
+        "carbs_g": 40.5,
+        "fat_g": 24.8,
+        "fiber_g": 2.3
+      }
+    },
+    "cheeseburger": {
+      "category": "fast_food",
+      "serving_label": "1 burger, beef patty with cheese (typical serving, not from a specific published recipe)",
+      "default_serving_g": 215.0,
+      "per_100g": {
+        "kcal": 267.07,
+        "protein_g": 16.42,
+        "carbs_g": 19.04,
+        "fat_g": 13.68,
+        "fiber_g": 1.01
+      },
+      "default_serving": {
+        "kcal": 574.2,
+        "protein_g": 35.3,
+        "carbs_g": 40.9,
+        "fat_g": 29.4,
+        "fiber_g": 2.2
+      }
+    },
+    "grilled_chicken_burger": {
+      "category": "fast_food",
+      "serving_label": "1 burger, grilled chicken patty -- distinct from the fried zinger_burger already in the database (typical serving, not from a specific published recipe)",
+      "default_serving_g": 213.0,
+      "per_100g": {
+        "kcal": 199.92,
+        "protein_g": 19.48,
+        "carbs_g": 19.02,
+        "fat_g": 4.6,
+        "fiber_g": 1.08
+      },
+      "default_serving": {
+        "kcal": 425.8,
+        "protein_g": 41.5,
+        "carbs_g": 40.5,
+        "fat_g": 9.8,
+        "fiber_g": 2.3
+      }
+    },
+    "veggie_burger": {
+      "category": "fast_food",
+      "serving_label": "1 burger, bean/vegetable patty (typical serving, not from a specific published recipe)",
+      "default_serving_g": 195.0,
+      "per_100g": {
+        "kcal": 217.44,
+        "protein_g": 7.95,
+        "carbs_g": 29.09,
+        "fat_g": 7.71,
+        "fiber_g": 3.48
+      },
+      "default_serving": {
+        "kcal": 424.0,
+        "protein_g": 15.5,
+        "carbs_g": 56.7,
+        "fat_g": 15.0,
+        "fiber_g": 6.8
+      }
+    },
+    "pepperoni_pizza_slice": {
+      "category": "fast_food",
+      "serving_label": "1 slice, medium pizza (typical serving, not from a specific published recipe)",
+      "default_serving_g": 126.0,
+      "per_100g": {
+        "kcal": 336.7,
+        "protein_g": 12.92,
+        "carbs_g": 29.17,
+        "fat_g": 18.52,
+        "fiber_g": 1.15
+      },
+      "default_serving": {
+        "kcal": 424.2,
+        "protein_g": 16.3,
+        "carbs_g": 36.8,
+        "fat_g": 23.3,
+        "fiber_g": 1.5
+      }
+    },
+    "chicken_tikka_pizza_slice": {
+      "category": "fast_food",
+      "serving_label": "1 slice, medium pizza -- one of the most popular pizza toppings in Pakistan specifically (typical serving, not from a specific published recipe)",
+      "default_serving_g": 131.0,
+      "per_100g": {
+        "kcal": 279.92,
+        "protein_g": 14.83,
+        "carbs_g": 27.77,
+        "fat_g": 11.79,
+        "fiber_g": 1.11
+      },
+      "default_serving": {
+        "kcal": 366.7,
+        "protein_g": 19.4,
+        "carbs_g": 36.4,
+        "fat_g": 15.4,
+        "fiber_g": 1.5
+      }
+    },
+    "vegetable_pizza_slice": {
+      "category": "fast_food",
+      "serving_label": "1 slice, medium pizza (typical serving, not from a specific published recipe)",
+      "default_serving_g": 116.0,
+      "per_100g": {
+        "kcal": 271.84,
+        "protein_g": 9.34,
+        "carbs_g": 32.16,
+        "fat_g": 11.56,
+        "fiber_g": 1.45
+      },
+      "default_serving": {
+        "kcal": 315.3,
+        "protein_g": 10.8,
+        "carbs_g": 37.3,
+        "fat_g": 13.4,
+        "fiber_g": 1.7
+      }
+    },
+    "red_sauce_pasta": {
+      "category": "fast_food",
+      "serving_label": "1 plate, tomato/marinara sauce -- distinct from the existing white_sauce_pasta (typical serving, not from a specific published recipe)",
+      "default_serving_g": 345.0,
+      "per_100g": {
+        "kcal": 116.12,
+        "protein_g": 3.5,
+        "carbs_g": 17.48,
+        "fat_g": 3.66,
+        "fiber_g": 1.57
+      },
+      "default_serving": {
+        "kcal": 400.6,
+        "protein_g": 12.1,
+        "carbs_g": 60.3,
+        "fat_g": 12.6,
+        "fiber_g": 5.4
+      }
+    },
+    "mac_and_cheese": {
+      "category": "fast_food",
+      "serving_label": "1 plate (typical serving, not from a specific published recipe)",
+      "default_serving_g": 298.0,
+      "per_100g": {
+        "kcal": 170.17,
+        "protein_g": 7.14,
+        "carbs_g": 18.09,
+        "fat_g": 7.72,
+        "fiber_g": 1.21
+      },
+      "default_serving": {
+        "kcal": 507.1,
+        "protein_g": 21.3,
+        "carbs_g": 53.9,
+        "fat_g": 23.0,
+        "fiber_g": 3.6
+      }
+    },
+    "loaded_fries": {
+      "category": "fast_food",
+      "serving_label": "1 serving, fries with cheese and beef topping -- distinct from plain french_fries (typical serving, not from a specific published recipe)",
+      "default_serving_g": 215.0,
+      "per_100g": {
+        "kcal": 315.53,
+        "protein_g": 8.51,
+        "carbs_g": 29.16,
+        "fat_g": 18.37,
+        "fiber_g": 2.65
+      },
+      "default_serving": {
+        "kcal": 678.4,
+        "protein_g": 18.3,
+        "carbs_g": 62.7,
+        "fat_g": 39.5,
+        "fiber_g": 5.7
+      }
+    },
+    "onion_rings": {
+      "category": "fast_food",
+      "serving_label": "1 serving, battered and fried (typical serving, not from a specific published recipe)",
+      "default_serving_g": 130.0,
+      "per_100g": {
+        "kcal": 249.92,
+        "protein_g": 5.75,
+        "carbs_g": 19.11,
+        "fat_g": 16.99,
+        "fiber_g": 3.54
+      },
+      "default_serving": {
+        "kcal": 324.9,
+        "protein_g": 7.5,
+        "carbs_g": 24.8,
+        "fat_g": 22.1,
+        "fiber_g": 4.6
+      }
+    },
+    "grilled_chicken_sandwich": {
+      "category": "fast_food",
+      "serving_label": "1 sandwich, 2 slices (typical serving, not from a specific published recipe)",
+      "default_serving_g": 193.0,
+      "per_100g": {
+        "kcal": 200.74,
+        "protein_g": 21.73,
+        "carbs_g": 13.36,
+        "fat_g": 6.28,
+        "fiber_g": 2.27
+      },
+      "default_serving": {
+        "kcal": 387.4,
+        "protein_g": 41.9,
+        "carbs_g": 25.8,
+        "fat_g": 12.1,
+        "fiber_g": 4.4
+      }
+    },
+    "club_sandwich": {
+      "category": "fast_food",
+      "serving_label": "1 sandwich, 3 slices with chicken and egg (typical serving, not from a specific published recipe)",
+      "default_serving_g": 225.0,
+      "per_100g": {
+        "kcal": 208.0,
+        "protein_g": 18.77,
+        "carbs_g": 15.25,
+        "fat_g": 7.72,
+        "fiber_g": 2.57
+      },
+      "default_serving": {
+        "kcal": 468.0,
+        "protein_g": 42.2,
+        "carbs_g": 34.3,
+        "fat_g": 17.4,
+        "fiber_g": 5.8
+      }
+    },
+    "fried_chicken_sandwich": {
+      "category": "fast_food",
+      "serving_label": "1 sandwich, crispy fried chicken fillet (typical serving, not from a specific published recipe)",
+      "default_serving_g": 240.0,
+      "per_100g": {
+        "kcal": 267.08,
+        "protein_g": 14.58,
+        "carbs_g": 22.16,
+        "fat_g": 13.36,
+        "fiber_g": 0.88
+      },
+      "default_serving": {
+        "kcal": 641.0,
+        "protein_g": 35.0,
+        "carbs_g": 53.2,
+        "fat_g": 32.1,
+        "fiber_g": 2.1
+      }
+    },
+    "chicken_wings": {
+      "category": "fast_food",
+      "serving_label": "1 serving (~5-6 wings), fried with a light glaze (typical serving, not from a specific published recipe)",
+      "default_serving_g": 165.0,
+      "per_100g": {
+        "kcal": 249.85,
+        "protein_g": 27.73,
+        "carbs_g": 3.03,
+        "fat_g": 13.42,
+        "fiber_g": 0.0
+      },
+      "default_serving": {
+        "kcal": 412.2,
+        "protein_g": 45.8,
+        "carbs_g": 5.0,
+        "fat_g": 22.1,
+        "fiber_g": 0.0
+      }
+    },
+    "chicken_nuggets": {
+      "category": "fast_food",
+      "serving_label": "1 serving (~6-8 pieces)",
+      "default_serving_g": 130.0,
+      "per_100g": {
+        "kcal": 260.0,
+        "protein_g": 19.0,
+        "carbs_g": 10.0,
+        "fat_g": 16.0,
+        "fiber_g": 0.0
+      },
+      "default_serving": {
+        "kcal": 338.0,
+        "protein_g": 24.7,
+        "carbs_g": 13.0,
+        "fat_g": 20.8,
+        "fiber_g": 0.0
+      }
+    },
+    "hot_dog": {
+      "category": "fast_food",
+      "serving_label": "1 hot dog",
+      "default_serving_g": 123.0,
+      "per_100g": {
+        "kcal": 292.29,
+        "protein_g": 9.46,
+        "carbs_g": 25.95,
+        "fat_g": 16.83,
+        "fiber_g": 1.22
+      },
+      "default_serving": {
+        "kcal": 359.5,
+        "protein_g": 11.6,
+        "carbs_g": 31.9,
+        "fat_g": 20.7,
+        "fiber_g": 1.5
+      }
+    },
+    "nachos": {
+      "category": "fast_food",
+      "serving_label": "1 serving, tortilla chips with cheese and salsa (typical serving, not from a specific published recipe)",
+      "default_serving_g": 110.0,
+      "per_100g": {
+        "kcal": 351.82,
+        "protein_g": 9.44,
+        "carbs_g": 36.16,
+        "fat_g": 19.95,
+        "fiber_g": 2.67
+      },
+      "default_serving": {
+        "kcal": 387.0,
+        "protein_g": 10.4,
+        "carbs_g": 39.8,
+        "fat_g": 21.9,
+        "fiber_g": 2.9
+      }
+    },
+    "mozzarella_sticks": {
+      "category": "fast_food",
+      "serving_label": "1 serving (~4-5 sticks), breaded and fried",
+      "default_serving_g": 100.0,
+      "per_100g": {
+        "kcal": 306.0,
+        "protein_g": 15.0,
+        "carbs_g": 20.0,
+        "fat_g": 19.0,
+        "fiber_g": 1.0
+      },
+      "default_serving": {
+        "kcal": 306.0,
+        "protein_g": 15.0,
+        "carbs_g": 20.0,
+        "fat_g": 19.0,
+        "fiber_g": 1.0
+      }
     }
   }
 }

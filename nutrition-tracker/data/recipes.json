@@ -1463,5 +1463,155 @@
     "ingredients": {
       "rice_white_cooked": 250, "chicken_breast_cooked": 120, "avocado_raw": 50, "peanut_butter": 10
     }
+  },
+
+  "beef_burger": {
+    "category": "fast_food",
+    "serving_label": "1 burger, plain beef patty (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "white_bread_bun": 80, "beef_mince_keema_cooked": 100, "onion_raw": 10, "tomato_raw": 10,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+    }
+  },
+  "cheeseburger": {
+    "category": "fast_food",
+    "serving_label": "1 burger, beef patty with cheese (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "white_bread_bun": 80, "beef_mince_keema_cooked": 100, "cheese_processed": 20, "onion_raw": 10,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+    }
+  },
+  "grilled_chicken_burger": {
+    "category": "fast_food",
+    "serving_label": "1 burger, grilled chicken patty -- distinct from the fried zinger_burger already in the database (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "white_bread_bun": 80, "chicken_breast_cooked": 110, "tomato_raw": 10, "onion_raw": 10,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 3 }
+    }
+  },
+  "veggie_burger": {
+    "category": "fast_food",
+    "serving_label": "1 burger, bean/vegetable patty (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "white_bread_bun": 80, "veggie_patty": 90, "tomato_raw": 10, "onion_raw": 10,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+    }
+  },
+
+  "pepperoni_pizza_slice": {
+    "category": "fast_food",
+    "serving_label": "1 slice, medium pizza (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "maida_refined_flour": 45, "cheese_processed": 35, "tomato_raw": 20, "pepperoni": 20,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 }
+    }
+  },
+  "chicken_tikka_pizza_slice": {
+    "category": "fast_food",
+    "serving_label": "1 slice, medium pizza -- one of the most popular pizza toppings in Pakistan specifically (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "maida_refined_flour": 45, "cheese_processed": 35, "tomato_raw": 20, "chicken_breast_cooked": 25,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 }
+    }
+  },
+  "vegetable_pizza_slice": {
+    "category": "fast_food",
+    "serving_label": "1 slice, medium pizza (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "maida_refined_flour": 45, "cheese_processed": 30, "tomato_raw": 25, "onion_raw": 10,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 }
+    }
+  },
+
+  "red_sauce_pasta": {
+    "category": "fast_food",
+    "serving_label": "1 plate, tomato/marinara sauce -- distinct from the existing white_sauce_pasta (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "pasta_cooked": 220, "tomato_raw": 100, "onion_raw": 15,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 10 }
+    }
+  },
+  "mac_and_cheese": {
+    "category": "fast_food",
+    "serving_label": "1 plate (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "pasta_cooked": 200, "cheese_processed": 50,
+      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 40 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 8 }
+    }
+  },
+
+  "loaded_fries": {
+    "category": "fast_food",
+    "serving_label": "1 serving, fries with cheese and beef topping -- distinct from plain french_fries (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "potato_fried_fries": 150, "cheese_processed": 30, "beef_mince_keema_cooked": 30,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+    }
+  },
+  "onion_rings": {
+    "category": "fast_food",
+    "serving_label": "1 serving, battered and fried (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "onion_raw": 80, "besan_gram_flour": 30,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 20 }
+    }
+  },
+
+  "grilled_chicken_sandwich": {
+    "category": "fast_food",
+    "serving_label": "1 sandwich, 2 slices (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "whole_wheat_bread": 60, "chicken_breast_cooked": 100, "tomato_raw": 15, "cheese_processed": 15,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 3 }
+    }
+  },
+  "club_sandwich": {
+    "category": "fast_food",
+    "serving_label": "1 sandwich, 3 slices with chicken and egg (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "whole_wheat_bread": 80, "chicken_breast_cooked": 80, "egg_cooked": 30, "cheese_processed": 15, "tomato_raw": 15,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+    }
+  },
+  "fried_chicken_sandwich": {
+    "category": "fast_food",
+    "serving_label": "1 sandwich, crispy fried chicken fillet (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "white_bread_bun": 80, "chicken_breaded_fried": 130, "cheese_processed": 15, "tomato_raw": 10,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+    }
+  },
+
+  "chicken_wings": {
+    "category": "fast_food",
+    "serving_label": "1 serving (~5-6 wings), fried with a light glaze (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "chicken_wing_cooked": 150, "sugar": 5,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 10 }
+    }
+  },
+  "chicken_nuggets": {
+    "category": "fast_food",
+    "serving_label": "1 serving (~6-8 pieces)",
+    "ingredients": { "chicken_breaded_fried": 130 }
+  },
+  "hot_dog": {
+    "category": "fast_food",
+    "serving_label": "1 hot dog",
+    "ingredients": {
+      "white_bread_bun": 60, "hot_dog_sausage": 60,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 3 }
+    }
+  },
+  "nachos": {
+    "category": "fast_food",
+    "serving_label": "1 serving, tortilla chips with cheese and salsa (typical serving, not from a specific published recipe)",
+    "ingredients": { "tortilla_chips": 60, "cheese_processed": 30, "tomato_raw": 20 }
+  },
+  "mozzarella_sticks": {
+    "category": "fast_food",
+    "serving_label": "1 serving (~4-5 sticks), breaded and fried",
+    "ingredients": { "mozzarella_stick_breaded_fried": 100 }
   }
 }
