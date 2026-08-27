@@ -1,6 +1,20 @@
-# Pakistani + common Western food database — v10
+# Pakistani + common Western food database — v11
 
-151 dishes: 135 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+177 dishes: 161 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+
+## v11: the universal baseline — foods with nothing to do with Pakistan or any region
+
+Every batch before this one was cuisine-specific. This one is the opposite on purpose: the plain, generic staples every fitness app has regardless of country, so a user can log "grilled chicken and rice" or "protein shake" without the app feeling incomplete next to MyFitnessPal. 26 dishes across 5 groups:
+
+**Generic proteins (7):** `grilled_chicken_breast`, `grilled_salmon`, `grilled_steak`, `egg_whites`, `cottage_cheese`, `canned_tuna`, `greek_yogurt_plain`
+**Generic carbs (6):** `oatmeal`, `brown_rice`, `whole_wheat_toast`, `sweet_potato_baked`, `quinoa`, `granola`
+**Generic snacks (6):** `peanut_butter`, `almonds_snack`, `potato_chips`, `chocolate_bar`, `cookies`, `popcorn`
+**Generic veg/misc (4):** `steamed_broccoli`, `avocado`, `hummus`, `mixed_green_salad`
+**Dairy/other (3):** `glass_of_milk`, `cheese_slice`, `whey_protein_shake`
+
+Unlike every prior batch, these aren't converted from a specific recipe or built by analogy — they're plain single-ingredient or near-single-ingredient foods, so the accuracy question is just "is the per-100g value right," and it was checked against standard reference nutrition data (not a specific site) for each one. A striking number landed almost exactly on known real-world values: `grilled_chicken_breast` at 165 kcal/100g, `peanut_butter` at 188 kcal/2 tbsp, `glass_of_milk` at 146 kcal/240ml, `avocado`, `broccoli`, `potato_chips`, `popcorn`, `brown_rice`, `sweet_potato_baked`, and `quinoa` all matched standard references closely. No corrections needed.
+
+21 new base ingredients (the largest single-batch addition so far): `salmon_cooked`, `egg_white_cooked`, `cottage_cheese`, `tuna_canned`, `greek_yogurt_plain`, `oats_dry`, `brown_rice_cooked`, `whole_wheat_bread`, `sweet_potato_cooked`, `quinoa_cooked`, `granola`, `peanut_butter`, `potato_chips`, `chocolate_bar`, `cookie_generic`, `popcorn_plain`, `broccoli_cooked`, `avocado_raw`, `hummus`, `lettuce_raw`, `whey_protein_powder`. Reused existing ingredients where they already fit: `beef_lean_cooked` for steak, `mixed_nuts_dry` for almonds, `milk_whole`/`cheese_processed` as standalone loggable items for the first time (previously only used inside other dishes).
 
 ## v10: milkshakes and general drinks
 
@@ -107,8 +121,8 @@ All 14 originally-named "remaining recipes" are now built, across v5 and v6 (see
 
 ## Next steps (not done yet)
 
-- Regional variants (v7), chutneys/pickles/raita (v8), Ramadan foods (v9), and milkshakes/drinks (v10) are done. Next per the agreed roadmap: expanded Western fast food.
-- **Weight-loss / weight-gain goal variants** (added to the roadmap by the user, not built yet): lighter/"diet" and higher-calorie/bulking versions of dishes people actually cook when trying to lose or gain weight — e.g. grilled instead of fried, less oil/ghee, boiled chicken breast versions of curries, protein-added versions for weight gain. Comes after the phases above; not scoped in detail yet.
+- Regional variants (v7), chutneys/pickles/raita (v8), Ramadan foods (v9), milkshakes/drinks (v10), and the generic fitness-app baseline (v11) are done. That closes out the original roadmap's "normal stuff every app has" item.
+- **Weight-loss / weight-gain goal variants, both Pakistan-specific and global** (up next, per the user): lighter/"diet" and higher-calorie/bulking versions of dishes people actually eat when trying to lose or gain weight — e.g. grilled instead of fried, less oil/ghee, boiled chicken breast versions of curries, protein-added versions for weight gain, on both the Pakistani dish set and the v11 generic staples. Not scoped in detail yet.
 - Decide serving-size conventions with real user feedback once logging starts.
 - Turn `dishes.json` into D1 seed data once the app schema exists.
 

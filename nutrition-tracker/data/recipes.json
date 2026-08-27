@@ -1216,5 +1216,151 @@
     "category": "beverage",
     "serving_label": "1 glass (~250ml), sweetened (typical serving, not from a specific published recipe)",
     "ingredients": { "sugar": 20 }
+  },
+
+  "grilled_chicken_breast": {
+    "category": "grilled",
+    "serving_label": "1 breast (~150g), plain, no oil counted -- the generic lean-protein staple every fitness app has",
+    "ingredients": { "chicken_breast_cooked": 150 }
+  },
+  "grilled_salmon": {
+    "category": "grilled",
+    "serving_label": "1 fillet (~150g), plain grilled/baked",
+    "ingredients": { "salmon_cooked": 150 }
+  },
+  "grilled_steak": {
+    "category": "grilled",
+    "serving_label": "1 serving (~150g), plain grilled lean beef",
+    "ingredients": { "beef_lean_cooked": 150 }
+  },
+  "egg_whites": {
+    "category": "breakfast",
+    "serving_label": "~3 large egg whites (100g)",
+    "ingredients": { "egg_white_cooked": 100 }
+  },
+  "cottage_cheese": {
+    "category": "snack",
+    "serving_label": "1 cup (~150g), plain",
+    "ingredients": { "cottage_cheese": 150 }
+  },
+  "canned_tuna": {
+    "category": "snack",
+    "serving_label": "1 small can (~100g), in water, drained",
+    "ingredients": { "tuna_canned": 100 }
+  },
+  "greek_yogurt_plain": {
+    "category": "breakfast",
+    "serving_label": "1 cup (~170g), plain",
+    "ingredients": { "greek_yogurt_plain": 170 }
+  },
+
+  "oatmeal": {
+    "category": "breakfast",
+    "serving_label": "1 bowl, plain oats cooked with a splash of milk",
+    "ingredients": {
+      "oats_dry": 40,
+      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 100 }
+    }
+  },
+  "brown_rice": {
+    "category": "rice_dish",
+    "serving_label": "1 plate, plain",
+    "ingredients": { "brown_rice_cooked": 200 }
+  },
+  "whole_wheat_toast": {
+    "category": "breakfast",
+    "serving_label": "1 slice, plain",
+    "ingredients": { "whole_wheat_bread": 30 }
+  },
+  "sweet_potato_baked": {
+    "category": "vegetable",
+    "serving_label": "1 medium, baked, plain",
+    "ingredients": { "sweet_potato_cooked": 150 }
+  },
+  "quinoa": {
+    "category": "rice_dish",
+    "serving_label": "1 cup cooked, plain",
+    "ingredients": { "quinoa_cooked": 185 }
+  },
+  "granola": {
+    "category": "breakfast",
+    "serving_label": "1 serving (~50g)",
+    "ingredients": { "granola": 50 }
+  },
+
+  "peanut_butter": {
+    "category": "snack",
+    "serving_label": "2 tbsp (~32g)",
+    "ingredients": { "peanut_butter": 32 }
+  },
+  "almonds_snack": {
+    "category": "snack",
+    "serving_label": "1oz handful (~28g)",
+    "ingredients": { "mixed_nuts_dry": 28 }
+  },
+  "potato_chips": {
+    "category": "snack",
+    "serving_label": "1 small bag (~28g)",
+    "ingredients": { "potato_chips": 28 }
+  },
+  "chocolate_bar": {
+    "category": "dessert",
+    "serving_label": "1 standard bar (~45g)",
+    "ingredients": { "chocolate_bar": 45 }
+  },
+  "cookies": {
+    "category": "dessert",
+    "serving_label": "2-3 cookies (~30g)",
+    "ingredients": { "cookie_generic": 30 }
+  },
+  "popcorn": {
+    "category": "snack",
+    "serving_label": "~3 cups, air-popped, plain (~25g)",
+    "ingredients": { "popcorn_plain": 25 }
+  },
+
+  "steamed_broccoli": {
+    "category": "vegetable",
+    "serving_label": "1 bowl, plain",
+    "ingredients": { "broccoli_cooked": 150 }
+  },
+  "avocado": {
+    "category": "fruit",
+    "serving_label": "1/2 medium avocado",
+    "ingredients": { "avocado_raw": 100 }
+  },
+  "hummus": {
+    "category": "condiment",
+    "serving_label": "2 tbsp (~30g)",
+    "ingredients": { "hummus": 30 }
+  },
+  "mixed_green_salad": {
+    "category": "vegetable_raw",
+    "serving_label": "1 bowl, lettuce/cucumber/tomato with a light oil dressing",
+    "ingredients": {
+      "lettuce_raw": 60, "cucumber_raw": 30, "tomato_raw": 30,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+    }
+  },
+
+  "glass_of_milk": {
+    "category": "beverage",
+    "serving_label": "1 glass (~240ml)",
+    "ingredients": {
+      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 240 }
+    }
+  },
+  "cheese_slice": {
+    "category": "snack",
+    "serving_label": "1 slice (~20g)",
+    "ingredients": { "cheese_processed": 20 }
+  },
+  "whey_protein_shake": {
+    "category": "beverage",
+    "serving_label": "1 scoop (~30g) mixed with milk",
+    "ingredients": {
+      "whey_protein_powder": 30,
+      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 240 }
+    }
   }
 }
