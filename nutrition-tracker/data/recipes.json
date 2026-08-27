@@ -568,5 +568,34 @@
       "zucchini_cooked": 128, "onion_raw": 75, "tomato_raw": 30,
       "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 19 }
     }
+  },
+
+  "aloo_chicken": {
+    "category": "curry",
+    "serving_label": "1 bowl (built by analogy to sourced aloo_gosht, chicken instead of mutton — not independently sourced)",
+    "ingredients": {
+      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_thigh_skin_cooked", "grams": 130 },
+      "potato_cooked": 50, "onion_raw": 38, "tomato_raw": 30,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 17 },
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 4 }
+    }
+  },
+  "arvi_gosht": {
+    "category": "curry",
+    "serving_label": "1 bowl (built by analogy to sourced aloo_gosht, taro instead of potato — not independently sourced; you confirmed this is a real common dish)",
+    "ingredients": {
+      "mutton_curry_cut_cooked": 130, "taro_cooked": 120, "onion_raw": 38, "tomato_raw": 30,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 17 },
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 4 }
+    }
+  },
+  "lauki_gosht": {
+    "category": "curry",
+    "serving_label": "1 bowl (built by analogy to sourced aloo_gosht, bottle gourd instead of potato — not independently sourced; you confirmed this is a real common dish)",
+    "ingredients": {
+      "mutton_curry_cut_cooked": 130, "bottle_gourd_cooked": 150, "onion_raw": 38, "tomato_raw": 30,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 17 },
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 4 }
+    }
   }
 }

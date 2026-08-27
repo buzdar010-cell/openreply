@@ -1,6 +1,6 @@
 # Pakistani + common Western food database — v3
 
-74 dishes: 58 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+77 dishes: 61 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
 
 ## v3: real sourced recipes, not estimated ones
 
@@ -9,6 +9,32 @@ The 9 newest dishes (aloo_gosht, gobi_gosht, chana_pulao, palak_chicken, bhindi_
 **A real cross-check, not just a hope**: the Chana Pulao source page published its own nutrition figures — 463 kcal, 75g carbs, 11g protein, 14g fat per serving. My independent computation, built purely from their stated ingredient quantities run through our own ingredient database, came out to **481 kcal, 77.9g carbs, 11.7g protein, 13.3g fat** — within ~4% across every field. That's a genuine, external validation that the gram-conversion methodology is sound, not just internally consistent with itself.
 
 Four new base ingredients were added to support these: `mustard_greens_cooked` (sarson), `zucchini_cooked` (toriyan), `corn_flour` (saag thickener), `fenugreek_leaves_dried` (kasuri methi, used in gram-scale flavoring quantities).
+
+## Analogy-built dishes — a different, lower confidence tier
+
+`aloo_chicken`, `arvi_gosht`, `lauki_gosht` are **not** independently sourced. No dedicated recipe for these three was found on Tea for Turmeric or Pakistan Eats despite searching directly. Rather than skip them or invent numbers from nothing, they're built by direct analogy to the sourced `aloo_gosht` recipe — same structure, same ratios, just the vegetable or protein swapped (taro for potato, bottle gourd for potato, chicken for mutton). Their `serving_label` says exactly this, so it's visible in the data itself, not just this README. Arvi gosht and lauki gosht were confirmed as real, commonly-cooked dishes directly by the user (who is Pakistani) — that's real validation of the dish's existence, just not of these specific ratios.
+
+## Hit a real wall partway through this pass
+
+Tea for Turmeric started serving a bot-verification page after repeated rapid requests against the same domain — not a content problem, a rate-limit/anti-bot response. Stopped rather than push through it. **Confirmed real, with working URLs, but not yet pulled into the database:**
+
+- Maash ki Dal (Urad Dal) — `teaforturmeric.com/maash-ki-daal-urad-dal/`
+- Whole Masoor Dal / "Kali Dal" — `teaforturmeric.com/whole-masoor-dal/`
+- Aloo Methi (potato + fenugreek leaves) — `teaforturmeric.com/aloo-methi-potato-fenugreek-leaves/`
+- Yakhni Pulao (chicken pulao) — `teaforturmeric.com/chicken-pulao-yakhni-pulao/`
+- Achari Chicken — `teaforturmeric.com/web-stories/achari-chicken/`
+- Mutton Korma — `teaforturmeric.com/mutton-korma-lamb-korma/`
+- Chicken Kofta — `teaforturmeric.com/chicken-kofta/`
+- Kadhi Pakora — `teaforturmeric.com/kadhi-pakora/`
+
+Also named as existing (from the earlier roundup and Pakistan Eats' homepage) but not yet URL-confirmed for a direct fetch: Rajma Masala, Matar Paneer, Dahi Bhalla, Aloo Tikki, Matar Pulao, Zarda, Hariyali Chicken, Kali Mirch Chicken, Chicken Keema, Prawn Biryani, Seviyan, Sweet Dalia.
+
+## Next steps (not done yet)
+
+- Come back to the 8 confirmed-URL dishes above once the rate limit has cooled off, or pull them from Pakistan Eats/another source instead.
+- Chase down the remaining named-but-unconfirmed dishes.
+- Decide serving-size conventions with real user feedback once logging starts.
+- Turn `dishes.json` into D1 seed data once the app schema exists.
 
 ## Files
 
@@ -67,8 +93,4 @@ Every other dish (61 of 65) was checked against known reference ranges and held 
 - Restaurant/roadside versions run higher than these home-cooked estimates, especially karahi, biryani, and the fast-food entries (which approximate common chain-style versions, not any specific restaurant's actual recipe).
 - 65 dishes is still a starting set. Expand based on what people actually try to log and can't find.
 
-## Next steps (not done yet)
-
-- Continue expanding the dish list (more curries, more regional dishes, more Western items).
-- Add a one-time profile-level default for flour type (set once at onboarding, applied silently after) — this is a UI/app-layer decision, not a data-file one, so it's not implemented here.
-- Turn `dishes.json` into D1 seed data once the app schema exists.
+Add a one-time profile-level default for flour type (set once at onboarding, applied silently after) — this is a UI/app-layer decision, not a data-file one, so it's not implemented here.

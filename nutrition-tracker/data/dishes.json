@@ -1458,6 +1458,63 @@
         "fat_g": 19.5,
         "fiber_g": 2.9
       }
+    },
+    "aloo_chicken": {
+      "category": "curry",
+      "serving_label": "1 bowl (built by analogy to sourced aloo_gosht, chicken instead of mutton \u2014 not independently sourced)",
+      "default_serving_g": 269.0,
+      "per_100g": {
+        "kcal": 201.42,
+        "protein_g": 13.23,
+        "carbs_g": 5.55,
+        "fat_g": 14.16,
+        "fiber_g": 0.71
+      },
+      "default_serving": {
+        "kcal": 541.8,
+        "protein_g": 35.6,
+        "carbs_g": 14.9,
+        "fat_g": 38.1,
+        "fiber_g": 1.9
+      }
+    },
+    "arvi_gosht": {
+      "category": "curry",
+      "serving_label": "1 bowl (built by analogy to sourced aloo_gosht, taro instead of potato \u2014 not independently sourced; you confirmed this is a real common dish)",
+      "default_serving_g": 339.0,
+      "per_100g": {
+        "kcal": 190.48,
+        "protein_g": 10.36,
+        "carbs_g": 10.82,
+        "fat_g": 11.64,
+        "fiber_g": 1.75
+      },
+      "default_serving": {
+        "kcal": 645.7,
+        "protein_g": 35.1,
+        "carbs_g": 36.7,
+        "fat_g": 39.4,
+        "fiber_g": 5.9
+      }
+    },
+    "lauki_gosht": {
+      "category": "curry",
+      "serving_label": "1 bowl (built by analogy to sourced aloo_gosht, bottle gourd instead of potato \u2014 not independently sourced; you confirmed this is a real common dish)",
+      "default_serving_g": 369.0,
+      "per_100g": {
+        "kcal": 144.26,
+        "protein_g": 9.28,
+        "carbs_g": 2.71,
+        "fat_g": 10.66,
+        "fiber_g": 0.76
+      },
+      "default_serving": {
+        "kcal": 532.3,
+        "protein_g": 34.2,
+        "carbs_g": 10.0,
+        "fat_g": 39.3,
+        "fiber_g": 2.8
+      }
     }
   }
 }

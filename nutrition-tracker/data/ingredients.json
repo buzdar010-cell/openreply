@@ -61,5 +61,8 @@
   "mustard_greens_cooked": { "kcal": 27, "protein_g": 2.6, "carbs_g": 4.4, "fat_g": 0.3, "fiber_g": 3.2, "note": "sarson" },
   "zucchini_cooked": { "kcal": 17, "protein_g": 1.2, "carbs_g": 3.1, "fat_g": 0.3, "fiber_g": 1.0, "note": "toriyan/courgette" },
   "corn_flour": { "kcal": 365, "protein_g": 9.0, "carbs_g": 74.0, "fat_g": 4.0, "fiber_g": 7.0, "note": "makki atta, raw — used as a saag thickener" },
-  "fenugreek_leaves_dried": { "kcal": 320, "protein_g": 26.0, "carbs_g": 47.0, "fat_g": 6.0, "fiber_g": 25.0, "note": "kasuri methi — used in small (gram-scale) quantities as a flavoring, not a bulk ingredient" }
+  "fenugreek_leaves_dried": { "kcal": 320, "protein_g": 26.0, "carbs_g": 47.0, "fat_g": 6.0, "fiber_g": 25.0, "note": "kasuri methi — used in small (gram-scale) quantities as a flavoring, not a bulk ingredient" },
+
+  "taro_cooked": { "kcal": 112, "protein_g": 1.5, "carbs_g": 26.5, "fat_g": 0.1, "fiber_g": 4.1, "note": "arvi/arbi" },
+  "bottle_gourd_cooked": { "kcal": 14, "protein_g": 0.6, "carbs_g": 3.4, "fat_g": 0.0, "fiber_g": 1.2, "note": "lauki/ghiya" }
 }
