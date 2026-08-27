@@ -89,5 +89,7 @@
   "raw_green_mango": { "kcal": 44, "protein_g": 0.6, "carbs_g": 11.0, "fat_g": 0.2, "fiber_g": 1.7, "note": "unripe keri, distinct from ripe mango_raw -- more tart, far less sugar" },
   "lemon_lime_raw": { "kcal": 29, "protein_g": 1.1, "carbs_g": 9.3, "fat_g": 0.3, "fiber_g": 2.8, "note": "nimbu" },
   "green_chili_raw": { "kcal": 40, "protein_g": 2.0, "carbs_g": 9.5, "fat_g": 0.2, "fiber_g": 1.5, "note": "hari mirch" },
-  "turnip_raw": { "kcal": 28, "protein_g": 0.9, "carbs_g": 6.4, "fat_g": 0.1, "fiber_g": 1.8, "note": "shalgam" }
+  "turnip_raw": { "kcal": 28, "protein_g": 0.9, "carbs_g": 6.4, "fat_g": 0.1, "fiber_g": 1.8, "note": "shalgam" },
+
+  "rose_syrup_concentrate": { "kcal": 260, "protein_g": 0.1, "carbs_g": 65.0, "fat_g": 0.0, "fiber_g": 0.0, "note": "Rooh Afza-style concentrated sugar syrup, undiluted" }
 }

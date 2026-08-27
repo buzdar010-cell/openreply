@@ -1,6 +1,16 @@
-# Pakistani + common Western food database — v8
+# Pakistani + common Western food database — v9
 
-131 dishes: 115 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+140 dishes: 124 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+
+## v9: Ramadan / iftar & sehri foods
+
+Scoped against what was already in the database first — most sehri staples (paratha, omelette, daal, karahi, chana pulao, yogurt/lassi, dates, banana, watermelon) and most iftar starters (samosa, pakora, dahi bhalla, chana chaat, haleem, nihari) were already built in earlier batches. 9 dishes were genuinely missing:
+
+`jalebi`, `sheer_khurma` (distinct from the already-built `seviyan` — sheer khurma has dates and far more milk), `kulfi`, `fruit_custard` — iftar/Eid sweets. `fruit_chaat` — a fixture of almost every iftar spread. `puri` — deep-fried bread that completes the halwa-puri-channa combo `sooji_halwa` was flagged as missing back in v1. `rooh_afza_sharbat`, `jaljeera`, `date_milk_shake` — the drinks iftar starts with, since breaking a fast starts with liquid before food.
+
+None of these come from a specific published recipe with a stated serving count — same situation as v8's condiments, just for full dishes/desserts/drinks instead of spoonful accompaniments. Built from typical realistic serving proportions instead, with `serving_label` saying so plainly. All 9 checked against real-world calorie references for these specific items and held up — no corrections needed.
+
+One new base ingredient: `rose_syrup_concentrate` (Rooh Afza-style concentrated syrup).
 
 ## v8: chutneys, pickles/achaar, and raita — a new category, and a different shape of dish
 
@@ -85,7 +95,7 @@ All 14 originally-named "remaining recipes" are now built, across v5 and v6 (see
 
 ## Next steps (not done yet)
 
-- Regional variants (v7) and chutneys/pickles/raita (v8) are done. Next per the agreed roadmap: traditional Ramadan/fasting foods, then expanded Western fast food.
+- Regional variants (v7), chutneys/pickles/raita (v8), and Ramadan foods (v9) are done. Next per the agreed roadmap: expanded Western fast food.
 - **Weight-loss / weight-gain goal variants** (added to the roadmap by the user, not built yet): lighter/"diet" and higher-calorie/bulking versions of dishes people actually cook when trying to lose or gain weight — e.g. grilled instead of fried, less oil/ghee, boiled chicken breast versions of curries, protein-added versions for weight gain. Comes after the phases above; not scoped in detail yet.
 - Decide serving-size conventions with real user feedback once logging starts.
 - Turn `dishes.json` into D1 seed data once the app schema exists.

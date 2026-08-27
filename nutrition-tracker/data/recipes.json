@@ -1068,5 +1068,74 @@
       "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 85 },
       "cucumber_raw": 15
     }
+  },
+
+  "jalebi": {
+    "category": "dessert",
+    "serving_label": "3 pieces, fried spirals soaked in sugar syrup (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "maida_refined_flour": 15, "sugar": 20,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 8 }
+    }
+  },
+  "sheer_khurma": {
+    "category": "dessert",
+    "serving_label": "1 bowl, Eid vermicelli-milk dessert with dates and nuts (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "vermicelli_dry": 15,
+      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 150 },
+      "dates_raw": 15, "sugar": 10, "mixed_nuts_dry": 8
+    }
+  },
+  "kulfi": {
+    "category": "dessert",
+    "serving_label": "1 stick/scoop, dense frozen milk dessert (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 50 },
+      "cream_fresh": 15, "sugar": 12, "mixed_nuts_dry": 3
+    }
+  },
+  "fruit_custard": {
+    "category": "dessert",
+    "serving_label": "1 bowl, milk custard with mixed fruit and cream (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 100 },
+      "corn_flour": 8, "sugar": 15, "banana_raw": 30, "apple_raw": 30, "cream_fresh": 15
+    }
+  },
+  "fruit_chaat": {
+    "category": "snack",
+    "serving_label": "1 bowl, mixed fruit with chaat masala (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "banana_raw": 40, "apple_raw": 40, "guava_raw": 30, "pomegranate_raw": 30, "kinnow_orange_raw": 40,
+      "sugar": 5
+    }
+  },
+  "puri": {
+    "category": "bread",
+    "serving_label": "1 puri, deep-fried puffy bread — completes the halwa-puri-channa combo alongside sooji_halwa and chana_curry (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "flour": { "role": "flour", "options": ["atta_whole_wheat_flour", "maida_refined_flour", "atta_multigrain"], "default": "atta_whole_wheat_flour", "grams": 20 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 8 }
+    }
+  },
+  "rooh_afza_sharbat": {
+    "category": "beverage",
+    "serving_label": "1 glass (~200ml), rose syrup diluted in water (typical serving, not from a specific published recipe)",
+    "ingredients": { "rose_syrup_concentrate": 30 }
+  },
+  "jaljeera": {
+    "category": "beverage",
+    "serving_label": "1 glass (~200ml), tangy cumin-mint-tamarind water (typical serving, not from a specific published recipe)",
+    "ingredients": { "tamarind_pulp": 8, "mint_coriander_leaves_raw": 5, "sugar": 5 }
+  },
+  "date_milk_shake": {
+    "category": "beverage",
+    "serving_label": "1 glass (~250ml), blended dates and milk (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "dates_raw": 40,
+      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 200 },
+      "sugar": 5
+    }
   }
 }
