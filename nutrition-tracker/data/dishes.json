@@ -1,446 +1,1292 @@
 {
-  "_readme": "Computed dish-level nutrition per typical serving. Derived from ingredients.json + recipes.json via build_dishes.py \u2014 see that script for methodology. Estimates, not lab measurements.",
+  "_readme": "Computed dish-level nutrition. Every dish exposes per_100g (scale to any portion) plus default_serving (the recipe's own typical portion) and, where relevant, named portion_presets. Derived from ingredients.json + recipes.json via build_dishes.py \u2014 see that script and README.md for methodology. Estimates, not lab measurements.",
   "dishes": {
     "roti": {
       "category": "bread",
       "serving_label": "1 medium roti (~40g)",
-      "kcal": 119.0,
-      "protein_g": 4.2,
-      "carbs_g": 25.2,
-      "fat_g": 0.7,
-      "fiber_g": 3.8
+      "default_serving_g": 35.0,
+      "per_100g": {
+        "kcal": 340.0,
+        "protein_g": 12.0,
+        "carbs_g": 72.0,
+        "fat_g": 2.0,
+        "fiber_g": 11.0
+      },
+      "default_serving": {
+        "kcal": 119.0,
+        "protein_g": 4.2,
+        "carbs_g": 25.2,
+        "fat_g": 0.7,
+        "fiber_g": 3.8
+      }
     },
     "paratha": {
       "category": "bread",
       "serving_label": "1 medium paratha",
-      "kcal": 261.0,
-      "protein_g": 5.4,
-      "carbs_g": 32.4,
-      "fat_g": 12.9,
-      "fiber_g": 5.0
+      "default_serving_g": 57.0,
+      "per_100g": {
+        "kcal": 457.89,
+        "protein_g": 9.47,
+        "carbs_g": 56.84,
+        "fat_g": 22.63,
+        "fiber_g": 8.68
+      },
+      "default_serving": {
+        "kcal": 261.0,
+        "protein_g": 5.4,
+        "carbs_g": 32.4,
+        "fat_g": 12.9,
+        "fiber_g": 5.0
+      }
     },
     "naan": {
       "category": "bread",
       "serving_label": "1 tandoori naan",
-      "kcal": 232.0,
-      "protein_g": 6.6,
-      "carbs_g": 39.6,
-      "fat_g": 6.1,
-      "fiber_g": 6.1
+      "default_serving_g": 60.0,
+      "per_100g": {
+        "kcal": 386.67,
+        "protein_g": 11.0,
+        "carbs_g": 66.0,
+        "fat_g": 10.17,
+        "fiber_g": 10.08
+      },
+      "default_serving": {
+        "kcal": 232.0,
+        "protein_g": 6.6,
+        "carbs_g": 39.6,
+        "fat_g": 6.1,
+        "fiber_g": 6.1
+      }
     },
     "daal_chawal_masoor": {
       "category": "daal_rice",
       "serving_label": "1 plate (daal + rice)",
-      "kcal": 481.8,
-      "protein_g": 20.4,
-      "carbs_g": 79.4,
-      "fat_g": 9.2,
-      "fiber_g": 15.1
+      "default_serving_g": 353.0,
+      "per_100g": {
+        "kcal": 136.49,
+        "protein_g": 5.78,
+        "carbs_g": 22.49,
+        "fat_g": 2.6,
+        "fiber_g": 4.27
+      },
+      "default_serving": {
+        "kcal": 481.8,
+        "protein_g": 20.4,
+        "carbs_g": 79.4,
+        "fat_g": 9.2,
+        "fiber_g": 15.1
+      }
     },
     "chana_daal": {
       "category": "daal_rice",
       "serving_label": "1 bowl",
-      "kcal": 409.6,
-      "protein_g": 18.1,
-      "carbs_g": 57.0,
-      "fat_g": 13.3,
-      "fiber_g": 15.7
+      "default_serving_g": 243.0,
+      "per_100g": {
+        "kcal": 168.56,
+        "protein_g": 7.47,
+        "carbs_g": 23.45,
+        "fat_g": 5.45,
+        "fiber_g": 6.46
+      },
+      "default_serving": {
+        "kcal": 409.6,
+        "protein_g": 18.1,
+        "carbs_g": 57.0,
+        "fat_g": 13.3,
+        "fiber_g": 15.7
+      }
     },
     "moong_daal": {
       "category": "daal_rice",
       "serving_label": "1 bowl",
-      "kcal": 270.0,
-      "protein_g": 14.2,
-      "carbs_g": 39.4,
-      "fat_g": 6.8,
-      "fiber_g": 15.5
+      "default_serving_g": 221.0,
+      "per_100g": {
+        "kcal": 122.17,
+        "protein_g": 6.41,
+        "carbs_g": 17.83,
+        "fat_g": 3.08,
+        "fiber_g": 6.99
+      },
+      "default_serving": {
+        "kcal": 270.0,
+        "protein_g": 14.2,
+        "carbs_g": 39.4,
+        "fat_g": 6.8,
+        "fiber_g": 15.5
+      }
     },
     "plain_rice": {
       "category": "daal_rice",
       "serving_label": "1 plate",
-      "kcal": 260.0,
-      "protein_g": 5.4,
-      "carbs_g": 56.0,
-      "fat_g": 0.6,
-      "fiber_g": 0.8
+      "default_serving_g": 200.0,
+      "per_100g": {
+        "kcal": 130.0,
+        "protein_g": 2.7,
+        "carbs_g": 28.0,
+        "fat_g": 0.3,
+        "fiber_g": 0.4
+      },
+      "default_serving": {
+        "kcal": 260.0,
+        "protein_g": 5.4,
+        "carbs_g": 56.0,
+        "fat_g": 0.6,
+        "fiber_g": 0.8
+      }
     },
     "chicken_karahi": {
       "category": "curry",
       "serving_label": "1 serving (~1/4 karahi)",
-      "kcal": 518.8,
-      "protein_g": 39.5,
-      "carbs_g": 2.5,
-      "fat_g": 39.1,
-      "fiber_g": 0.7
+      "default_serving_g": 215.0,
+      "per_100g": {
+        "kcal": 241.3,
+        "protein_g": 18.36,
+        "carbs_g": 1.16,
+        "fat_g": 18.18,
+        "fiber_g": 0.3
+      },
+      "default_serving": {
+        "kcal": 518.8,
+        "protein_g": 39.5,
+        "carbs_g": 2.5,
+        "fat_g": 39.1,
+        "fiber_g": 0.7
+      }
     },
     "chicken_curry": {
       "category": "curry",
       "serving_label": "1 serving",
-      "kcal": 455.6,
-      "protein_g": 34.9,
-      "carbs_g": 4.2,
-      "fat_g": 33.4,
-      "fiber_g": 0.8
+      "default_serving_g": 212.0,
+      "per_100g": {
+        "kcal": 214.92,
+        "protein_g": 16.45,
+        "carbs_g": 1.98,
+        "fat_g": 15.75,
+        "fiber_g": 0.37
+      },
+      "default_serving": {
+        "kcal": 455.6,
+        "protein_g": 34.9,
+        "carbs_g": 4.2,
+        "fat_g": 33.4,
+        "fiber_g": 0.8
+      }
     },
     "beef_nihari": {
       "category": "curry",
       "serving_label": "1 bowl",
-      "kcal": 585.8,
-      "protein_g": 40.2,
-      "carbs_g": 7.2,
-      "fat_g": 42.7,
-      "fiber_g": 1.1
+      "default_serving_g": 180.0,
+      "per_100g": {
+        "kcal": 325.44,
+        "protein_g": 22.33,
+        "carbs_g": 4.0,
+        "fat_g": 23.72,
+        "fiber_g": 0.61
+      },
+      "default_serving": {
+        "kcal": 585.8,
+        "protein_g": 40.2,
+        "carbs_g": 7.2,
+        "fat_g": 42.7,
+        "fiber_g": 1.1
+      }
     },
     "mutton_karahi": {
       "category": "curry",
       "serving_label": "1 serving",
-      "kcal": 532.9,
-      "protein_g": 37.9,
-      "carbs_g": 2.3,
-      "fat_g": 40.6,
-      "fiber_g": 0.6
+      "default_serving_g": 210.0,
+      "per_100g": {
+        "kcal": 253.76,
+        "protein_g": 18.06,
+        "carbs_g": 1.09,
+        "fat_g": 19.32,
+        "fiber_g": 0.28
+      },
+      "default_serving": {
+        "kcal": 532.9,
+        "protein_g": 37.9,
+        "carbs_g": 2.3,
+        "fat_g": 40.6,
+        "fiber_g": 0.6
+      }
     },
     "haleem": {
       "category": "curry",
       "serving_label": "1 bowl",
-      "kcal": 459.0,
-      "protein_g": 26.8,
-      "carbs_g": 45.0,
-      "fat_g": 18.7,
-      "fiber_g": 7.5
+      "default_serving_g": 225.0,
+      "per_100g": {
+        "kcal": 204.0,
+        "protein_g": 11.93,
+        "carbs_g": 20.0,
+        "fat_g": 8.29,
+        "fiber_g": 3.33
+      },
+      "default_serving": {
+        "kcal": 459.0,
+        "protein_g": 26.8,
+        "carbs_g": 45.0,
+        "fat_g": 18.7,
+        "fiber_g": 7.5
+      }
     },
     "keema_matar": {
       "category": "curry",
       "serving_label": "1 serving",
-      "kcal": 499.6,
-      "protein_g": 36.4,
-      "carbs_g": 2.8,
-      "fat_g": 37.6,
-      "fiber_g": 0.6
+      "default_serving_g": 207.0,
+      "per_100g": {
+        "kcal": 241.34,
+        "protein_g": 17.61,
+        "carbs_g": 1.37,
+        "fat_g": 18.15,
+        "fiber_g": 0.31
+      },
+      "default_serving": {
+        "kcal": 499.6,
+        "protein_g": 36.4,
+        "carbs_g": 2.8,
+        "fat_g": 37.6,
+        "fiber_g": 0.6
+      }
     },
     "chicken_biryani": {
       "category": "rice_dish",
       "serving_label": "1 plate",
-      "kcal": 652.8,
-      "protein_g": 29.9,
-      "carbs_g": 62.3,
-      "fat_g": 30.6,
-      "fiber_g": 0.9
+      "default_serving_g": 340.0,
+      "per_100g": {
+        "kcal": 191.99,
+        "protein_g": 8.78,
+        "carbs_g": 18.33,
+        "fat_g": 8.99,
+        "fiber_g": 0.26
+      },
+      "default_serving": {
+        "kcal": 652.8,
+        "protein_g": 29.9,
+        "carbs_g": 62.3,
+        "fat_g": 30.6,
+        "fiber_g": 0.9
+      }
     },
     "beef_pulao": {
       "category": "rice_dish",
       "serving_label": "1 plate",
-      "kcal": 567.1,
-      "protein_g": 24.1,
-      "carbs_g": 61.6,
-      "fat_g": 23.2,
-      "fiber_g": 0.9
+      "default_serving_g": 302.0,
+      "per_100g": {
+        "kcal": 187.77,
+        "protein_g": 7.99,
+        "carbs_g": 20.4,
+        "fat_g": 7.67,
+        "fiber_g": 0.29
+      },
+      "default_serving": {
+        "kcal": 567.1,
+        "protein_g": 24.1,
+        "carbs_g": 61.6,
+        "fat_g": 23.2,
+        "fiber_g": 0.9
+      }
     },
     "aloo_sabzi": {
       "category": "vegetable",
       "serving_label": "1 bowl",
-      "kcal": 254.6,
-      "protein_g": 3.8,
-      "carbs_g": 38.4,
-      "fat_g": 10.2,
-      "fiber_g": 3.7
+      "default_serving_g": 225.0,
+      "per_100g": {
+        "kcal": 113.16,
+        "protein_g": 1.67,
+        "carbs_g": 17.05,
+        "fat_g": 4.55,
+        "fiber_g": 1.66
+      },
+      "default_serving": {
+        "kcal": 254.6,
+        "protein_g": 3.8,
+        "carbs_g": 38.4,
+        "fat_g": 10.2,
+        "fiber_g": 3.7
+      }
     },
     "bhindi_fry": {
       "category": "vegetable",
       "serving_label": "1 bowl",
-      "kcal": 161.6,
-      "protein_g": 3.0,
-      "carbs_g": 12.6,
-      "fat_g": 12.3,
-      "fiber_g": 5.1
+      "default_serving_g": 177.0,
+      "per_100g": {
+        "kcal": 91.29,
+        "protein_g": 1.7,
+        "carbs_g": 7.14,
+        "fat_g": 6.96,
+        "fiber_g": 2.86
+      },
+      "default_serving": {
+        "kcal": 161.6,
+        "protein_g": 3.0,
+        "carbs_g": 12.6,
+        "fat_g": 12.3,
+        "fiber_g": 5.1
+      }
     },
     "palak_paneer": {
       "category": "vegetable",
       "serving_label": "1 bowl",
-      "kcal": 291.0,
-      "protein_g": 15.7,
-      "carbs_g": 8.6,
-      "fat_g": 22.9,
-      "fiber_g": 3.6
+      "default_serving_g": 235.0,
+      "per_100g": {
+        "kcal": 123.85,
+        "protein_g": 6.67,
+        "carbs_g": 3.64,
+        "fat_g": 9.76,
+        "fiber_g": 1.53
+      },
+      "default_serving": {
+        "kcal": 291.0,
+        "protein_g": 15.7,
+        "carbs_g": 8.6,
+        "fat_g": 22.9,
+        "fiber_g": 3.6
+      }
     },
     "gobi_aloo": {
       "category": "vegetable",
       "serving_label": "1 bowl",
-      "kcal": 205.7,
-      "protein_g": 3.7,
-      "carbs_g": 22.1,
-      "fat_g": 12.4,
-      "fiber_g": 4.2
+      "default_serving_g": 212.0,
+      "per_100g": {
+        "kcal": 97.02,
+        "protein_g": 1.74,
+        "carbs_g": 10.42,
+        "fat_g": 5.87,
+        "fiber_g": 1.98
+      },
+      "default_serving": {
+        "kcal": 205.7,
+        "protein_g": 3.7,
+        "carbs_g": 22.1,
+        "fat_g": 12.4,
+        "fiber_g": 4.2
+      }
     },
     "chana_chaat": {
       "category": "snack",
       "serving_label": "1 bowl",
-      "kcal": 258.5,
-      "protein_g": 13.8,
-      "carbs_g": 43.9,
-      "fat_g": 4.0,
-      "fiber_g": 12.0
+      "default_serving_g": 195.0,
+      "per_100g": {
+        "kcal": 132.56,
+        "protein_g": 7.07,
+        "carbs_g": 22.53,
+        "fat_g": 2.04,
+        "fiber_g": 6.17
+      },
+      "default_serving": {
+        "kcal": 258.5,
+        "protein_g": 13.8,
+        "carbs_g": 43.9,
+        "fat_g": 4.0,
+        "fiber_g": 12.0
+      }
     },
     "samosa": {
       "category": "snack",
       "serving_label": "1 piece",
-      "kcal": 147.1,
-      "protein_g": 3.0,
-      "carbs_g": 20.4,
-      "fat_g": 6.4,
-      "fiber_g": 2.7
+      "default_serving_g": 56.0,
+      "per_100g": {
+        "kcal": 262.75,
+        "protein_g": 5.3,
+        "carbs_g": 36.48,
+        "fat_g": 11.48,
+        "fiber_g": 4.89
+      },
+      "default_serving": {
+        "kcal": 147.1,
+        "protein_g": 3.0,
+        "carbs_g": 20.4,
+        "fat_g": 6.4,
+        "fiber_g": 2.7
+      }
     },
     "pakora": {
       "category": "snack",
       "serving_label": "100g",
-      "kcal": 364.0,
-      "protein_g": 13.4,
-      "carbs_g": 36.7,
-      "fat_g": 18.0,
-      "fiber_g": 6.8
+      "default_serving_g": 94.0,
+      "per_100g": {
+        "kcal": 387.19,
+        "protein_g": 14.28,
+        "carbs_g": 39.0,
+        "fat_g": 19.19,
+        "fiber_g": 7.26
+      },
+      "default_serving": {
+        "kcal": 364.0,
+        "protein_g": 13.4,
+        "carbs_g": 36.7,
+        "fat_g": 18.0,
+        "fiber_g": 6.8
+      }
     },
     "chicken_tikka": {
       "category": "grilled",
       "serving_label": "2 pieces",
-      "kcal": 330.4,
-      "protein_g": 47.2,
-      "carbs_g": 0.9,
-      "fat_g": 14.1,
-      "fiber_g": 0.0
+      "default_serving_g": 178.0,
+      "per_100g": {
+        "kcal": 185.63,
+        "protein_g": 26.52,
+        "carbs_g": 0.53,
+        "fat_g": 7.9,
+        "fiber_g": 0.0
+      },
+      "default_serving": {
+        "kcal": 330.4,
+        "protein_g": 47.2,
+        "carbs_g": 0.9,
+        "fat_g": 14.1,
+        "fiber_g": 0.0
+      }
     },
     "seekh_kebab": {
       "category": "grilled",
       "serving_label": "2 kebabs",
-      "kcal": 254.0,
-      "protein_g": 24.0,
-      "carbs_g": 0.0,
-      "fat_g": 17.0,
-      "fiber_g": 0.0
+      "default_serving_g": 100.0,
+      "per_100g": {
+        "kcal": 254.0,
+        "protein_g": 24.0,
+        "carbs_g": 0.0,
+        "fat_g": 17.0,
+        "fiber_g": 0.0
+      },
+      "default_serving": {
+        "kcal": 254.0,
+        "protein_g": 24.0,
+        "carbs_g": 0.0,
+        "fat_g": 17.0,
+        "fiber_g": 0.0
+      }
     },
     "boiled_egg": {
       "category": "breakfast",
       "serving_label": "1 egg",
-      "kcal": 77.5,
-      "protein_g": 6.5,
-      "carbs_g": 0.6,
-      "fat_g": 5.5,
-      "fiber_g": 0.0
+      "default_serving_g": 50.0,
+      "per_100g": {
+        "kcal": 155.0,
+        "protein_g": 13.0,
+        "carbs_g": 1.1,
+        "fat_g": 11.0,
+        "fiber_g": 0.0
+      },
+      "default_serving": {
+        "kcal": 77.5,
+        "protein_g": 6.5,
+        "carbs_g": 0.6,
+        "fat_g": 5.5,
+        "fiber_g": 0.0
+      }
     },
     "omelette": {
       "category": "breakfast",
       "serving_label": "2-egg omelette",
-      "kcal": 229.7,
-      "protein_g": 13.1,
-      "carbs_g": 2.0,
-      "fat_g": 19.0,
-      "fiber_g": 0.2
+      "default_serving_g": 118.0,
+      "per_100g": {
+        "kcal": 194.68,
+        "protein_g": 11.11,
+        "carbs_g": 1.72,
+        "fat_g": 16.11,
+        "fiber_g": 0.14
+      },
+      "default_serving": {
+        "kcal": 229.7,
+        "protein_g": 13.1,
+        "carbs_g": 2.0,
+        "fat_g": 19.0,
+        "fiber_g": 0.2
+      }
     },
     "sooji_halwa": {
       "category": "breakfast",
       "serving_label": "1 portion (halwa only, not the full halwa-puri-channa combo)",
-      "kcal": 412.8,
-      "protein_g": 4.8,
-      "carbs_g": 53.8,
-      "fat_g": 20.8,
-      "fiber_g": 4.4
+      "default_serving_g": 85.0,
+      "per_100g": {
+        "kcal": 485.59,
+        "protein_g": 5.65,
+        "carbs_g": 63.29,
+        "fat_g": 24.47,
+        "fiber_g": 5.18
+      },
+      "default_serving": {
+        "kcal": 412.8,
+        "protein_g": 4.8,
+        "carbs_g": 53.8,
+        "fat_g": 20.8,
+        "fiber_g": 4.4
+      }
     },
     "chai_regular": {
       "category": "beverage",
       "serving_label": "1 cup (~200ml)",
-      "kcal": 119.6,
-      "protein_g": 3.8,
-      "carbs_g": 17.8,
-      "fat_g": 4.0,
-      "fiber_g": 0.0
+      "default_serving_g": 132.0,
+      "per_100g": {
+        "kcal": 90.64,
+        "protein_g": 2.91,
+        "carbs_g": 13.45,
+        "fat_g": 3.0,
+        "fiber_g": 0.0
+      },
+      "default_serving": {
+        "kcal": 119.6,
+        "protein_g": 3.8,
+        "carbs_g": 17.8,
+        "fat_g": 4.0,
+        "fiber_g": 0.0
+      }
     },
     "lassi_sweet": {
       "category": "beverage",
       "serving_label": "1 glass (~250ml)",
-      "kcal": 199.4,
-      "protein_g": 7.0,
-      "carbs_g": 29.4,
-      "fat_g": 6.6,
-      "fiber_g": 0.0
+      "default_serving_g": 220.0,
+      "per_100g": {
+        "kcal": 90.64,
+        "protein_g": 3.18,
+        "carbs_g": 13.36,
+        "fat_g": 3.0,
+        "fiber_g": 0.0
+      },
+      "default_serving": {
+        "kcal": 199.4,
+        "protein_g": 7.0,
+        "carbs_g": 29.4,
+        "fat_g": 6.6,
+        "fiber_g": 0.0
+      }
     },
     "chapli_kebab": {
       "category": "grilled",
       "serving_label": "1 kebab",
-      "kcal": 396.8,
-      "protein_g": 29.0,
-      "carbs_g": 0.8,
-      "fat_g": 30.4,
-      "fiber_g": 0.2
+      "default_serving_g": 150.0,
+      "per_100g": {
+        "kcal": 264.53,
+        "protein_g": 19.32,
+        "carbs_g": 0.52,
+        "fat_g": 20.29,
+        "fiber_g": 0.16
+      },
+      "default_serving": {
+        "kcal": 396.8,
+        "protein_g": 29.0,
+        "carbs_g": 0.8,
+        "fat_g": 30.4,
+        "fiber_g": 0.2
+      }
     },
     "beef_korma": {
       "category": "curry",
       "serving_label": "1 serving",
-      "kcal": 500.4,
-      "protein_g": 35.2,
-      "carbs_g": 1.9,
-      "fat_g": 37.7,
-      "fiber_g": 0.0
+      "default_serving_g": 187.0,
+      "per_100g": {
+        "kcal": 267.58,
+        "protein_g": 18.8,
+        "carbs_g": 0.99,
+        "fat_g": 20.18,
+        "fiber_g": 0.0
+      },
+      "default_serving": {
+        "kcal": 500.4,
+        "protein_g": 35.2,
+        "carbs_g": 1.9,
+        "fat_g": 37.7,
+        "fiber_g": 0.0
+      }
     },
     "chicken_korma": {
       "category": "curry",
       "serving_label": "1 serving",
-      "kcal": 482.7,
-      "protein_g": 35.2,
-      "carbs_g": 1.9,
-      "fat_g": 37.0,
-      "fiber_g": 0.0
+      "default_serving_g": 185.0,
+      "per_100g": {
+        "kcal": 260.92,
+        "protein_g": 19.01,
+        "carbs_g": 1.01,
+        "fat_g": 20.02,
+        "fiber_g": 0.0
+      },
+      "default_serving": {
+        "kcal": 482.7,
+        "protein_g": 35.2,
+        "carbs_g": 1.9,
+        "fat_g": 37.0,
+        "fiber_g": 0.0
+      }
     },
     "aloo_keema": {
       "category": "curry",
       "serving_label": "1 serving",
-      "kcal": 437.4,
-      "protein_g": 26.1,
-      "carbs_g": 22.0,
-      "fat_g": 27.1,
-      "fiber_g": 2.1
+      "default_serving_g": 230.0,
+      "per_100g": {
+        "kcal": 190.17,
+        "protein_g": 11.36,
+        "carbs_g": 9.55,
+        "fat_g": 11.79,
+        "fiber_g": 0.93
+      },
+      "default_serving": {
+        "kcal": 437.4,
+        "protein_g": 26.1,
+        "carbs_g": 22.0,
+        "fat_g": 27.1,
+        "fiber_g": 2.1
+      }
     },
     "baingan_bharta": {
       "category": "vegetable",
       "serving_label": "1 bowl",
-      "kcal": 181.6,
-      "protein_g": 1.9,
-      "carbs_g": 18.3,
-      "fat_g": 12.4,
-      "fiber_g": 5.1
+      "default_serving_g": 237.0,
+      "per_100g": {
+        "kcal": 76.62,
+        "protein_g": 0.8,
+        "carbs_g": 7.73,
+        "fat_g": 5.24,
+        "fiber_g": 2.17
+      },
+      "default_serving": {
+        "kcal": 181.6,
+        "protein_g": 1.9,
+        "carbs_g": 18.3,
+        "fat_g": 12.4,
+        "fiber_g": 5.1
+      }
     },
     "shami_kebab": {
       "category": "grilled",
       "serving_label": "2 kebabs",
-      "kcal": 210.5,
-      "protein_g": 13.6,
-      "carbs_g": 8.3,
-      "fat_g": 13.7,
-      "fiber_g": 2.3
+      "default_serving_g": 85.0,
+      "per_100g": {
+        "kcal": 247.65,
+        "protein_g": 15.96,
+        "carbs_g": 9.8,
+        "fat_g": 16.09,
+        "fiber_g": 2.68
+      },
+      "default_serving": {
+        "kcal": 210.5,
+        "protein_g": 13.6,
+        "carbs_g": 8.3,
+        "fat_g": 13.7,
+        "fiber_g": 2.3
+      }
     },
     "chicken_malai_boti": {
       "category": "grilled",
       "serving_label": "2 pieces",
-      "kcal": 324.6,
-      "protein_g": 47.4,
-      "carbs_g": 1.3,
-      "fat_g": 12.9,
-      "fiber_g": 0.0
+      "default_serving_g": 185.0,
+      "per_100g": {
+        "kcal": 175.49,
+        "protein_g": 25.65,
+        "carbs_g": 0.71,
+        "fat_g": 6.97,
+        "fiber_g": 0.0
+      },
+      "default_serving": {
+        "kcal": 324.6,
+        "protein_g": 47.4,
+        "carbs_g": 1.3,
+        "fat_g": 12.9,
+        "fiber_g": 0.0
+      }
     },
     "fish_fry": {
       "category": "grilled",
       "serving_label": "1 fillet",
-      "kcal": 389.1,
-      "protein_g": 36.3,
-      "carbs_g": 8.7,
-      "fat_g": 22.0,
-      "fiber_g": 1.6
+      "default_serving_g": 177.0,
+      "per_100g": {
+        "kcal": 219.85,
+        "protein_g": 20.51,
+        "carbs_g": 4.92,
+        "fat_g": 12.43,
+        "fiber_g": 0.92
+      },
+      "default_serving": {
+        "kcal": 389.1,
+        "protein_g": 36.3,
+        "carbs_g": 8.7,
+        "fat_g": 22.0,
+        "fiber_g": 1.6
+      }
     },
     "chana_curry": {
       "category": "daal_rice",
       "serving_label": "1 bowl",
-      "kcal": 447.5,
-      "protein_g": 18.3,
-      "carbs_g": 57.8,
-      "fat_g": 17.3,
-      "fiber_g": 15.9
+      "default_serving_g": 262.0,
+      "per_100g": {
+        "kcal": 170.79,
+        "protein_g": 6.98,
+        "carbs_g": 22.07,
+        "fat_g": 6.6,
+        "fiber_g": 6.07
+      },
+      "default_serving": {
+        "kcal": 447.5,
+        "protein_g": 18.3,
+        "carbs_g": 57.8,
+        "fat_g": 17.3,
+        "fiber_g": 15.9
+      }
     },
     "gajar_halwa": {
       "category": "dessert",
       "serving_label": "1 portion",
-      "kcal": 366.9,
-      "protein_g": 5.7,
-      "carbs_g": 40.7,
-      "fat_g": 20.7,
-      "fiber_g": 4.2
+      "default_serving_g": 212.0,
+      "per_100g": {
+        "kcal": 173.07,
+        "protein_g": 2.69,
+        "carbs_g": 19.2,
+        "fat_g": 9.76,
+        "fiber_g": 1.98
+      },
+      "default_serving": {
+        "kcal": 366.9,
+        "protein_g": 5.7,
+        "carbs_g": 40.7,
+        "fat_g": 20.7,
+        "fiber_g": 4.2
+      }
     },
     "kheer": {
       "category": "dessert",
       "serving_label": "1 bowl",
-      "kcal": 277.4,
-      "protein_g": 8.0,
-      "carbs_g": 46.4,
-      "fat_g": 6.8,
-      "fiber_g": 0.2
+      "default_serving_g": 280.0,
+      "per_100g": {
+        "kcal": 99.07,
+        "protein_g": 2.86,
+        "carbs_g": 16.57,
+        "fat_g": 2.42,
+        "fiber_g": 0.09
+      },
+      "default_serving": {
+        "kcal": 277.4,
+        "protein_g": 8.0,
+        "carbs_g": 46.4,
+        "fat_g": 6.8,
+        "fiber_g": 0.2
+      }
     },
     "gulab_jamun": {
       "category": "dessert",
       "serving_label": "2 pieces",
-      "kcal": 452.0,
-      "protein_g": 7.5,
-      "carbs_g": 57.6,
-      "fat_g": 21.4,
-      "fiber_g": 0.4
+      "default_serving_g": 100.0,
+      "per_100g": {
+        "kcal": 452.05,
+        "protein_g": 7.5,
+        "carbs_g": 57.6,
+        "fat_g": 21.35,
+        "fiber_g": 0.41
+      },
+      "default_serving": {
+        "kcal": 452.0,
+        "protein_g": 7.5,
+        "carbs_g": 57.6,
+        "fat_g": 21.4,
+        "fiber_g": 0.4
+      }
     },
     "zinger_burger": {
       "category": "fast_food",
       "serving_label": "1 burger",
-      "kcal": 568.7,
-      "protein_g": 28.1,
-      "carbs_g": 50.2,
-      "fat_g": 28.4,
-      "fiber_g": 2.0
+      "default_serving_g": 198.0,
+      "per_100g": {
+        "kcal": 287.23,
+        "protein_g": 14.19,
+        "carbs_g": 25.35,
+        "fat_g": 14.34,
+        "fiber_g": 1.01
+      },
+      "default_serving": {
+        "kcal": 568.7,
+        "protein_g": 28.1,
+        "carbs_g": 50.2,
+        "fat_g": 28.4,
+        "fiber_g": 2.0
+      }
     },
     "fried_chicken_piece": {
       "category": "fast_food",
       "serving_label": "1 piece",
-      "kcal": 338.0,
-      "protein_g": 24.7,
-      "carbs_g": 13.0,
-      "fat_g": 20.8,
-      "fiber_g": 0.0
+      "default_serving_g": 130.0,
+      "per_100g": {
+        "kcal": 260.0,
+        "protein_g": 19.0,
+        "carbs_g": 10.0,
+        "fat_g": 16.0,
+        "fiber_g": 0.0
+      },
+      "default_serving": {
+        "kcal": 338.0,
+        "protein_g": 24.7,
+        "carbs_g": 13.0,
+        "fat_g": 20.8,
+        "fiber_g": 0.0
+      }
     },
     "pizza_slice_cheese": {
       "category": "fast_food",
-      "serving_label": "1 slice (medium pizza)",
-      "kcal": 325.4,
-      "protein_g": 11.7,
-      "carbs_g": 36.4,
-      "fat_g": 14.5,
-      "fiber_g": 1.5
+      "serving_label": "1 slice, medium pizza (default)",
+      "default_serving_g": 106.0,
+      "per_100g": {
+        "kcal": 307.02,
+        "protein_g": 11.02,
+        "carbs_g": 34.32,
+        "fat_g": 13.72,
+        "fiber_g": 1.37
+      },
+      "default_serving": {
+        "kcal": 325.4,
+        "protein_g": 11.7,
+        "carbs_g": 36.4,
+        "fat_g": 14.5,
+        "fiber_g": 1.5
+      },
+      "portion_presets": {
+        "slice_small_pizza": {
+          "grams": 60,
+          "kcal": 184.2,
+          "protein_g": 6.6,
+          "carbs_g": 20.6,
+          "fat_g": 8.2,
+          "fiber_g": 0.8
+        },
+        "slice_medium_pizza": {
+          "grams": 90,
+          "kcal": 276.3,
+          "protein_g": 9.9,
+          "carbs_g": 30.9,
+          "fat_g": 12.3,
+          "fiber_g": 1.2
+        },
+        "slice_large_pizza": {
+          "grams": 120,
+          "kcal": 368.4,
+          "protein_g": 13.2,
+          "carbs_g": 41.2,
+          "fat_g": 16.5,
+          "fiber_g": 1.6
+        }
+      }
     },
     "french_fries": {
       "category": "fast_food",
       "serving_label": "1 regular serving",
-      "kcal": 405.6,
-      "protein_g": 4.4,
-      "carbs_g": 53.3,
-      "fat_g": 19.5,
-      "fiber_g": 4.9
+      "default_serving_g": 130.0,
+      "per_100g": {
+        "kcal": 312.0,
+        "protein_g": 3.4,
+        "carbs_g": 41.0,
+        "fat_g": 15.0,
+        "fiber_g": 3.8
+      },
+      "default_serving": {
+        "kcal": 405.6,
+        "protein_g": 4.4,
+        "carbs_g": 53.3,
+        "fat_g": 19.5,
+        "fiber_g": 4.9
+      }
     },
     "chicken_shawarma": {
       "category": "fast_food",
       "serving_label": "1 roll",
-      "kcal": 390.0,
-      "protein_g": 34.8,
-      "carbs_g": 35.9,
-      "fat_g": 11.0,
-      "fiber_g": 2.2
+      "default_serving_g": 195.0,
+      "per_100g": {
+        "kcal": 200.0,
+        "protein_g": 17.83,
+        "carbs_g": 18.42,
+        "fat_g": 5.62,
+        "fiber_g": 1.15
+      },
+      "default_serving": {
+        "kcal": 390.0,
+        "protein_g": 34.8,
+        "carbs_g": 35.9,
+        "fat_g": 11.0,
+        "fiber_g": 2.2
+      }
     },
     "white_sauce_pasta": {
       "category": "fast_food",
       "serving_label": "1 plate",
-      "kcal": 581.7,
-      "protein_g": 32.3,
-      "carbs_g": 57.2,
-      "fat_g": 24.0,
-      "fiber_g": 4.0
+      "default_serving_g": 335.0,
+      "per_100g": {
+        "kcal": 173.64,
+        "protein_g": 9.65,
+        "carbs_g": 17.07,
+        "fat_g": 7.16,
+        "fiber_g": 1.18
+      },
+      "default_serving": {
+        "kcal": 581.7,
+        "protein_g": 32.3,
+        "carbs_g": 57.2,
+        "fat_g": 24.0,
+        "fiber_g": 4.0
+      }
     },
     "chicken_chowmein": {
       "category": "fast_food",
       "serving_label": "1 plate",
-      "kcal": 518.7,
-      "protein_g": 29.0,
-      "carbs_g": 57.3,
-      "fat_g": 18.8,
-      "fiber_g": 3.6
+      "default_serving_g": 332.0,
+      "per_100g": {
+        "kcal": 156.23,
+        "protein_g": 8.74,
+        "carbs_g": 17.27,
+        "fat_g": 5.67,
+        "fiber_g": 1.1
+      },
+      "default_serving": {
+        "kcal": 518.7,
+        "protein_g": 29.0,
+        "carbs_g": 57.3,
+        "fat_g": 18.8,
+        "fiber_g": 3.6
+      }
     },
     "chicken_manchurian": {
       "category": "fast_food",
       "serving_label": "1 serving",
-      "kcal": 430.5,
-      "protein_g": 44.9,
-      "carbs_g": 13.0,
-      "fat_g": 21.0,
-      "fiber_g": 2.4
+      "default_serving_g": 180.0,
+      "per_100g": {
+        "kcal": 239.17,
+        "protein_g": 24.93,
+        "carbs_g": 7.22,
+        "fat_g": 11.69,
+        "fiber_g": 1.34
+      },
+      "default_serving": {
+        "kcal": 430.5,
+        "protein_g": 44.9,
+        "carbs_g": 13.0,
+        "fat_g": 21.0,
+        "fiber_g": 2.4
+      }
+    },
+    "chicken_roast": {
+      "category": "grilled",
+      "serving_label": "1 quarter, cut unspecified (blended leg+breast average, edible meat weight)",
+      "default_serving_g": 100.0,
+      "per_100g": {
+        "kcal": 207.5,
+        "protein_g": 28.5,
+        "carbs_g": 0.0,
+        "fat_g": 9.8,
+        "fiber_g": 0.0
+      },
+      "default_serving": {
+        "kcal": 207.5,
+        "protein_g": 28.5,
+        "carbs_g": 0.0,
+        "fat_g": 9.8,
+        "fiber_g": 0.0
+      },
+      "portion_presets": {
+        "quarter": {
+          "grams": 190,
+          "kcal": 394.2,
+          "protein_g": 54.1,
+          "carbs_g": 0.0,
+          "fat_g": 18.6,
+          "fiber_g": 0.0
+        },
+        "half": {
+          "grams": 375,
+          "kcal": 778.1,
+          "protein_g": 106.9,
+          "carbs_g": 0.0,
+          "fat_g": 36.8,
+          "fiber_g": 0.0
+        },
+        "full": {
+          "grams": 750,
+          "kcal": 1556.2,
+          "protein_g": 213.8,
+          "carbs_g": 0.0,
+          "fat_g": 73.5,
+          "fiber_g": 0.0
+        }
+      }
+    },
+    "chicken_roast_leg_quarter": {
+      "category": "grilled",
+      "serving_label": "1 quarter, leg/thigh piece specifically (edible meat weight)",
+      "default_serving_g": 190.0,
+      "per_100g": {
+        "kcal": 250.0,
+        "protein_g": 26.0,
+        "carbs_g": 0.0,
+        "fat_g": 16.0,
+        "fiber_g": 0.0
+      },
+      "default_serving": {
+        "kcal": 475.0,
+        "protein_g": 49.4,
+        "carbs_g": 0.0,
+        "fat_g": 30.4,
+        "fiber_g": 0.0
+      }
+    },
+    "chicken_roast_breast_quarter": {
+      "category": "grilled",
+      "serving_label": "1 quarter, breast/chest piece specifically (edible meat weight)",
+      "default_serving_g": 190.0,
+      "per_100g": {
+        "kcal": 165.0,
+        "protein_g": 31.0,
+        "carbs_g": 0.0,
+        "fat_g": 3.6,
+        "fiber_g": 0.0
+      },
+      "default_serving": {
+        "kcal": 313.5,
+        "protein_g": 58.9,
+        "carbs_g": 0.0,
+        "fat_g": 6.8,
+        "fiber_g": 0.0
+      }
+    },
+    "mango": {
+      "category": "fruit",
+      "serving_label": "1 medium mango",
+      "default_serving_g": 200.0,
+      "per_100g": {
+        "kcal": 60.0,
+        "protein_g": 0.8,
+        "carbs_g": 15.0,
+        "fat_g": 0.4,
+        "fiber_g": 1.6
+      },
+      "default_serving": {
+        "kcal": 120.0,
+        "protein_g": 1.6,
+        "carbs_g": 30.0,
+        "fat_g": 0.8,
+        "fiber_g": 3.2
+      }
+    },
+    "banana": {
+      "category": "fruit",
+      "serving_label": "1 medium banana",
+      "default_serving_g": 120.0,
+      "per_100g": {
+        "kcal": 89.0,
+        "protein_g": 1.1,
+        "carbs_g": 23.0,
+        "fat_g": 0.3,
+        "fiber_g": 2.6
+      },
+      "default_serving": {
+        "kcal": 106.8,
+        "protein_g": 1.3,
+        "carbs_g": 27.6,
+        "fat_g": 0.4,
+        "fiber_g": 3.1
+      }
+    },
+    "apple": {
+      "category": "fruit",
+      "serving_label": "1 medium apple",
+      "default_serving_g": 180.0,
+      "per_100g": {
+        "kcal": 52.0,
+        "protein_g": 0.3,
+        "carbs_g": 14.0,
+        "fat_g": 0.2,
+        "fiber_g": 2.4
+      },
+      "default_serving": {
+        "kcal": 93.6,
+        "protein_g": 0.5,
+        "carbs_g": 25.2,
+        "fat_g": 0.4,
+        "fiber_g": 4.3
+      }
+    },
+    "guava": {
+      "category": "fruit",
+      "serving_label": "1 medium guava",
+      "default_serving_g": 100.0,
+      "per_100g": {
+        "kcal": 68.0,
+        "protein_g": 2.6,
+        "carbs_g": 14.0,
+        "fat_g": 1.0,
+        "fiber_g": 5.4
+      },
+      "default_serving": {
+        "kcal": 68.0,
+        "protein_g": 2.6,
+        "carbs_g": 14.0,
+        "fat_g": 1.0,
+        "fiber_g": 5.4
+      }
+    },
+    "watermelon": {
+      "category": "fruit",
+      "serving_label": "1 wedge/cup",
+      "default_serving_g": 280.0,
+      "per_100g": {
+        "kcal": 30.0,
+        "protein_g": 0.6,
+        "carbs_g": 7.6,
+        "fat_g": 0.2,
+        "fiber_g": 0.4
+      },
+      "default_serving": {
+        "kcal": 84.0,
+        "protein_g": 1.7,
+        "carbs_g": 21.3,
+        "fat_g": 0.6,
+        "fiber_g": 1.1
+      }
+    },
+    "kinnow": {
+      "category": "fruit",
+      "serving_label": "1 medium kinnow/orange",
+      "default_serving_g": 130.0,
+      "per_100g": {
+        "kcal": 47.0,
+        "protein_g": 0.9,
+        "carbs_g": 12.0,
+        "fat_g": 0.1,
+        "fiber_g": 2.4
+      },
+      "default_serving": {
+        "kcal": 61.1,
+        "protein_g": 1.2,
+        "carbs_g": 15.6,
+        "fat_g": 0.1,
+        "fiber_g": 3.1
+      }
+    },
+    "grapes": {
+      "category": "fruit",
+      "serving_label": "1 small bunch/cup",
+      "default_serving_g": 100.0,
+      "per_100g": {
+        "kcal": 69.0,
+        "protein_g": 0.7,
+        "carbs_g": 18.0,
+        "fat_g": 0.2,
+        "fiber_g": 0.9
+      },
+      "default_serving": {
+        "kcal": 69.0,
+        "protein_g": 0.7,
+        "carbs_g": 18.0,
+        "fat_g": 0.2,
+        "fiber_g": 0.9
+      }
+    },
+    "pomegranate": {
+      "category": "fruit",
+      "serving_label": "1 cup seeds (anaar)",
+      "default_serving_g": 100.0,
+      "per_100g": {
+        "kcal": 83.0,
+        "protein_g": 1.7,
+        "carbs_g": 19.0,
+        "fat_g": 1.2,
+        "fiber_g": 4.0
+      },
+      "default_serving": {
+        "kcal": 83.0,
+        "protein_g": 1.7,
+        "carbs_g": 19.0,
+        "fat_g": 1.2,
+        "fiber_g": 4.0
+      }
+    },
+    "dates": {
+      "category": "fruit",
+      "serving_label": "3 dates (khajoor)",
+      "default_serving_g": 24.0,
+      "per_100g": {
+        "kcal": 277.0,
+        "protein_g": 1.8,
+        "carbs_g": 75.0,
+        "fat_g": 0.2,
+        "fiber_g": 6.7
+      },
+      "default_serving": {
+        "kcal": 66.5,
+        "protein_g": 0.4,
+        "carbs_g": 18.0,
+        "fat_g": 0.0,
+        "fiber_g": 1.6
+      }
+    },
+    "cucumber": {
+      "category": "vegetable_raw",
+      "serving_label": "1 medium cucumber (kheera)",
+      "default_serving_g": 150.0,
+      "per_100g": {
+        "kcal": 15.0,
+        "protein_g": 0.7,
+        "carbs_g": 3.6,
+        "fat_g": 0.1,
+        "fiber_g": 0.5
+      },
+      "default_serving": {
+        "kcal": 22.5,
+        "protein_g": 1.0,
+        "carbs_g": 5.4,
+        "fat_g": 0.2,
+        "fiber_g": 0.8
+      }
+    },
+    "radish": {
+      "category": "vegetable_raw",
+      "serving_label": "1 medium radish (mooli)",
+      "default_serving_g": 60.0,
+      "per_100g": {
+        "kcal": 16.0,
+        "protein_g": 0.7,
+        "carbs_g": 3.4,
+        "fat_g": 0.1,
+        "fiber_g": 1.6
+      },
+      "default_serving": {
+        "kcal": 9.6,
+        "protein_g": 0.4,
+        "carbs_g": 2.0,
+        "fat_g": 0.1,
+        "fiber_g": 1.0
+      }
+    },
+    "carrot_snack": {
+      "category": "vegetable_raw",
+      "serving_label": "1 medium carrot",
+      "default_serving_g": 60.0,
+      "per_100g": {
+        "kcal": 41.0,
+        "protein_g": 0.9,
+        "carbs_g": 9.6,
+        "fat_g": 0.2,
+        "fiber_g": 2.8
+      },
+      "default_serving": {
+        "kcal": 24.6,
+        "protein_g": 0.5,
+        "carbs_g": 5.8,
+        "fat_g": 0.1,
+        "fiber_g": 1.7
+      }
+    },
+    "kachumber_salad": {
+      "category": "vegetable_raw",
+      "serving_label": "1 bowl",
+      "default_serving_g": 160.0,
+      "per_100g": {
+        "kcal": 20.62,
+        "protein_g": 0.84,
+        "carbs_g": 4.76,
+        "fat_g": 0.13,
+        "fiber_g": 0.94
+      },
+      "default_serving": {
+        "kcal": 33.0,
+        "protein_g": 1.3,
+        "carbs_g": 7.6,
+        "fat_g": 0.2,
+        "fiber_g": 1.5
+      }
     }
   }
 }

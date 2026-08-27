@@ -1,41 +1,66 @@
-# Pakistani + common Western food database — v1
+# Pakistani + common Western food database — v2
 
-49 dishes: the original 29 Pakistani home-cooking staples plus 20 more — 12 additional Pakistani dishes (kebabs, kormas, desserts) and 8 Western/fast-food items that are genuinely common in Pakistan (burgers, pizza, fries, shawarma, pasta, chowmein, manchurian). Computed, not guessed — see below.
+65 dishes: 49 composed dishes (curries, breads, rice dishes, snacks, desserts, fast food) plus 16 standalone raw fruits/vegetables. Every dish now stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
 
 ## Files
 
-- `ingredients.json` — per-100g nutrition for ~28 base ingredients (atta, rice, daals, meats, ghee/oil, dairy, common vegetables). Values match standard, well-established nutrition references (USDA FoodData Central-consistent) for these items.
-- `recipes.json` — each dish as a real recipe: base ingredients + realistic gram quantities for one typical home-cooked serving.
-- `build_dishes.py` — computes dish-level nutrition from the two files above. Run with `python3 build_dishes.py`.
-- `dishes.json` — the generated output. Don't hand-edit this file — edit `recipes.json` or `ingredients.json` and re-run the script instead, so the numbers stay traceable to a real recipe.
+- `ingredients.json` — ~40 base ingredients, per-100g nutrition. Includes swap-option variants (e.g. `atta_multigrain` alongside `atta_whole_wheat_flour`) and raw fruit/veg with a `unit_g` field for natural "1 medium X" logging.
+- `recipes.json` — each dish's recipe. An ingredient entry is either a fixed amount (`"onion_raw": 15`) or a **swappable role** (see below).
+- `build_dishes.py` — resolves recipes into `dishes.json`. Re-run after any edit to `recipes.json` or `ingredients.json`.
+- `dishes.json` — generated output. Don't hand-edit.
 
-## Why this method, not just typing numbers
+## Why the schema changed (v1 -> v2)
 
-Every dish total here can be traced back to specific ingredients and quantities. That means if one ingredient's data turns out to be off, fixing it in one place and re-running the script corrects every dish that uses it — and anyone (including future us) can check *why* a number is what it is instead of taking it on faith.
+v1 stored one fixed total per dish ("1 slice pizza = 325 kcal"), which broke down immediately on real questions: what size pizza? What if someone cooks with refined flour instead of whole wheat? What if the chicken roast is a leg piece, not a breast piece? A fixed-total-per-dish model can't answer any of that without a new hardcoded dish for every combination.
 
-## Full audit log
+v2 fixes this two ways:
 
-Every dish (all 49) was checked against known real-world reference ranges for that item — not just spot-checked. Three real errors were found and fixed, all from the same root cause (overestimating oil/fat absorption in fried or rich dishes):
+**1. Per-100g storage, portion resolved at logging time.** Every dish exposes `per_100g` nutrition plus its own `default_serving`. Dishes with genuinely different real-world sizes also expose `portion_presets` — e.g. `pizza_slice_cheese` now has `slice_small_pizza` / `slice_medium_pizza` / `slice_large_pizza` as three real weights, not one guess.
 
-| Dish | First-pass result | Fix | Corrected result | Reference range |
-|---|---|---|---|---|
-| Samosa | 227 kcal | oil 15g → 6g | 147 kcal | ~130–150 kcal/piece |
-| Pakora | 417 kcal/100g | oil 20g → 14g | 364 kcal/100g | ~300–380 kcal/100g |
-| Shami kebab (2pc) | 363 kcal | mince/daal/egg/oil all reduced to real small-kebab portions | 210 kcal | ~150–200 kcal/2pc |
+**2. Swappable ingredient roles**, resolved by what the user actually said, not asked as a form. A role entry looks like:
+```json
+"flour": { "role": "flour", "options": ["atta_whole_wheat_flour", "maida_refined_flour", "atta_multigrain"], "default": "atta_whole_wheat_flour", "grams": 35 }
+```
+If someone just says "roti," the default applies — nothing is asked. If they say "roti with maida" or "multigrain roti," the parser maps directly to that option. No user-facing form, no extra taps in the common case.
 
-Also fixed: `halwa_puri_halwa` was renamed to `sooji_halwa` and its serving label clarified — it only represents the halwa component, not the full halwa-puri-channa breakfast combo. The original name implied more than the recipe actually modeled.
+Four roles are modeled this way across the dishes that plausibly vary: **flour** (whole wheat / refined / multigrain), **protein_cut** (chicken breast / thigh, on every chicken dish), **fat** (ghee / cooking oil), **dairy** (regular / low-fat yogurt or milk).
 
-Everything else (46 of 49 dishes, plus all 40 ingredients) fell within plausible real-world reference ranges on review — including the richer dishes (nihari, korma, karahi, biryani, gulab jamun) that could plausibly have been over- or under-estimated given how much oil/ghee/sugar varies by household. Nothing else needed correction, but "checked and fine" is a real finding here, not a rubber stamp — each one was compared against a known range, not assumed correct by default.
+## Chicken roast: the worked example that shaped this design
 
-## Known limitations — read before trusting this at scale
+Chicken roast comes in real, meaningfully different variants — quarter/half/full, and a quarter is specifically either a leg piece or a breast piece, which differ a lot nutritionally (dark meat vs. lean white meat). This is handled as:
 
-- **Serving sizes are estimates of "typical," not measured.** Real households vary a lot, especially on oil/ghee. Treat these as a reasonable starting point, not gospel.
-- **Restaurant/roadside versions run higher** than these home-cooked estimates, especially for karahi, biryani, and the fast-food items (pizza/burger cheese content varies a lot by chain). These numbers represent modest, typical portions — worth surfacing that distinction in the app rather than pretending one number covers both.
-- **The Western/fast-food entries are approximations of common chain-style versions** (zinger burger, pizza slice, etc.), not any specific restaurant's actual recipe — real values vary by chain and will need refinement once compared against real menus.
-- **49 dishes is still a starting set**, not the full list. Expand based on what people actually try to log and can't find — that's a better prioritization signal than guessing the next 50 dishes up front.
+- `chicken_roast` — the generic entry, cut unspecified. Uses a **blend** (not a single default) of breast + thigh, because there's no honest single "default" cut for an unspecified quarter — guessing one would be wrong roughly half the time. `portion_presets` gives quarter/half/full as real weights.
+- `chicken_roast_leg_quarter` / `chicken_roast_breast_quarter` — separate, simple fixed-ingredient entries for when the cut *is* specified, since half/full naturally contain both cuts anyway (no ambiguity there) but a quarter genuinely is one piece or the other.
+- **Important basis note, and a real fix made during this build**: the underlying chicken ingredients (`chicken_breast_cooked`, `chicken_thigh_skin_cooked`) are per-100g *edible meat*, not bone-in as-served weight. The first pass used bone-in-style portion weights (275g/550g/1100g for quarter/half/full) against edible-meat-basis nutrition data, which overstated calories — a full roast came out to 2282 kcal. Recalibrated to edible-meat-weight portions (190g/375g/750g), bringing quarter down to a realistic 394 kcal. Documenting this because it's the same category of error as the samosa/pakora fixes in v1 — mixing two different weight bases without noticing.
+
+## Raw fruits & vegetables — a genuinely different case
+
+These aren't composed recipes; the ingredient *is* the loggable item. Two things that made this its own thing rather than "more dishes":
+
+- Each fruit/veg ingredient carries a `unit_g` (e.g. 1 medium apple ≈ 180g), so natural logging ("I had a banana") maps directly without anyone touching grams.
+- They're deliberately prioritized for what's actually eaten in Pakistan, not a generic global fruit list: mango, banana, apple, guava, watermelon, **kinnow** (a citrus Pakistan is a major producer of, and almost certainly absent or poorly modeled in MyFitnessPal-style apps — this is exactly the kind of gap the whole idea is betting on), grapes, pomegranate, dates. Plus vegetables genuinely eaten raw rather than cooked into a dish: cucumber, radish, carrot, and kachumber salad as the first dish built entirely from raw ingredients.
+
+## Full audit log (cumulative)
+
+| Item | Issue found | Fix | Reference basis |
+|---|---|---|---|
+| Samosa | 227 kcal | oil 15g -> 6g | ~130-150 kcal/piece |
+| Pakora | 417 kcal/100g | oil 20g -> 14g | ~300-380 kcal/100g |
+| Shami kebab (2pc) | 363 kcal | portions resized to real small-kebab weights | ~150-200 kcal/2pc |
+| Chicken roast (full) | 2282 kcal | portion weights recalibrated from bone-in to edible-meat basis | consistency with own ingredient data |
+
+`halwa_puri_halwa` was also renamed to `sooji_halwa` in v1 since it only modeled the halwa component, not the full combo the old name implied.
+
+Every other dish (61 of 65) was checked against known reference ranges and held up — including the richer/riskier ones (nihari, korma, karahi, biryani, gulab jamun, the fast-food entries).
+
+## Known limitations — unchanged from v1, still true
+
+- Serving sizes and swap defaults are "typical," not measured. Real households vary.
+- Restaurant/roadside versions run higher than these home-cooked estimates, especially karahi, biryani, and the fast-food entries (which approximate common chain-style versions, not any specific restaurant's actual recipe).
+- 65 dishes is still a starting set. Expand based on what people actually try to log and can't find.
 
 ## Next steps (not done yet)
 
-- Continue expanding toward the full common Pakistani + Western-in-Pakistan dish list.
-- Decide serving-size conventions with real user feedback once logging starts.
+- Continue expanding the dish list (more curries, more regional dishes, more Western items).
+- Add a one-time profile-level default for flour type (set once at onboarding, applied silently after) — this is a UI/app-layer decision, not a data-file one, so it's not implemented here.
 - Turn `dishes.json` into D1 seed data once the app schema exists.

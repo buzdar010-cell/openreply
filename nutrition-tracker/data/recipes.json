@@ -1,35 +1,55 @@
 {
-  "_readme": "Each dish defined as a typical home-cooked recipe: one serving, broken into base ingredients + grams, matching how it's realistically cooked in a Pakistani home kitchen. build_dishes.py sums these against ingredients.json to compute dish-level nutrition. Serving sizes are deliberately 'typical portion', not restaurant-size — should be tuned against real user feedback once people start logging.",
+  "_readme": "Each dish defined as a typical home-cooked recipe: one serving, broken into base ingredients + grams. An ingredient entry is either a plain number (fixed grams of that exact ingredient) or an object describing a swappable role: {\"role\": \"<label>\", \"options\": [...], \"default\": \"<ingredient_id>\", \"grams\": N} picks one specific default ingredient, while {\"role\": \"<label>\", \"options\": [...], \"blend\": [...], \"grams\": N} averages across the blend list when no specific option is named (used for chicken roast, where a generic 'quarter' with no cut specified is genuinely a mix, not one true default). 'portion_presets' (optional) maps a size name to its total gram weight, letting one dish support multiple real portion sizes (e.g. pizza slice size, chicken roast quarter/half/full) instead of guessing one fixed weight. build_dishes.py resolves all of this into per-100g values plus the default serving.",
 
   "roti": {
     "category": "bread",
     "serving_label": "1 medium roti (~40g)",
-    "ingredients": { "atta_whole_wheat_flour": 35 }
+    "ingredients": {
+      "flour": { "role": "flour", "options": ["atta_whole_wheat_flour", "maida_refined_flour", "atta_multigrain"], "default": "atta_whole_wheat_flour", "grams": 35 }
+    }
   },
   "paratha": {
     "category": "bread",
     "serving_label": "1 medium paratha",
-    "ingredients": { "atta_whole_wheat_flour": 45, "ghee": 12 }
+    "ingredients": {
+      "flour": { "role": "flour", "options": ["atta_whole_wheat_flour", "maida_refined_flour", "atta_multigrain"], "default": "atta_whole_wheat_flour", "grams": 45 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 12 }
+    }
   },
   "naan": {
     "category": "bread",
     "serving_label": "1 tandoori naan",
-    "ingredients": { "atta_whole_wheat_flour": 55, "ghee": 5 }
+    "ingredients": {
+      "flour": { "role": "flour", "options": ["atta_whole_wheat_flour", "maida_refined_flour", "atta_multigrain"], "default": "atta_whole_wheat_flour", "grams": 55 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 5 }
+    }
   },
   "daal_chawal_masoor": {
     "category": "daal_rice",
     "serving_label": "1 plate (daal + rice)",
-    "ingredients": { "masoor_daal_cooked": 180, "rice_white_cooked": 150, "ghee": 8, "onion_raw": 15 }
+    "ingredients": {
+      "masoor_daal_cooked": 180, "rice_white_cooked": 150,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 8 },
+      "onion_raw": 15
+    }
   },
   "chana_daal": {
     "category": "daal_rice",
     "serving_label": "1 bowl",
-    "ingredients": { "chana_daal_cooked": 200, "ghee": 8, "onion_raw": 15, "tomato_raw": 20 }
+    "ingredients": {
+      "chana_daal_cooked": 200,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 8 },
+      "onion_raw": 15, "tomato_raw": 20
+    }
   },
   "moong_daal": {
     "category": "daal_rice",
     "serving_label": "1 bowl",
-    "ingredients": { "moong_daal_cooked": 200, "ghee": 6, "onion_raw": 15 }
+    "ingredients": {
+      "moong_daal_cooked": 200,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 6 },
+      "onion_raw": 15
+    }
   },
   "plain_rice": {
     "category": "daal_rice",
@@ -39,62 +59,110 @@
   "chicken_karahi": {
     "category": "curry",
     "serving_label": "1 serving (~1/4 karahi)",
-    "ingredients": { "chicken_thigh_skin_cooked": 150, "tomato_raw": 40, "cooking_oil": 15, "onion_raw": 10 }
+    "ingredients": {
+      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_thigh_skin_cooked", "grams": 150 },
+      "tomato_raw": 40,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 15 },
+      "onion_raw": 10
+    }
   },
   "chicken_curry": {
     "category": "curry",
     "serving_label": "1 serving",
-    "ingredients": { "chicken_thigh_skin_cooked": 130, "onion_raw": 25, "tomato_raw": 30, "cooking_oil": 12, "yogurt_whole_milk": 15 }
+    "ingredients": {
+      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_thigh_skin_cooked", "grams": 130 },
+      "onion_raw": 25, "tomato_raw": 30,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 },
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 15 }
+    }
   },
   "beef_nihari": {
     "category": "curry",
     "serving_label": "1 bowl",
-    "ingredients": { "beef_lean_cooked": 150, "cooking_oil": 20, "atta_whole_wheat_flour": 10 }
+    "ingredients": {
+      "beef_lean_cooked": 150,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 20 },
+      "atta_whole_wheat_flour": 10
+    }
   },
   "mutton_karahi": {
     "category": "curry",
     "serving_label": "1 serving",
-    "ingredients": { "mutton_curry_cut_cooked": 150, "tomato_raw": 35, "cooking_oil": 15, "onion_raw": 10 }
+    "ingredients": {
+      "mutton_curry_cut_cooked": 150, "tomato_raw": 35,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 15 },
+      "onion_raw": 10
+    }
   },
   "haleem": {
     "category": "curry",
     "serving_label": "1 bowl",
-    "ingredients": { "wheat_bulgur_haleem_mix_cooked": 150, "chicken_breast_cooked": 60, "ghee": 15 }
+    "ingredients": {
+      "wheat_bulgur_haleem_mix_cooked": 150,
+      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_breast_cooked", "grams": 60 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 15 }
+    }
   },
   "keema_matar": {
     "category": "curry",
     "serving_label": "1 serving",
-    "ingredients": { "beef_mince_keema_cooked": 150, "onion_raw": 20, "tomato_raw": 25, "cooking_oil": 12 }
+    "ingredients": {
+      "beef_mince_keema_cooked": 150, "onion_raw": 20, "tomato_raw": 25,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 }
+    }
   },
   "chicken_biryani": {
     "category": "rice_dish",
     "serving_label": "1 plate",
-    "ingredients": { "rice_white_cooked": 220, "chicken_thigh_skin_cooked": 90, "cooking_oil": 15, "yogurt_whole_milk": 15 }
+    "ingredients": {
+      "rice_white_cooked": 220,
+      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_thigh_skin_cooked", "grams": 90 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 15 },
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 15 }
+    }
   },
   "beef_pulao": {
     "category": "rice_dish",
     "serving_label": "1 plate",
-    "ingredients": { "rice_white_cooked": 220, "beef_lean_cooked": 70, "cooking_oil": 12 }
+    "ingredients": {
+      "rice_white_cooked": 220, "beef_lean_cooked": 70,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 }
+    }
   },
   "aloo_sabzi": {
     "category": "vegetable",
     "serving_label": "1 bowl",
-    "ingredients": { "potato_cooked": 180, "cooking_oil": 10, "onion_raw": 15, "tomato_raw": 20 }
+    "ingredients": {
+      "potato_cooked": 180,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 10 },
+      "onion_raw": 15, "tomato_raw": 20
+    }
   },
   "bhindi_fry": {
     "category": "vegetable",
     "serving_label": "1 bowl",
-    "ingredients": { "okra_cooked": 150, "cooking_oil": 12, "onion_raw": 15 }
+    "ingredients": {
+      "okra_cooked": 150,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 },
+      "onion_raw": 15
+    }
   },
   "palak_paneer": {
     "category": "vegetable",
     "serving_label": "1 bowl",
-    "ingredients": { "spinach_cooked": 150, "paneer": 60, "cooking_oil": 10, "yogurt_whole_milk": 15 }
+    "ingredients": {
+      "spinach_cooked": 150, "paneer": 60,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 10 },
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 15 }
+    }
   },
   "gobi_aloo": {
     "category": "vegetable",
     "serving_label": "1 bowl",
-    "ingredients": { "cauliflower_cooked": 120, "potato_cooked": 80, "cooking_oil": 12 }
+    "ingredients": {
+      "cauliflower_cooked": 120, "potato_cooked": 80,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 }
+    }
   },
   "chana_chaat": {
     "category": "snack",
@@ -104,17 +172,27 @@
   "samosa": {
     "category": "snack",
     "serving_label": "1 piece",
-    "ingredients": { "atta_whole_wheat_flour": 20, "potato_cooked": 30, "cooking_oil": 6 }
+    "ingredients": {
+      "atta_whole_wheat_flour": 20, "potato_cooked": 30,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 }
+    }
   },
   "pakora": {
     "category": "snack",
     "serving_label": "100g",
-    "ingredients": { "besan_gram_flour": 60, "onion_raw": 20, "cooking_oil": 14 }
+    "ingredients": {
+      "besan_gram_flour": 60, "onion_raw": 20,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 14 }
+    }
   },
   "chicken_tikka": {
     "category": "grilled",
     "serving_label": "2 pieces",
-    "ingredients": { "chicken_breast_cooked": 150, "yogurt_whole_milk": 20, "cooking_oil": 8 }
+    "ingredients": {
+      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_breast_cooked", "grams": 150 },
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 20 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 8 }
+    }
   },
   "seekh_kebab": {
     "category": "grilled",
@@ -129,89 +207,148 @@
   "omelette": {
     "category": "breakfast",
     "serving_label": "2-egg omelette",
-    "ingredients": { "egg_cooked": 100, "cooking_oil": 8, "onion_raw": 10 }
+    "ingredients": {
+      "egg_cooked": 100,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 8 },
+      "onion_raw": 10
+    }
   },
   "sooji_halwa": {
     "category": "breakfast",
     "serving_label": "1 portion (halwa only, not the full halwa-puri-channa combo)",
-    "ingredients": { "atta_whole_wheat_flour": 40, "sugar": 25, "ghee": 20 }
+    "ingredients": {
+      "flour": { "role": "flour", "options": ["atta_whole_wheat_flour", "maida_refined_flour", "atta_multigrain"], "default": "atta_whole_wheat_flour", "grams": 40 },
+      "sugar": 25,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 20 }
+    }
   },
   "chai_regular": {
     "category": "beverage",
     "serving_label": "1 cup (~200ml)",
-    "ingredients": { "milk_whole": 120, "sugar": 12 }
+    "ingredients": {
+      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 120 },
+      "sugar": 12
+    }
   },
   "lassi_sweet": {
     "category": "beverage",
     "serving_label": "1 glass (~250ml)",
-    "ingredients": { "yogurt_whole_milk": 200, "sugar": 20 }
+    "ingredients": {
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 200 },
+      "sugar": 20
+    }
   },
 
   "chapli_kebab": {
     "category": "grilled",
     "serving_label": "1 kebab",
-    "ingredients": { "beef_mince_keema_cooked": 120, "tomato_raw": 20, "cooking_oil": 10 }
+    "ingredients": {
+      "beef_mince_keema_cooked": 120, "tomato_raw": 20,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 10 }
+    }
   },
   "beef_korma": {
     "category": "curry",
     "serving_label": "1 serving",
-    "ingredients": { "beef_lean_cooked": 130, "yogurt_whole_milk": 30, "cream_fresh": 15, "cooking_oil": 12 }
+    "ingredients": {
+      "beef_lean_cooked": 130,
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 30 },
+      "cream_fresh": 15,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 }
+    }
   },
   "chicken_korma": {
     "category": "curry",
     "serving_label": "1 serving",
-    "ingredients": { "chicken_thigh_skin_cooked": 130, "yogurt_whole_milk": 30, "cream_fresh": 15, "cooking_oil": 10 }
+    "ingredients": {
+      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_thigh_skin_cooked", "grams": 130 },
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 30 },
+      "cream_fresh": 15,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 10 }
+    }
   },
   "aloo_keema": {
     "category": "curry",
     "serving_label": "1 serving",
-    "ingredients": { "beef_mince_keema_cooked": 100, "potato_cooked": 100, "onion_raw": 20, "cooking_oil": 10 }
+    "ingredients": {
+      "beef_mince_keema_cooked": 100, "potato_cooked": 100, "onion_raw": 20,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 10 }
+    }
   },
   "baingan_bharta": {
     "category": "vegetable",
     "serving_label": "1 bowl",
-    "ingredients": { "eggplant_cooked": 180, "onion_raw": 20, "tomato_raw": 25, "cooking_oil": 12 }
+    "ingredients": {
+      "eggplant_cooked": 180, "onion_raw": 20, "tomato_raw": 25,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 }
+    }
   },
   "shami_kebab": {
     "category": "grilled",
     "serving_label": "2 kebabs",
-    "ingredients": { "beef_mince_keema_cooked": 40, "chana_daal_cooked": 30, "egg_cooked": 10, "cooking_oil": 5 }
+    "ingredients": {
+      "beef_mince_keema_cooked": 40, "chana_daal_cooked": 30, "egg_cooked": 10,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+    }
   },
   "chicken_malai_boti": {
     "category": "grilled",
     "serving_label": "2 pieces",
-    "ingredients": { "chicken_breast_cooked": 150, "cream_fresh": 20, "yogurt_whole_milk": 15 }
+    "ingredients": {
+      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_breast_cooked", "grams": 150 },
+      "cream_fresh": 20,
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 15 }
+    }
   },
   "fish_fry": {
     "category": "grilled",
     "serving_label": "1 fillet",
-    "ingredients": { "fish_fillet_cooked": 150, "besan_gram_flour": 15, "cooking_oil": 12 }
+    "ingredients": {
+      "fish_fillet_cooked": 150, "besan_gram_flour": 15,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 }
+    }
   },
   "chana_curry": {
     "category": "daal_rice",
     "serving_label": "1 bowl",
-    "ingredients": { "chickpeas_cooked": 200, "onion_raw": 20, "tomato_raw": 30, "cooking_oil": 12 }
+    "ingredients": {
+      "chickpeas_cooked": 200, "onion_raw": 20, "tomato_raw": 30,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 }
+    }
   },
   "gajar_halwa": {
     "category": "dessert",
     "serving_label": "1 portion",
-    "ingredients": { "carrot_cooked": 150, "khoya_mawa": 30, "sugar": 20, "ghee": 12 }
+    "ingredients": {
+      "carrot_cooked": 150, "khoya_mawa": 30, "sugar": 20,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 12 }
+    }
   },
   "kheer": {
     "category": "dessert",
     "serving_label": "1 bowl",
-    "ingredients": { "rice_white_cooked": 60, "milk_whole": 200, "sugar": 20 }
+    "ingredients": {
+      "rice_white_cooked": 60,
+      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 200 },
+      "sugar": 20
+    }
   },
   "gulab_jamun": {
     "category": "dessert",
     "serving_label": "2 pieces",
-    "ingredients": { "khoya_mawa": 40, "maida_refined_flour": 15, "sugar": 35, "ghee": 10 }
+    "ingredients": {
+      "khoya_mawa": 40, "maida_refined_flour": 15, "sugar": 35,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 10 }
+    }
   },
 
   "zinger_burger": {
     "category": "fast_food",
     "serving_label": "1 burger",
-    "ingredients": { "white_bread_bun": 80, "chicken_breaded_fried": 110, "cooking_oil": 8 }
+    "ingredients": {
+      "white_bread_bun": 80, "chicken_breaded_fried": 110,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 8 }
+    }
   },
   "fried_chicken_piece": {
     "category": "fast_food",
@@ -220,8 +357,12 @@
   },
   "pizza_slice_cheese": {
     "category": "fast_food",
-    "serving_label": "1 slice (medium pizza)",
-    "ingredients": { "maida_refined_flour": 45, "cheese_processed": 35, "tomato_raw": 20, "cooking_oil": 6 }
+    "serving_label": "1 slice, medium pizza (default)",
+    "portion_presets": { "slice_small_pizza": 60, "slice_medium_pizza": 90, "slice_large_pizza": 120 },
+    "ingredients": {
+      "maida_refined_flour": 45, "cheese_processed": 35, "tomato_raw": 20,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 }
+    }
   },
   "french_fries": {
     "category": "fast_food",
@@ -231,21 +372,123 @@
   "chicken_shawarma": {
     "category": "fast_food",
     "serving_label": "1 roll",
-    "ingredients": { "white_bread_bun": 70, "chicken_breast_cooked": 90, "cream_fresh": 15, "cabbage_raw": 20 }
+    "ingredients": {
+      "white_bread_bun": 70,
+      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_breast_cooked", "grams": 90 },
+      "cream_fresh": 15, "cabbage_raw": 20
+    }
   },
   "white_sauce_pasta": {
     "category": "fast_food",
     "serving_label": "1 plate",
-    "ingredients": { "pasta_cooked": 220, "cream_fresh": 40, "cheese_processed": 25, "chicken_breast_cooked": 50 }
+    "ingredients": {
+      "pasta_cooked": 220, "cream_fresh": 40, "cheese_processed": 25,
+      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_breast_cooked", "grams": 50 }
+    }
   },
   "chicken_chowmein": {
     "category": "fast_food",
     "serving_label": "1 plate",
-    "ingredients": { "noodles_cooked": 220, "chicken_breast_cooked": 60, "cabbage_raw": 40, "cooking_oil": 12 }
+    "ingredients": {
+      "noodles_cooked": 220,
+      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_breast_cooked", "grams": 60 },
+      "cabbage_raw": 40,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 }
+    }
   },
   "chicken_manchurian": {
     "category": "fast_food",
     "serving_label": "1 serving",
-    "ingredients": { "chicken_breast_cooked": 130, "besan_gram_flour": 20, "cooking_oil": 15, "onion_raw": 15 }
+    "ingredients": {
+      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_breast_cooked", "grams": 130 },
+      "besan_gram_flour": 20,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 15 },
+      "onion_raw": 15
+    }
+  },
+
+  "chicken_roast": {
+    "category": "grilled",
+    "serving_label": "1 quarter, cut unspecified (blended leg+breast average, edible meat weight)",
+    "portion_presets": { "quarter": 190, "half": 375, "full": 750 },
+    "ingredients": {
+      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "blend": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "grams": 100 }
+    }
+  },
+  "chicken_roast_leg_quarter": {
+    "category": "grilled",
+    "serving_label": "1 quarter, leg/thigh piece specifically (edible meat weight)",
+    "ingredients": { "chicken_thigh_skin_cooked": 190 }
+  },
+  "chicken_roast_breast_quarter": {
+    "category": "grilled",
+    "serving_label": "1 quarter, breast/chest piece specifically (edible meat weight)",
+    "ingredients": { "chicken_breast_cooked": 190 }
+  },
+
+  "mango": {
+    "category": "fruit",
+    "serving_label": "1 medium mango",
+    "ingredients": { "mango_raw": 200 }
+  },
+  "banana": {
+    "category": "fruit",
+    "serving_label": "1 medium banana",
+    "ingredients": { "banana_raw": 120 }
+  },
+  "apple": {
+    "category": "fruit",
+    "serving_label": "1 medium apple",
+    "ingredients": { "apple_raw": 180 }
+  },
+  "guava": {
+    "category": "fruit",
+    "serving_label": "1 medium guava",
+    "ingredients": { "guava_raw": 100 }
+  },
+  "watermelon": {
+    "category": "fruit",
+    "serving_label": "1 wedge/cup",
+    "ingredients": { "watermelon_raw": 280 }
+  },
+  "kinnow": {
+    "category": "fruit",
+    "serving_label": "1 medium kinnow/orange",
+    "ingredients": { "kinnow_orange_raw": 130 }
+  },
+  "grapes": {
+    "category": "fruit",
+    "serving_label": "1 small bunch/cup",
+    "ingredients": { "grapes_raw": 100 }
+  },
+  "pomegranate": {
+    "category": "fruit",
+    "serving_label": "1 cup seeds (anaar)",
+    "ingredients": { "pomegranate_raw": 100 }
+  },
+  "dates": {
+    "category": "fruit",
+    "serving_label": "3 dates (khajoor)",
+    "ingredients": { "dates_raw": 24 }
+  },
+  "cucumber": {
+    "category": "vegetable_raw",
+    "serving_label": "1 medium cucumber (kheera)",
+    "ingredients": { "cucumber_raw": 150 }
+  },
+  "radish": {
+    "category": "vegetable_raw",
+    "serving_label": "1 medium radish (mooli)",
+    "ingredients": { "radish_raw": 60 }
+  },
+  "carrot_snack": {
+    "category": "vegetable_raw",
+    "serving_label": "1 medium carrot",
+    "ingredients": { "carrot_raw": 60 }
+  },
+  "kachumber_salad": {
+    "category": "vegetable_raw",
+    "serving_label": "1 bowl",
+    "ingredients": { "cucumber_raw": 80, "tomato_raw": 50, "onion_raw": 30 }
   }
 }
