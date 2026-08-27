@@ -1,626 +1,1476 @@
 {
   "_readme": "Each dish defined as a typical home-cooked recipe: one serving, broken into base ingredients + grams. An ingredient entry is either a plain number (fixed grams of that exact ingredient) or an object describing a swappable role: {\"role\": \"<label>\", \"options\": [...], \"default\": \"<ingredient_id>\", \"grams\": N} picks one specific default ingredient, while {\"role\": \"<label>\", \"options\": [...], \"blend\": [...], \"grams\": N} averages across the blend list when no specific option is named (used for chicken roast, where a generic 'quarter' with no cut specified is genuinely a mix, not one true default). 'portion_presets' (optional) maps a size name to its total gram weight, letting one dish support multiple real portion sizes (e.g. pizza slice size, chicken roast quarter/half/full) instead of guessing one fixed weight. build_dishes.py resolves all of this into per-100g values plus the default serving.",
-
   "roti": {
     "category": "bread",
-    "serving_label": "1 medium roti (~40g)",
+    "serving_label": "1 medium roti (~40g) (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "flour": { "role": "flour", "options": ["atta_whole_wheat_flour", "maida_refined_flour", "atta_multigrain"], "default": "atta_whole_wheat_flour", "grams": 35 }
+      "flour": {
+        "role": "flour",
+        "options": [
+          "atta_whole_wheat_flour",
+          "maida_refined_flour",
+          "atta_multigrain"
+        ],
+        "default": "atta_whole_wheat_flour",
+        "grams": 35
+      }
+    },
+    "portion_presets": {
+      "small": 25,
+      "regular": 40,
+      "large": 60
     }
   },
   "paratha": {
     "category": "bread",
-    "serving_label": "1 medium paratha",
+    "serving_label": "1 medium paratha (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "flour": { "role": "flour", "options": ["atta_whole_wheat_flour", "maida_refined_flour", "atta_multigrain"], "default": "atta_whole_wheat_flour", "grams": 45 },
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 12 }
+      "flour": {
+        "role": "flour",
+        "options": [
+          "atta_whole_wheat_flour",
+          "maida_refined_flour",
+          "atta_multigrain"
+        ],
+        "default": "atta_whole_wheat_flour",
+        "grams": 45
+      },
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "ghee",
+        "grams": 12
+      }
+    },
+    "portion_presets": {
+      "small": 45,
+      "regular": 57,
+      "large": 80
     }
   },
   "naan": {
     "category": "bread",
-    "serving_label": "1 tandoori naan",
+    "serving_label": "1 tandoori naan (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "flour": { "role": "flour", "options": ["atta_whole_wheat_flour", "maida_refined_flour", "atta_multigrain"], "default": "atta_whole_wheat_flour", "grams": 55 },
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 5 }
+      "flour": {
+        "role": "flour",
+        "options": [
+          "atta_whole_wheat_flour",
+          "maida_refined_flour",
+          "atta_multigrain"
+        ],
+        "default": "atta_whole_wheat_flour",
+        "grams": 55
+      },
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "ghee",
+        "grams": 5
+      }
+    },
+    "portion_presets": {
+      "small": 45,
+      "regular": 60,
+      "large": 90
     }
   },
   "daal_chawal_masoor": {
     "category": "daal_rice",
-    "serving_label": "1 plate (daal + rice) — daal portion corrected to match real recipe serving math",
+    "serving_label": "1 plate (daal + rice) \u2014 daal portion corrected to match real recipe serving math (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "masoor_daal_cooked": 55, "rice_white_cooked": 150,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 8 },
+      "masoor_daal_cooked": 55,
+      "rice_white_cooked": 150,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "ghee",
+        "grams": 8
+      },
       "onion_raw": 15
     }
   },
   "chana_daal": {
     "category": "daal_rice",
-    "serving_label": "1 plate, eaten with roti (portion corrected to match real recipe serving math, not a standalone bowl)",
+    "serving_label": "1 plate, eaten with roti (portion corrected to match real recipe serving math, not a standalone bowl) (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
       "chana_daal_cooked": 65,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 8 },
-      "onion_raw": 15, "tomato_raw": 20
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "ghee",
+        "grams": 8
+      },
+      "onion_raw": 15,
+      "tomato_raw": 20
     }
   },
   "moong_daal": {
     "category": "daal_rice",
-    "serving_label": "1 plate, eaten with roti (portion corrected to match real recipe serving math, not a standalone bowl)",
+    "serving_label": "1 plate, eaten with roti (portion corrected to match real recipe serving math, not a standalone bowl) (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
       "moong_daal_cooked": 55,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 6 },
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "ghee",
+        "grams": 6
+      },
       "onion_raw": 15
     }
   },
   "plain_rice": {
     "category": "daal_rice",
-    "serving_label": "1 plate",
-    "ingredients": { "rice_white_cooked": 200 }
+    "serving_label": "1 plate (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
+    "ingredients": {
+      "rice_white_cooked": 200
+    },
+    "portion_presets": {
+      "small_plate": 150,
+      "regular_plate": 200,
+      "large_plate": 280
+    }
   },
   "chicken_karahi": {
     "category": "curry",
-    "serving_label": "1 serving (~1/4 karahi)",
+    "serving_label": "1 serving (~1/4 karahi) (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_thigh_skin_cooked", "grams": 150 },
+      "protein": {
+        "role": "protein_cut",
+        "options": [
+          "chicken_breast_cooked",
+          "chicken_thigh_skin_cooked"
+        ],
+        "default": "chicken_thigh_skin_cooked",
+        "grams": 150
+      },
       "tomato_raw": 40,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 15 },
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 15
+      },
       "onion_raw": 10
     }
   },
   "chicken_curry": {
     "category": "curry",
-    "serving_label": "1 serving",
+    "serving_label": "1 serving (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_thigh_skin_cooked", "grams": 130 },
-      "onion_raw": 25, "tomato_raw": 30,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 },
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 15 }
+      "protein": {
+        "role": "protein_cut",
+        "options": [
+          "chicken_breast_cooked",
+          "chicken_thigh_skin_cooked"
+        ],
+        "default": "chicken_thigh_skin_cooked",
+        "grams": 130
+      },
+      "onion_raw": 25,
+      "tomato_raw": 30,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 12
+      },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 15
+      }
     }
   },
   "beef_nihari": {
     "category": "curry",
-    "serving_label": "1 bowl",
+    "serving_label": "1 bowl (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
       "beef_lean_cooked": 150,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 20 },
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 20
+      },
       "atta_whole_wheat_flour": 10
     }
   },
   "mutton_karahi": {
     "category": "curry",
-    "serving_label": "1 serving",
+    "serving_label": "1 serving (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "mutton_curry_cut_cooked": 150, "tomato_raw": 35,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 15 },
+      "mutton_curry_cut_cooked": 150,
+      "tomato_raw": 35,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 15
+      },
       "onion_raw": 10
     }
   },
   "haleem": {
     "category": "curry",
-    "serving_label": "1 bowl",
+    "serving_label": "1 bowl (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
       "wheat_bulgur_haleem_mix_cooked": 150,
-      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_breast_cooked", "grams": 60 },
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 15 }
+      "protein": {
+        "role": "protein_cut",
+        "options": [
+          "chicken_breast_cooked",
+          "chicken_thigh_skin_cooked"
+        ],
+        "default": "chicken_breast_cooked",
+        "grams": 60
+      },
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "ghee",
+        "grams": 15
+      }
     }
   },
   "keema_matar": {
     "category": "curry",
-    "serving_label": "1 serving",
+    "serving_label": "1 serving (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "beef_mince_keema_cooked": 150, "onion_raw": 20, "tomato_raw": 25,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 }
+      "beef_mince_keema_cooked": 150,
+      "onion_raw": 20,
+      "tomato_raw": 25,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 12
+      }
     }
   },
   "chicken_biryani": {
     "category": "rice_dish",
-    "serving_label": "1 plate",
+    "serving_label": "1 plate (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
       "rice_white_cooked": 220,
-      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_thigh_skin_cooked", "grams": 90 },
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 15 },
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 15 }
+      "protein": {
+        "role": "protein_cut",
+        "options": [
+          "chicken_breast_cooked",
+          "chicken_thigh_skin_cooked"
+        ],
+        "default": "chicken_thigh_skin_cooked",
+        "grams": 90
+      },
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 15
+      },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 15
+      }
+    },
+    "portion_presets": {
+      "small_plate": 250,
+      "regular_plate": 340,
+      "large_plate": 450
     }
   },
   "beef_pulao": {
     "category": "rice_dish",
-    "serving_label": "1 plate",
+    "serving_label": "1 plate (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "rice_white_cooked": 220, "beef_lean_cooked": 70,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 }
+      "rice_white_cooked": 220,
+      "beef_lean_cooked": 70,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 12
+      }
+    },
+    "portion_presets": {
+      "small_plate": 220,
+      "regular_plate": 302,
+      "large_plate": 400
     }
   },
   "aloo_sabzi": {
     "category": "vegetable",
-    "serving_label": "1 bowl",
+    "serving_label": "1 bowl (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
       "potato_cooked": 180,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 10 },
-      "onion_raw": 15, "tomato_raw": 20
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 10
+      },
+      "onion_raw": 15,
+      "tomato_raw": 20
     }
   },
   "bhindi_fry": {
     "category": "vegetable",
-    "serving_label": "1 bowl",
+    "serving_label": "1 bowl (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
       "okra_cooked": 150,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 },
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 12
+      },
       "onion_raw": 15
     }
   },
   "palak_paneer": {
     "category": "vegetable",
-    "serving_label": "1 bowl",
+    "serving_label": "1 bowl (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "spinach_cooked": 150, "paneer": 60,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 10 },
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 15 }
+      "spinach_cooked": 150,
+      "paneer": 60,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 10
+      },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 15
+      }
     }
   },
   "gobi_aloo": {
     "category": "vegetable",
-    "serving_label": "1 bowl",
+    "serving_label": "1 bowl (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "cauliflower_cooked": 120, "potato_cooked": 80,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 }
+      "cauliflower_cooked": 120,
+      "potato_cooked": 80,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 12
+      }
     }
   },
   "chana_chaat": {
     "category": "snack",
-    "serving_label": "1 bowl",
-    "ingredients": { "chickpeas_cooked": 150, "onion_raw": 20, "tomato_raw": 25 }
+    "serving_label": "1 bowl (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
+    "ingredients": {
+      "chickpeas_cooked": 150,
+      "onion_raw": 20,
+      "tomato_raw": 25
+    }
   },
   "samosa": {
     "category": "snack",
-    "serving_label": "1 piece",
+    "serving_label": "1 piece (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "atta_whole_wheat_flour": 20, "potato_cooked": 30,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 }
+      "atta_whole_wheat_flour": 20,
+      "potato_cooked": 30,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 6
+      }
+    },
+    "portion_presets": {
+      "small": 40,
+      "regular": 56,
+      "large": 80
     }
   },
   "pakora": {
     "category": "snack",
-    "serving_label": "100g",
+    "serving_label": "100g (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "besan_gram_flour": 60, "onion_raw": 20,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 14 }
+      "besan_gram_flour": 60,
+      "onion_raw": 20,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 14
+      }
     }
   },
   "chicken_tikka": {
     "category": "grilled",
-    "serving_label": "2 pieces",
+    "serving_label": "2 pieces (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_breast_cooked", "grams": 150 },
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 20 },
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 8 }
+      "protein": {
+        "role": "protein_cut",
+        "options": [
+          "chicken_breast_cooked",
+          "chicken_thigh_skin_cooked"
+        ],
+        "default": "chicken_breast_cooked",
+        "grams": 150
+      },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 20
+      },
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 8
+      }
     }
   },
   "seekh_kebab": {
     "category": "grilled",
-    "serving_label": "2 kebabs",
-    "ingredients": { "beef_mince_keema_cooked": 100 }
+    "serving_label": "2 kebabs (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
+    "ingredients": {
+      "beef_mince_keema_cooked": 100
+    }
   },
   "boiled_egg": {
     "category": "breakfast",
-    "serving_label": "1 egg",
-    "ingredients": { "egg_cooked": 50 }
+    "serving_label": "1 egg (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
+    "ingredients": {
+      "egg_cooked": 50
+    }
   },
   "omelette": {
     "category": "breakfast",
-    "serving_label": "2-egg omelette",
+    "serving_label": "2-egg omelette (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
       "egg_cooked": 100,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 8 },
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 8
+      },
       "onion_raw": 10
     }
   },
   "sooji_halwa": {
     "category": "breakfast",
-    "serving_label": "1 portion (halwa only, not the full halwa-puri-channa combo)",
+    "serving_label": "1 portion (halwa only, not the full halwa-puri-channa combo) (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "flour": { "role": "flour", "options": ["atta_whole_wheat_flour", "maida_refined_flour", "atta_multigrain"], "default": "atta_whole_wheat_flour", "grams": 40 },
+      "flour": {
+        "role": "flour",
+        "options": [
+          "atta_whole_wheat_flour",
+          "maida_refined_flour",
+          "atta_multigrain"
+        ],
+        "default": "atta_whole_wheat_flour",
+        "grams": 40
+      },
       "sugar": 25,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 20 }
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "ghee",
+        "grams": 20
+      }
     }
   },
   "chai_regular": {
     "category": "beverage",
-    "serving_label": "1 cup (~200ml)",
+    "serving_label": "1 cup (~200ml) (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 120 },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "milk_whole",
+          "milk_low_fat"
+        ],
+        "default": "milk_whole",
+        "grams": 120
+      },
       "sugar": 12
     }
   },
   "lassi_sweet": {
     "category": "beverage",
-    "serving_label": "1 glass (~250ml)",
+    "serving_label": "1 glass (~250ml) (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 200 },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 200
+      },
       "sugar": 20
     }
   },
-
   "chapli_kebab": {
     "category": "grilled",
-    "serving_label": "1 kebab",
+    "serving_label": "1 kebab (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "beef_mince_keema_cooked": 120, "tomato_raw": 20,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 10 }
+      "beef_mince_keema_cooked": 120,
+      "tomato_raw": 20,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 10
+      }
     }
   },
   "beef_korma": {
     "category": "curry",
-    "serving_label": "1 serving",
+    "serving_label": "1 serving (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
       "beef_lean_cooked": 130,
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 30 },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 30
+      },
       "cream_fresh": 15,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 }
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 12
+      }
     }
   },
   "chicken_korma": {
     "category": "curry",
-    "serving_label": "1 serving",
+    "serving_label": "1 serving (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_thigh_skin_cooked", "grams": 130 },
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 30 },
+      "protein": {
+        "role": "protein_cut",
+        "options": [
+          "chicken_breast_cooked",
+          "chicken_thigh_skin_cooked"
+        ],
+        "default": "chicken_thigh_skin_cooked",
+        "grams": 130
+      },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 30
+      },
       "cream_fresh": 15,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 10 }
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 10
+      }
     }
   },
   "aloo_keema": {
     "category": "curry",
-    "serving_label": "1 serving",
+    "serving_label": "1 serving (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "beef_mince_keema_cooked": 100, "potato_cooked": 100, "onion_raw": 20,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 10 }
+      "beef_mince_keema_cooked": 100,
+      "potato_cooked": 100,
+      "onion_raw": 20,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 10
+      }
     }
   },
   "baingan_bharta": {
     "category": "vegetable",
-    "serving_label": "1 bowl",
+    "serving_label": "1 bowl (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "eggplant_cooked": 180, "onion_raw": 20, "tomato_raw": 25,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 }
+      "eggplant_cooked": 180,
+      "onion_raw": 20,
+      "tomato_raw": 25,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 12
+      }
     }
   },
   "shami_kebab": {
     "category": "grilled",
-    "serving_label": "2 kebabs",
+    "serving_label": "2 kebabs (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "beef_mince_keema_cooked": 40, "chana_daal_cooked": 30, "egg_cooked": 10,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+      "beef_mince_keema_cooked": 40,
+      "chana_daal_cooked": 30,
+      "egg_cooked": 10,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 5
+      }
     }
   },
   "chicken_malai_boti": {
     "category": "grilled",
-    "serving_label": "2 pieces",
+    "serving_label": "2 pieces (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_breast_cooked", "grams": 150 },
+      "protein": {
+        "role": "protein_cut",
+        "options": [
+          "chicken_breast_cooked",
+          "chicken_thigh_skin_cooked"
+        ],
+        "default": "chicken_breast_cooked",
+        "grams": 150
+      },
       "cream_fresh": 20,
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 15 }
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 15
+      }
     }
   },
   "fish_fry": {
     "category": "grilled",
-    "serving_label": "1 fillet",
+    "serving_label": "1 fillet (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "fish_fillet_cooked": 150, "besan_gram_flour": 15,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 }
+      "fish_fillet_cooked": 150,
+      "besan_gram_flour": 15,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 12
+      }
     }
   },
   "chana_curry": {
     "category": "daal_rice",
-    "serving_label": "1 bowl",
+    "serving_label": "1 bowl (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "chickpeas_cooked": 200, "onion_raw": 20, "tomato_raw": 30,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 }
+      "chickpeas_cooked": 200,
+      "onion_raw": 20,
+      "tomato_raw": 30,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 12
+      }
     }
   },
   "gajar_halwa": {
     "category": "dessert",
-    "serving_label": "1 portion",
+    "serving_label": "1 portion (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "carrot_cooked": 150, "khoya_mawa": 30, "sugar": 20,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 12 }
+      "carrot_cooked": 150,
+      "khoya_mawa": 30,
+      "sugar": 20,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "ghee",
+        "grams": 12
+      }
     }
   },
   "kheer": {
     "category": "dessert",
-    "serving_label": "1 bowl",
+    "serving_label": "1 bowl (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
       "rice_white_cooked": 60,
-      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 200 },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "milk_whole",
+          "milk_low_fat"
+        ],
+        "default": "milk_whole",
+        "grams": 200
+      },
       "sugar": 20
     }
   },
   "gulab_jamun": {
     "category": "dessert",
-    "serving_label": "2 pieces",
+    "serving_label": "2 pieces (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "khoya_mawa": 40, "maida_refined_flour": 15, "sugar": 35,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 10 }
+      "khoya_mawa": 40,
+      "maida_refined_flour": 15,
+      "sugar": 35,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "ghee",
+        "grams": 10
+      }
+    },
+    "portion_presets": {
+      "one_piece": 50,
+      "two_pieces": 100,
+      "four_pieces": 200
     }
   },
-
   "zinger_burger": {
     "category": "fast_food",
-    "serving_label": "1 burger",
+    "serving_label": "1 burger (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "white_bread_bun": 80, "chicken_breaded_fried": 110,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 8 }
+      "white_bread_bun": 80,
+      "chicken_breaded_fried": 110,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 8
+      }
     }
   },
   "fried_chicken_piece": {
     "category": "fast_food",
-    "serving_label": "1 piece",
-    "ingredients": { "chicken_breaded_fried": 130 }
+    "serving_label": "1 piece (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
+    "ingredients": {
+      "chicken_breaded_fried": 130
+    }
   },
   "pizza_slice_cheese": {
     "category": "fast_food",
-    "serving_label": "1 slice, medium pizza (default)",
-    "portion_presets": { "slice_small_pizza": 60, "slice_medium_pizza": 90, "slice_large_pizza": 120 },
+    "serving_label": "1 slice, medium pizza (default) (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
+    "portion_presets": {
+      "slice_small_pizza": 60,
+      "slice_medium_pizza": 90,
+      "slice_large_pizza": 120
+    },
     "ingredients": {
-      "maida_refined_flour": 45, "cheese_processed": 35, "tomato_raw": 20,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 }
+      "maida_refined_flour": 45,
+      "tomato_raw": 20,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 6
+      },
+      "mozzarella_cheese": 35
     }
   },
   "french_fries": {
     "category": "fast_food",
-    "serving_label": "1 regular serving",
-    "ingredients": { "potato_fried_fries": 130 }
+    "serving_label": "1 regular serving (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
+    "ingredients": {
+      "potato_fried_fries": 130
+    }
   },
   "chicken_shawarma": {
     "category": "fast_food",
-    "serving_label": "1 roll",
+    "serving_label": "1 roll (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
       "white_bread_bun": 70,
-      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_breast_cooked", "grams": 90 },
-      "cream_fresh": 15, "cabbage_raw": 20
+      "protein": {
+        "role": "protein_cut",
+        "options": [
+          "chicken_breast_cooked",
+          "chicken_thigh_skin_cooked"
+        ],
+        "default": "chicken_breast_cooked",
+        "grams": 90
+      },
+      "cream_fresh": 15,
+      "cabbage_raw": 20
     }
   },
   "white_sauce_pasta": {
     "category": "fast_food",
-    "serving_label": "1 plate",
+    "serving_label": "1 plate (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "pasta_cooked": 220, "cream_fresh": 40, "cheese_processed": 25,
-      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_breast_cooked", "grams": 50 }
+      "pasta_cooked": 220,
+      "cream_fresh": 40,
+      "protein": {
+        "role": "protein_cut",
+        "options": [
+          "chicken_breast_cooked",
+          "chicken_thigh_skin_cooked"
+        ],
+        "default": "chicken_breast_cooked",
+        "grams": 50
+      },
+      "mozzarella_cheese": 25
     }
   },
   "chicken_chowmein": {
     "category": "fast_food",
-    "serving_label": "1 plate",
+    "serving_label": "1 plate (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
       "noodles_cooked": 220,
-      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_breast_cooked", "grams": 60 },
+      "protein": {
+        "role": "protein_cut",
+        "options": [
+          "chicken_breast_cooked",
+          "chicken_thigh_skin_cooked"
+        ],
+        "default": "chicken_breast_cooked",
+        "grams": 60
+      },
       "cabbage_raw": 40,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 }
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 12
+      }
     }
   },
   "chicken_manchurian": {
     "category": "fast_food",
-    "serving_label": "1 serving",
+    "serving_label": "1 serving (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
     "ingredients": {
-      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_breast_cooked", "grams": 130 },
+      "protein": {
+        "role": "protein_cut",
+        "options": [
+          "chicken_breast_cooked",
+          "chicken_thigh_skin_cooked"
+        ],
+        "default": "chicken_breast_cooked",
+        "grams": 130
+      },
       "besan_gram_flour": 20,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 15 },
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 15
+      },
       "onion_raw": 15
     }
   },
-
   "chicken_roast": {
     "category": "grilled",
-    "serving_label": "1 quarter, cut unspecified (blended leg+breast average, edible meat weight)",
-    "portion_presets": { "quarter": 190, "half": 375, "full": 750 },
+    "serving_label": "1 quarter, cut unspecified (blended leg+breast average, edible meat weight) (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
+    "portion_presets": {
+      "quarter": 190,
+      "half": 375,
+      "full": 750
+    },
     "ingredients": {
-      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "blend": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "grams": 100 }
+      "protein": {
+        "role": "protein_cut",
+        "options": [
+          "chicken_breast_cooked",
+          "chicken_thigh_skin_cooked"
+        ],
+        "blend": [
+          "chicken_breast_cooked",
+          "chicken_thigh_skin_cooked"
+        ],
+        "grams": 100
+      }
     }
   },
   "chicken_roast_leg_quarter": {
     "category": "grilled",
-    "serving_label": "1 quarter, leg/thigh piece specifically (edible meat weight)",
-    "ingredients": { "chicken_thigh_skin_cooked": 190 }
+    "serving_label": "1 quarter, leg/thigh piece specifically (edible meat weight) (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
+    "ingredients": {
+      "chicken_thigh_skin_cooked": 190
+    }
   },
   "chicken_roast_breast_quarter": {
     "category": "grilled",
-    "serving_label": "1 quarter, breast/chest piece specifically (edible meat weight)",
-    "ingredients": { "chicken_breast_cooked": 190 }
+    "serving_label": "1 quarter, breast/chest piece specifically (edible meat weight) (typical serving, built from general recipe knowledge -- not independently sourced from a specific published recipe; this predates the sourcing-tier convention introduced in v3)",
+    "ingredients": {
+      "chicken_breast_cooked": 190
+    }
   },
-
   "mango": {
     "category": "fruit",
-    "serving_label": "1 medium mango",
-    "ingredients": { "mango_raw": 200 }
+    "serving_label": "1 medium mango (standard reference nutrition for this fruit/vegetable, single-ingredient item)",
+    "ingredients": {
+      "mango_raw": 200
+    }
   },
   "banana": {
     "category": "fruit",
-    "serving_label": "1 medium banana",
-    "ingredients": { "banana_raw": 120 }
+    "serving_label": "1 medium banana (standard reference nutrition for this fruit/vegetable, single-ingredient item)",
+    "ingredients": {
+      "banana_raw": 120
+    }
   },
   "apple": {
     "category": "fruit",
-    "serving_label": "1 medium apple",
-    "ingredients": { "apple_raw": 180 }
+    "serving_label": "1 medium apple (standard reference nutrition for this fruit/vegetable, single-ingredient item)",
+    "ingredients": {
+      "apple_raw": 180
+    }
   },
   "guava": {
     "category": "fruit",
-    "serving_label": "1 medium guava",
-    "ingredients": { "guava_raw": 100 }
+    "serving_label": "1 medium guava (standard reference nutrition for this fruit/vegetable, single-ingredient item)",
+    "ingredients": {
+      "guava_raw": 100
+    }
   },
   "watermelon": {
     "category": "fruit",
-    "serving_label": "1 wedge/cup",
-    "ingredients": { "watermelon_raw": 280 }
+    "serving_label": "1 wedge/cup (standard reference nutrition for this fruit/vegetable, single-ingredient item)",
+    "ingredients": {
+      "watermelon_raw": 280
+    }
   },
   "kinnow": {
     "category": "fruit",
-    "serving_label": "1 medium kinnow/orange",
-    "ingredients": { "kinnow_orange_raw": 130 }
+    "serving_label": "1 medium kinnow/orange (standard reference nutrition for this fruit/vegetable, single-ingredient item)",
+    "ingredients": {
+      "kinnow_orange_raw": 130
+    }
   },
   "grapes": {
     "category": "fruit",
-    "serving_label": "1 small bunch/cup",
-    "ingredients": { "grapes_raw": 100 }
+    "serving_label": "1 small bunch/cup (standard reference nutrition for this fruit/vegetable, single-ingredient item)",
+    "ingredients": {
+      "grapes_raw": 100
+    }
   },
   "pomegranate": {
     "category": "fruit",
-    "serving_label": "1 cup seeds (anaar)",
-    "ingredients": { "pomegranate_raw": 100 }
+    "serving_label": "1 cup seeds (anaar) (standard reference nutrition for this fruit/vegetable, single-ingredient item)",
+    "ingredients": {
+      "pomegranate_raw": 100
+    }
   },
   "dates": {
     "category": "fruit",
-    "serving_label": "3 dates (khajoor)",
-    "ingredients": { "dates_raw": 24 }
+    "serving_label": "3 dates (khajoor) (standard reference nutrition for this fruit/vegetable, single-ingredient item)",
+    "ingredients": {
+      "dates_raw": 24
+    }
   },
   "cucumber": {
     "category": "vegetable_raw",
-    "serving_label": "1 medium cucumber (kheera)",
-    "ingredients": { "cucumber_raw": 150 }
+    "serving_label": "1 medium cucumber (kheera) (standard reference nutrition for this fruit/vegetable, single-ingredient item)",
+    "ingredients": {
+      "cucumber_raw": 150
+    }
   },
   "radish": {
     "category": "vegetable_raw",
-    "serving_label": "1 medium radish (mooli)",
-    "ingredients": { "radish_raw": 60 }
+    "serving_label": "1 medium radish (mooli) (standard reference nutrition for this fruit/vegetable, single-ingredient item)",
+    "ingredients": {
+      "radish_raw": 60
+    }
   },
   "carrot_snack": {
     "category": "vegetable_raw",
-    "serving_label": "1 medium carrot",
-    "ingredients": { "carrot_raw": 60 }
+    "serving_label": "1 medium carrot (standard reference nutrition for this fruit/vegetable, single-ingredient item)",
+    "ingredients": {
+      "carrot_raw": 60
+    }
   },
   "kachumber_salad": {
     "category": "vegetable_raw",
-    "serving_label": "1 bowl",
-    "ingredients": { "cucumber_raw": 80, "tomato_raw": 50, "onion_raw": 30 }
+    "serving_label": "1 bowl (standard reference nutrition for this fruit/vegetable, single-ingredient item)",
+    "ingredients": {
+      "cucumber_raw": 80,
+      "tomato_raw": 50,
+      "onion_raw": 30
+    }
   },
-
   "aloo_gosht": {
     "category": "curry",
     "serving_label": "1 bowl (sourced: Tea for Turmeric, 4 servings)",
     "ingredients": {
-      "mutton_curry_cut_cooked": 130, "potato_cooked": 50, "onion_raw": 38, "tomato_raw": 30,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 17 },
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 4 }
+      "mutton_curry_cut_cooked": 130,
+      "potato_cooked": 50,
+      "onion_raw": 38,
+      "tomato_raw": 30,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 17
+      },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 4
+      }
     }
   },
   "gobi_gosht": {
     "category": "curry",
     "serving_label": "1 bowl (sourced: Tea for Turmeric, 5 servings)",
     "ingredients": {
-      "mutton_curry_cut_cooked": 114, "cauliflower_cooked": 132, "onion_raw": 30, "tomato_raw": 24,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 15 }
+      "mutton_curry_cut_cooked": 114,
+      "cauliflower_cooked": 132,
+      "onion_raw": 30,
+      "tomato_raw": 24,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 15
+      }
     }
   },
   "chana_pulao": {
     "category": "rice_dish",
     "serving_label": "1 plate (sourced: Tea for Turmeric, 4 servings)",
     "ingredients": {
-      "rice_white_cooked": 200, "chickpeas_cooked": 65, "onion_raw": 44,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 11 }
+      "rice_white_cooked": 200,
+      "chickpeas_cooked": 65,
+      "onion_raw": 44,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 11
+      }
     }
   },
   "palak_chicken": {
     "category": "curry",
     "serving_label": "1 bowl (sourced: Tea for Turmeric, 4 servings)",
     "ingredients": {
-      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_thigh_skin_cooked", "grams": 114 },
-      "spinach_cooked": 144, "onion_raw": 38, "tomato_raw": 33,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 26 },
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 11 }
+      "protein": {
+        "role": "protein_cut",
+        "options": [
+          "chicken_breast_cooked",
+          "chicken_thigh_skin_cooked"
+        ],
+        "default": "chicken_thigh_skin_cooked",
+        "grams": 114
+      },
+      "spinach_cooked": 144,
+      "onion_raw": 38,
+      "tomato_raw": 33,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 26
+      },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 11
+      }
     }
   },
   "bhindi_masala": {
     "category": "vegetable",
     "serving_label": "1 bowl (sourced: Tea for Turmeric, 4 servings)",
     "ingredients": {
-      "okra_cooked": 114, "onion_raw": 75, "tomato_raw": 53,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 14 }
+      "okra_cooked": 114,
+      "onion_raw": 75,
+      "tomato_raw": 53,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 14
+      }
     }
   },
   "sarson_ka_saag": {
     "category": "vegetable",
     "serving_label": "1 bowl (sourced: Tea for Turmeric, 4 servings)",
     "ingredients": {
-      "mustard_greens_cooked": 114, "spinach_cooked": 57, "corn_flour": 8, "onion_raw": 25,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 24 }
+      "mustard_greens_cooked": 114,
+      "spinach_cooked": 57,
+      "corn_flour": 8,
+      "onion_raw": 25,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "ghee",
+        "grams": 24
+      }
     }
   },
   "aloo_baingan": {
     "category": "vegetable",
     "serving_label": "1 bowl (sourced: Tea for Turmeric, 4 servings)",
     "ingredients": {
-      "eggplant_cooked": 113, "potato_cooked": 106, "onion_raw": 61, "tomato_raw": 75,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 14 }
+      "eggplant_cooked": 113,
+      "potato_cooked": 106,
+      "onion_raw": 61,
+      "tomato_raw": 75,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 14
+      }
     }
   },
   "chicken_chargha": {
     "category": "grilled",
     "serving_label": "1/4 chicken, roasted with potatoes (sourced: Tea for Turmeric, 4 servings)",
     "ingredients": {
-      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "blend": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "grams": 160 },
+      "protein": {
+        "role": "protein_cut",
+        "options": [
+          "chicken_breast_cooked",
+          "chicken_thigh_skin_cooked"
+        ],
+        "blend": [
+          "chicken_breast_cooked",
+          "chicken_thigh_skin_cooked"
+        ],
+        "grams": 160
+      },
       "potato_cooked": 125,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 21 },
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 20 }
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 21
+      },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 20
+      }
     }
   },
   "toriyan": {
     "category": "vegetable",
     "serving_label": "1 bowl, zucchini/courgette curry (sourced: Tea for Turmeric, 4 servings)",
     "ingredients": {
-      "zucchini_cooked": 128, "onion_raw": 75, "tomato_raw": 30,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 19 }
+      "zucchini_cooked": 128,
+      "onion_raw": 75,
+      "tomato_raw": 30,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 19
+      }
     }
   },
-
   "aloo_chicken": {
     "category": "curry",
-    "serving_label": "1 bowl (built by analogy to sourced aloo_gosht, chicken instead of mutton — not independently sourced)",
+    "serving_label": "1 bowl (built by analogy to sourced aloo_gosht, chicken instead of mutton \u2014 not independently sourced)",
     "ingredients": {
-      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_thigh_skin_cooked", "grams": 130 },
-      "potato_cooked": 50, "onion_raw": 38, "tomato_raw": 30,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 17 },
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 4 }
+      "protein": {
+        "role": "protein_cut",
+        "options": [
+          "chicken_breast_cooked",
+          "chicken_thigh_skin_cooked"
+        ],
+        "default": "chicken_thigh_skin_cooked",
+        "grams": 130
+      },
+      "potato_cooked": 50,
+      "onion_raw": 38,
+      "tomato_raw": 30,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 17
+      },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 4
+      }
     }
   },
   "arvi_gosht": {
     "category": "curry",
-    "serving_label": "1 bowl (built by analogy to sourced aloo_gosht, taro instead of potato — not independently sourced; you confirmed this is a real common dish)",
+    "serving_label": "1 bowl (built by analogy to sourced aloo_gosht, taro instead of potato \u2014 not independently sourced; you confirmed this is a real common dish)",
     "ingredients": {
-      "mutton_curry_cut_cooked": 130, "taro_cooked": 120, "onion_raw": 38, "tomato_raw": 30,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 17 },
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 4 }
+      "mutton_curry_cut_cooked": 130,
+      "taro_cooked": 120,
+      "onion_raw": 38,
+      "tomato_raw": 30,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 17
+      },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 4
+      }
     }
   },
   "lauki_gosht": {
     "category": "curry",
-    "serving_label": "1 bowl (built by analogy to sourced aloo_gosht, bottle gourd instead of potato — not independently sourced; you confirmed this is a real common dish)",
+    "serving_label": "1 bowl (built by analogy to sourced aloo_gosht, bottle gourd instead of potato \u2014 not independently sourced; you confirmed this is a real common dish)",
     "ingredients": {
-      "mutton_curry_cut_cooked": 130, "bottle_gourd_cooked": 150, "onion_raw": 38, "tomato_raw": 30,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 17 },
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 4 }
+      "mutton_curry_cut_cooked": 130,
+      "bottle_gourd_cooked": 150,
+      "onion_raw": 38,
+      "tomato_raw": 30,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 17
+      },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 4
+      }
     }
   },
-
   "maash_ki_daal": {
     "category": "daal_rice",
     "serving_label": "1 bowl (sourced: Tea for Turmeric, 4 servings)",
     "ingredients": {
-      "urad_daal_cooked": 50, "onion_raw": 38, "tomato_raw": 25,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 19 }
+      "urad_daal_cooked": 50,
+      "onion_raw": 38,
+      "tomato_raw": 25,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 19
+      }
     }
   },
   "kali_daal": {
     "category": "daal_rice",
     "serving_label": "1 bowl, whole masoor/brown lentil (sourced: Tea for Turmeric, 4 servings)",
     "ingredients": {
-      "masoor_daal_cooked": 50, "onion_raw": 41, "tomato_raw": 19,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 19 }
+      "masoor_daal_cooked": 50,
+      "onion_raw": 41,
+      "tomato_raw": 19,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 19
+      }
     }
   },
   "aloo_methi": {
     "category": "vegetable",
     "serving_label": "1 bowl (sourced: Tea for Turmeric, 4 servings)",
     "ingredients": {
-      "methi_leaves_cooked": 94, "potato_cooked": 114, "tomato_raw": 50,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 28 }
+      "methi_leaves_cooked": 94,
+      "potato_cooked": 114,
+      "tomato_raw": 50,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 28
+      }
     }
   },
   "yakhni_pulao": {
@@ -628,83 +1478,244 @@
     "serving_label": "1 plate, chicken pulao (sourced: Tea for Turmeric, 4 servings)",
     "ingredients": {
       "rice_white_cooked": 200,
-      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_breast_cooked", "grams": 78 },
-      "onion_raw": 44, "tomato_raw": 25,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 21 },
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 6 }
+      "protein": {
+        "role": "protein_cut",
+        "options": [
+          "chicken_breast_cooked",
+          "chicken_thigh_skin_cooked"
+        ],
+        "default": "chicken_breast_cooked",
+        "grams": 78
+      },
+      "onion_raw": 44,
+      "tomato_raw": 25,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 21
+      },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 6
+      }
     }
   },
   "mutton_korma": {
     "category": "curry",
     "serving_label": "1 serving (sourced: Tea for Turmeric, 5 servings)",
     "ingredients": {
-      "mutton_curry_cut_cooked": 100, "onion_raw": 8,
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 25 },
+      "mutton_curry_cut_cooked": 100,
+      "onion_raw": 8,
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 25
+      },
       "cream_fresh": 6,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 19 }
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 19
+      }
     }
   },
   "kadhi_pakora": {
     "category": "curry",
     "serving_label": "1 bowl, yogurt-besan curry with fritters (sourced: Tea for Turmeric, 4 servings)",
     "ingredients": {
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 63 },
-      "besan_gram_flour": 30, "onion_raw": 31, "potato_cooked": 13,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 21 }
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 63
+      },
+      "besan_gram_flour": 30,
+      "onion_raw": 31,
+      "potato_cooked": 13,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 21
+      }
     }
   },
-
   "achari_chicken": {
     "category": "curry",
     "serving_label": "1 serving, pickling-spice chicken curry (sourced: Pakistan Eats, 4 servings)",
     "ingredients": {
-      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_thigh_skin_cooked", "grams": 113 },
-      "onion_raw": 38, "tomato_raw": 80,
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 4 },
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 14 }
+      "protein": {
+        "role": "protein_cut",
+        "options": [
+          "chicken_breast_cooked",
+          "chicken_thigh_skin_cooked"
+        ],
+        "default": "chicken_thigh_skin_cooked",
+        "grams": 113
+      },
+      "onion_raw": 38,
+      "tomato_raw": 80,
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 4
+      },
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 14
+      }
     }
   },
   "matar_pulao": {
     "category": "rice_dish",
     "serving_label": "1 plate, peas pulao (sourced: Pakistan Eats, 4 servings)",
     "ingredients": {
-      "rice_white_cooked": 277, "peas_cooked": 36, "onion_raw": 38,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 19 }
+      "rice_white_cooked": 277,
+      "peas_cooked": 36,
+      "onion_raw": 38,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 19
+      }
     }
   },
   "chicken_keema": {
     "category": "curry",
     "serving_label": "1 serving, minced chicken curry (sourced: Pakistan Eats, 4 servings)",
     "ingredients": {
-      "chicken_mince_cooked": 113, "onion_raw": 38, "tomato_raw": 80,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 14 }
+      "chicken_mince_cooked": 113,
+      "onion_raw": 38,
+      "tomato_raw": 80,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 14
+      }
     }
   },
   "hariyali_chicken": {
     "category": "curry",
     "serving_label": "1 serving, green herb-yogurt chicken (sourced: Pakistan Eats, 4 servings)",
     "ingredients": {
-      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_breast_cooked", "grams": 113 },
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 91 },
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 19 }
+      "protein": {
+        "role": "protein_cut",
+        "options": [
+          "chicken_breast_cooked",
+          "chicken_thigh_skin_cooked"
+        ],
+        "default": "chicken_breast_cooked",
+        "grams": 113
+      },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 91
+      },
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 19
+      }
     }
   },
   "kali_mirch_chicken": {
     "category": "curry",
     "serving_label": "1 serving, black pepper chicken curry (sourced: Pakistan Eats, 6 servings)",
     "ingredients": {
-      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_thigh_skin_cooked", "grams": 88 },
+      "protein": {
+        "role": "protein_cut",
+        "options": [
+          "chicken_breast_cooked",
+          "chicken_thigh_skin_cooked"
+        ],
+        "default": "chicken_thigh_skin_cooked",
+        "grams": 88
+      },
       "onion_raw": 25,
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 21 },
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 18 }
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 21
+      },
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 18
+      }
     }
   },
   "aloo_tikki": {
     "category": "snack",
     "serving_label": "1 patty (sourced: Pakistan Eats, 6 patties)",
     "ingredients": {
-      "potato_cooked": 83, "egg_cooked": 8,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 9 }
+      "potato_cooked": 83,
+      "egg_cooked": 8,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 9
+      }
     }
   },
   "seviyan": {
@@ -712,28 +1723,64 @@
     "serving_label": "1 bowl, sweet vermicelli (sourced: Pakistan Eats, 8 servings)",
     "ingredients": {
       "vermicelli_dry": 19,
-      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 258 },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "milk_whole",
+          "milk_low_fat"
+        ],
+        "default": "milk_whole",
+        "grams": 258
+      },
       "sugar": 19,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 7 }
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "ghee",
+        "grams": 7
+      }
     }
   },
-
   "rajma_masala": {
     "category": "daal_rice",
     "serving_label": "1 bowl, red kidney bean curry (sourced: Tea for Turmeric, 4 servings)",
     "ingredients": {
-      "kidney_beans_cooked": 130, "onion_raw": 45, "tomato_raw": 67,
+      "kidney_beans_cooked": 130,
+      "onion_raw": 45,
+      "tomato_raw": 67,
       "cream_fresh": 10,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 17 }
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 17
+      }
     }
   },
   "matar_paneer": {
     "category": "vegetable",
     "serving_label": "1 bowl, peas and paneer curry (sourced: Tea for Turmeric, 4 servings)",
     "ingredients": {
-      "paneer": 57, "peas_cooked": 41, "onion_raw": 75, "tomato_raw": 90,
+      "paneer": 57,
+      "peas_cooked": 41,
+      "onion_raw": 75,
+      "tomato_raw": 90,
       "cream_fresh": 15,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 19 }
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 19
+      }
     }
   },
   "dahi_bhalla": {
@@ -741,9 +1788,26 @@
     "serving_label": "1 serving, lentil fritters in spiced yogurt (sourced: Tea for Turmeric, 6 servings)",
     "ingredients": {
       "urad_daal_cooked": 38,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 },
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 82 },
-      "milk_whole": 19, "sugar": 8
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 6
+      },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 82
+      },
+      "milk_whole": 19,
+      "sugar": 8
     }
   },
   "zarda": {
@@ -751,17 +1815,45 @@
     "serving_label": "1 portion, sweet saffron rice (sourced: Tea for Turmeric, 4 servings)",
     "ingredients": {
       "rice_white_cooked": 119,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 7 },
-      "milk_whole": 20, "sugar": 38
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "ghee",
+        "grams": 7
+      },
+      "milk_whole": 20,
+      "sugar": 38
     }
   },
   "beef_kofta_curry": {
     "category": "curry",
-    "serving_label": "1 serving, minced-beef meatball curry — the traditional kofta curry (sourced: Tea for Turmeric, 4 servings). Chicken Kofta was not built as a traditional dish: koftas are traditionally beef/mutton mince, and the only Chicken Kofta recipe found was an explicit Western-fusion version.",
+    "serving_label": "1 serving, minced-beef meatball curry \u2014 the traditional kofta curry (sourced: Tea for Turmeric, 4 servings). Chicken Kofta was not built as a traditional dish: koftas are traditionally beef/mutton mince, and the only Chicken Kofta recipe found was an explicit Western-fusion version.",
     "ingredients": {
-      "beef_mince_keema_cooked": 85, "egg_cooked": 12, "onion_raw": 68, "tomato_raw": 50,
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 11 },
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 14 }
+      "beef_mince_keema_cooked": 85,
+      "egg_cooked": 12,
+      "onion_raw": 68,
+      "tomato_raw": 50,
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 11
+      },
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 14
+      }
     }
   },
   "sweet_dalia": {
@@ -769,7 +1861,15 @@
     "serving_label": "1 bowl, sweet cracked-wheat porridge (sourced: Pakistan Eats, 2 servings)",
     "ingredients": {
       "cracked_wheat_dry": 43,
-      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 58 },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "milk_whole",
+          "milk_low_fat"
+        ],
+        "default": "milk_whole",
+        "grams": 58
+      },
       "sugar": 10
     }
   },
@@ -777,247 +1877,592 @@
     "category": "rice_dish",
     "serving_label": "1 plate (sourced: Pakistan Eats, 6 servings)",
     "ingredients": {
-      "rice_white_cooked": 198, "prawns_cooked": 64, "onion_raw": 25, "tomato_raw": 50,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 18 }
+      "rice_white_cooked": 198,
+      "prawns_cooked": 64,
+      "onion_raw": 25,
+      "tomato_raw": 50,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 18
+      }
     }
   },
-
   "sindhi_biryani": {
     "category": "rice_dish",
-    "serving_label": "1 plate, tangy potato-and-prune biryani (sourced: Fauzia's Kitchen Fun, 8 servings; portion scaled down ~0.66x from the literal recipe/8 math, which implied a 572g plate — a family-style-batch artifact, not a real single serving; scaled to match this database's other biryani/pulao plate sizes)",
+    "serving_label": "1 plate, tangy potato-and-prune biryani (sourced: Fauzia's Kitchen Fun, 8 servings; portion scaled down ~0.66x from the literal recipe/8 math, which implied a 572g plate \u2014 a family-style-batch artifact, not a real single serving; scaled to match this database's other biryani/pulao plate sizes)",
     "ingredients": {
       "rice_white_cooked": 197,
-      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_thigh_skin_cooked", "grams": 56 },
-      "potato_cooked": 50, "tomato_raw": 33, "dried_plums_prunes": 7,
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 25 },
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 11 }
+      "protein": {
+        "role": "protein_cut",
+        "options": [
+          "chicken_breast_cooked",
+          "chicken_thigh_skin_cooked"
+        ],
+        "default": "chicken_thigh_skin_cooked",
+        "grams": 56
+      },
+      "potato_cooked": 50,
+      "tomato_raw": 33,
+      "dried_plums_prunes": 7,
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 25
+      },
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 11
+      }
     }
   },
   "sai_bhaji": {
     "category": "vegetable",
     "serving_label": "1 bowl, Sindhi spinach-lentil-vegetable curry (sourced: Archana's Kitchen, 4 servings)",
     "ingredients": {
-      "spinach_cooked": 35, "methi_leaves_cooked": 5, "chana_daal_cooked": 40,
-      "carrot_cooked": 10, "bottle_gourd_cooked": 12, "green_beans_cooked": 9,
-      "onion_raw": 50, "tomato_raw": 25,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 11 }
+      "spinach_cooked": 35,
+      "methi_leaves_cooked": 5,
+      "chana_daal_cooked": 40,
+      "carrot_cooked": 10,
+      "bottle_gourd_cooked": 12,
+      "green_beans_cooked": 9,
+      "onion_raw": 50,
+      "tomato_raw": 25,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "ghee",
+        "grams": 11
+      }
     }
   },
   "sindhi_kadhi": {
     "category": "curry",
     "serving_label": "1 bowl, tangy besan-vegetable curry, no yogurt (sourced: Whiskaffair, 6 servings)",
     "ingredients": {
-      "potato_cooked": 15, "carrot_cooked": 7, "okra_cooked": 13, "eggplant_cooked": 15,
-      "besan_gram_flour": 10, "tomato_raw": 15,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 14 }
+      "potato_cooked": 15,
+      "carrot_cooked": 7,
+      "okra_cooked": 13,
+      "eggplant_cooked": 15,
+      "besan_gram_flour": 10,
+      "tomato_raw": 15,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 14
+      }
     }
   },
   "koki": {
     "category": "bread",
-    "serving_label": "1 koki, thick spiced Sindhi flatbread with onion (built by analogy to roti/paratha — not independently sourced)",
+    "serving_label": "1 koki, thick spiced Sindhi flatbread with onion (built by analogy to roti/paratha \u2014 not independently sourced)",
     "ingredients": {
-      "flour": { "role": "flour", "options": ["atta_whole_wheat_flour", "maida_refined_flour", "atta_multigrain"], "default": "atta_whole_wheat_flour", "grams": 45 },
+      "flour": {
+        "role": "flour",
+        "options": [
+          "atta_whole_wheat_flour",
+          "maida_refined_flour",
+          "atta_multigrain"
+        ],
+        "default": "atta_whole_wheat_flour",
+        "grams": 45
+      },
       "onion_raw": 15,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 15 }
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "ghee",
+        "grams": 15
+      }
     }
   },
   "palla_machi": {
     "category": "curry",
-    "serving_label": "1 serving, Sindhi fish curry (built by analogy to chicken_curry using generic fish fillet — real Palla/Hilsa isn't in our ingredient set; not independently sourced)",
+    "serving_label": "1 serving, Sindhi fish curry (built by analogy to chicken_curry using generic fish fillet \u2014 real Palla/Hilsa isn't in our ingredient set; not independently sourced)",
     "ingredients": {
-      "fish_fillet_cooked": 130, "onion_raw": 25, "tomato_raw": 30,
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 15 },
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 }
+      "fish_fillet_cooked": 130,
+      "onion_raw": 25,
+      "tomato_raw": 30,
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 15
+      },
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 12
+      }
     }
   },
   "took_aloo": {
     "category": "vegetable",
-    "serving_label": "1 bowl, thin-fried Sindhi potatoes (built by analogy to aloo_sabzi — not independently sourced)",
+    "serving_label": "1 bowl, thin-fried Sindhi potatoes (built by analogy to aloo_sabzi \u2014 not independently sourced)",
     "ingredients": {
-      "potato_cooked": 150, "onion_raw": 10,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 15 }
+      "potato_cooked": 150,
+      "onion_raw": 10,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 15
+      }
     }
   },
-
   "kabuli_pulao": {
     "category": "rice_dish",
     "serving_label": "1 plate, lamb pulao with carrots and raisins (sourced: The Foreign Fork, 6 servings)",
     "ingredients": {
-      "rice_white_cooked": 167, "mutton_curry_cut_cooked": 58, "carrot_cooked": 21,
-      "raisins_dry": 21, "mixed_nuts_dry": 7,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 14 }
+      "rice_white_cooked": 167,
+      "mutton_curry_cut_cooked": 58,
+      "carrot_cooked": 21,
+      "raisins_dry": 21,
+      "mixed_nuts_dry": 7,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "ghee",
+        "grams": 14
+      }
     }
   },
   "peshawari_naan": {
     "category": "bread",
-    "serving_label": "1 naan, stuffed with coconut/almond/raisin filling (filling ratios estimated from typical recipes — exact source quantities not found, not independently sourced)",
+    "serving_label": "1 naan, stuffed with coconut/almond/raisin filling (filling ratios estimated from typical recipes \u2014 exact source quantities not found, not independently sourced)",
     "ingredients": {
-      "flour": { "role": "flour", "options": ["atta_whole_wheat_flour", "maida_refined_flour", "atta_multigrain"], "default": "maida_refined_flour", "grams": 55 },
-      "coconut_desiccated": 8, "mixed_nuts_dry": 6, "raisins_dry": 6, "sugar": 5,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 5 }
+      "flour": {
+        "role": "flour",
+        "options": [
+          "atta_whole_wheat_flour",
+          "maida_refined_flour",
+          "atta_multigrain"
+        ],
+        "default": "maida_refined_flour",
+        "grams": 55
+      },
+      "coconut_desiccated": 8,
+      "mixed_nuts_dry": 6,
+      "raisins_dry": 6,
+      "sugar": 5,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "ghee",
+        "grams": 5
+      }
     }
   },
   "charsi_tikka": {
     "category": "grilled",
-    "serving_label": "2 pieces, Peshawari-style grilled mutton (built by analogy to chicken_tikka/chapli_kebab — not independently sourced)",
+    "serving_label": "2 pieces, Peshawari-style grilled mutton (built by analogy to chicken_tikka/chapli_kebab \u2014 not independently sourced)",
     "ingredients": {
       "mutton_curry_cut_cooked": 150,
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 15 },
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 10 }
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 15
+      },
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 10
+      }
     }
   },
   "peshawari_kahwa": {
     "category": "beverage",
-    "serving_label": "1 cup (~150ml), green tea with cardamom and almonds (built by analogy to chai_regular — tea itself is ~0 kcal; not independently sourced)",
-    "ingredients": { "sugar": 8, "mixed_nuts_dry": 3 }
+    "serving_label": "1 cup (~150ml), green tea with cardamom and almonds (built by analogy to chai_regular \u2014 tea itself is ~0 kcal; not independently sourced)",
+    "ingredients": {
+      "sugar": 8,
+      "mixed_nuts_dry": 3
+    }
   },
   "kachalo": {
     "category": "snack",
-    "serving_label": "1 bowl, boiled taro chaat with tamarind-yogurt (built by analogy to chana_chaat — not independently sourced)",
+    "serving_label": "1 bowl, boiled taro chaat with tamarind-yogurt (built by analogy to chana_chaat \u2014 not independently sourced)",
     "ingredients": {
       "taro_cooked": 150,
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 20 },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 20
+      },
       "sugar": 3
     }
   },
   "peshawari_falooda": {
     "category": "dessert",
-    "serving_label": "1 glass, rose milk with vermicelli and cream (no ice cream ingredient modeled — approximated with cream; not independently sourced)",
+    "serving_label": "1 glass, rose milk with vermicelli and cream (no ice cream ingredient modeled \u2014 approximated with cream; not independently sourced)",
     "ingredients": {
       "vermicelli_dry": 10,
-      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 150 },
-      "sugar": 20, "cream_fresh": 30
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "milk_whole",
+          "milk_low_fat"
+        ],
+        "default": "milk_whole",
+        "grams": 150
+      },
+      "sugar": 20,
+      "cream_fresh": 30
     }
   },
-
   "sajji": {
     "category": "grilled",
-    "serving_label": "1 quarter, whole roasted chicken with Balochi spice marinade (built by analogy to chicken_roast/chicken_chargha — not independently sourced)",
-    "portion_presets": { "quarter": 190, "half": 375, "full": 750 },
+    "serving_label": "1 quarter, whole roasted chicken with Balochi spice marinade (built by analogy to chicken_roast/chicken_chargha \u2014 not independently sourced)",
+    "portion_presets": {
+      "quarter": 190,
+      "half": 375,
+      "full": 750
+    },
     "ingredients": {
-      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "blend": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "grams": 100 },
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 8 },
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+      "protein": {
+        "role": "protein_cut",
+        "options": [
+          "chicken_breast_cooked",
+          "chicken_thigh_skin_cooked"
+        ],
+        "blend": [
+          "chicken_breast_cooked",
+          "chicken_thigh_skin_cooked"
+        ],
+        "grams": 100
+      },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 8
+      },
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 5
+      }
     }
   },
   "balochi_rosh": {
     "category": "curry",
-    "serving_label": "1 bowl, minimally-spiced Balochi lamb curry (built by analogy to mutton_karahi, lighter on spices/oil — not independently sourced)",
+    "serving_label": "1 bowl, minimally-spiced Balochi lamb curry (built by analogy to mutton_karahi, lighter on spices/oil \u2014 not independently sourced)",
     "ingredients": {
-      "mutton_curry_cut_cooked": 150, "onion_raw": 10,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 10 }
+      "mutton_curry_cut_cooked": 150,
+      "onion_raw": 10,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 10
+      }
     }
   },
   "kaak": {
     "category": "bread",
-    "serving_label": "1 piece, hard trench-baked Balochi bread (built by analogy to roti/naan — not independently sourced)",
+    "serving_label": "1 piece, hard trench-baked Balochi bread (built by analogy to roti/naan \u2014 not independently sourced)",
     "ingredients": {
-      "flour": { "role": "flour", "options": ["atta_whole_wheat_flour", "maida_refined_flour", "atta_multigrain"], "default": "atta_whole_wheat_flour", "grams": 50 },
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 3 }
+      "flour": {
+        "role": "flour",
+        "options": [
+          "atta_whole_wheat_flour",
+          "maida_refined_flour",
+          "atta_multigrain"
+        ],
+        "default": "atta_whole_wheat_flour",
+        "grams": 50
+      },
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 3
+      }
     }
   },
   "dampukht": {
     "category": "curry",
-    "serving_label": "1 serving, slow-cooked Balochi meat curry (built by analogy to mutton_korma — not independently sourced)",
+    "serving_label": "1 serving, slow-cooked Balochi meat curry (built by analogy to mutton_korma \u2014 not independently sourced)",
     "ingredients": {
-      "mutton_curry_cut_cooked": 150, "onion_raw": 15,
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 20 },
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 }
+      "mutton_curry_cut_cooked": 150,
+      "onion_raw": 15,
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 20
+      },
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 12
+      }
     }
   },
-
   "mamtu": {
     "category": "snack",
-    "serving_label": "4 dumplings, steamed meat-filled dumplings from Gilgit-Baltistan (built by analogy to samosa/shami_kebab, no frying oil since steamed — portions sized to ~40g/dumpling, a realistic steamed-dumpling weight; not independently sourced)",
+    "serving_label": "4 dumplings, steamed meat-filled dumplings from Gilgit-Baltistan (built by analogy to samosa/shami_kebab, no frying oil since steamed \u2014 portions sized to ~40g/dumpling, a realistic steamed-dumpling weight; not independently sourced)",
     "ingredients": {
-      "beef_mince_keema_cooked": 96, "maida_refined_flour": 48, "onion_raw": 16
+      "beef_mince_keema_cooked": 96,
+      "maida_refined_flour": 48,
+      "onion_raw": 16
     }
   },
   "thukpa": {
     "category": "fast_food",
-    "serving_label": "1 bowl, noodle soup (built by analogy to chicken_chowmein, lighter on oil since it's a soup — not independently sourced)",
+    "serving_label": "1 bowl, noodle soup (built by analogy to chicken_chowmein, lighter on oil since it's a soup \u2014 not independently sourced)",
     "ingredients": {
       "noodles_cooked": 150,
-      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_breast_cooked", "grams": 60 },
+      "protein": {
+        "role": "protein_cut",
+        "options": [
+          "chicken_breast_cooked",
+          "chicken_thigh_skin_cooked"
+        ],
+        "default": "chicken_breast_cooked",
+        "grams": 60
+      },
       "cabbage_raw": 20,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 }
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 6
+      }
     }
   },
   "ghoshtaba": {
     "category": "curry",
-    "serving_label": "1 serving, Kashmiri pounded-mutton meatballs in yogurt gravy (built by analogy to beef_kofta_curry, using mince as a stand-in for pounded mutton — not independently sourced)",
+    "serving_label": "1 serving, Kashmiri pounded-mutton meatballs in yogurt gravy (built by analogy to beef_kofta_curry, using mince as a stand-in for pounded mutton \u2014 not independently sourced)",
     "ingredients": {
       "beef_mince_keema_cooked": 120,
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 40 },
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 12 }
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 40
+      },
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "ghee",
+        "grams": 12
+      }
     }
   },
   "kashmiri_pulao": {
     "category": "rice_dish",
     "serving_label": "1 plate, sweet-savory rice with nuts (sourced: Veg Recipes of India, 3 servings)",
     "ingredients": {
-      "rice_white_cooked": 158, "mixed_nuts_dry": 14, "onion_raw": 17,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 21 }
+      "rice_white_cooked": 158,
+      "mixed_nuts_dry": 14,
+      "onion_raw": 17,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "ghee",
+        "grams": 21
+      }
     }
   },
   "kashmiri_chai": {
     "category": "beverage",
-    "serving_label": "1 cup (~200ml), Kashmiri pink tea with pistachio garnish (built by analogy to chai_regular — not independently sourced)",
+    "serving_label": "1 cup (~200ml), Kashmiri pink tea with pistachio garnish (built by analogy to chai_regular \u2014 not independently sourced)",
     "ingredients": {
-      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 100 },
-      "sugar": 5, "mixed_nuts_dry": 3
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "milk_whole",
+          "milk_low_fat"
+        ],
+        "default": "milk_whole",
+        "grams": 100
+      },
+      "sugar": 5,
+      "mixed_nuts_dry": 3
     }
   },
-
   "hari_chutney": {
     "category": "condiment",
     "serving_label": "2 tbsp, mint-coriander chutney (typical accompaniment serving, not from a specific published recipe)",
     "ingredients": {
       "mint_coriander_leaves_raw": 28,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 2 }
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 2
+      }
     }
   },
   "imli_chutney": {
     "category": "condiment",
     "serving_label": "2 tbsp, tamarind chutney (typical accompaniment serving, not from a specific published recipe)",
-    "ingredients": { "tamarind_pulp": 15, "sugar": 15 }
+    "ingredients": {
+      "tamarind_pulp": 15,
+      "sugar": 15
+    }
   },
   "lehsun_chutney": {
     "category": "condiment",
     "serving_label": "1 tbsp, garlic chutney (typical accompaniment serving, not from a specific published recipe)",
     "ingredients": {
       "garlic_raw": 8,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 }
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 6
+      }
     }
   },
   "mango_chutney": {
     "category": "condiment",
     "serving_label": "2 tbsp, sweet raw-mango (keri) chutney (typical accompaniment serving, not from a specific published recipe)",
-    "ingredients": { "raw_green_mango": 20, "sugar": 10 }
+    "ingredients": {
+      "raw_green_mango": 20,
+      "sugar": 10
+    }
   },
   "tamatar_chutney": {
     "category": "condiment",
     "serving_label": "2 tbsp, cooked tomato chutney (typical accompaniment serving, not from a specific published recipe)",
     "ingredients": {
-      "tomato_raw": 25, "sugar": 3,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 2 }
+      "tomato_raw": 25,
+      "sugar": 3,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 2
+      }
     }
   },
-
   "aam_ka_achaar": {
     "category": "condiment",
     "serving_label": "1 tbsp, oil-preserved mango pickle (typical accompaniment serving, not from a specific published recipe)",
     "ingredients": {
       "raw_green_mango": 9,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 }
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 6
+      }
     }
   },
   "mixed_achaar": {
     "category": "condiment",
     "serving_label": "1 tbsp, mixed vegetable pickle -- carrot, turnip, cauliflower, garlic, mango (Shikarpuri-style; typical accompaniment serving, not from a specific published recipe)",
     "ingredients": {
-      "carrot_raw": 3, "turnip_raw": 3, "cauliflower_cooked": 2, "garlic_raw": 2, "raw_green_mango": 2,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+      "carrot_raw": 3,
+      "turnip_raw": 3,
+      "cauliflower_cooked": 2,
+      "garlic_raw": 2,
+      "raw_green_mango": 2,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 5
+      }
     }
   },
   "nimbu_ka_achaar": {
@@ -1025,7 +2470,15 @@
     "serving_label": "1 tbsp, oil-preserved lime/lemon pickle (typical accompaniment serving, not from a specific published recipe)",
     "ingredients": {
       "lemon_lime_raw": 10,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 5
+      }
     }
   },
   "mirch_ka_achaar": {
@@ -1033,7 +2486,15 @@
     "serving_label": "1 tbsp, oil-preserved green chili pickle (typical accompaniment serving, not from a specific published recipe)",
     "ingredients": {
       "green_chili_raw": 9,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 }
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 6
+      }
     }
   },
   "lehsun_ka_achaar": {
@@ -1041,7 +2502,15 @@
     "serving_label": "1 tbsp, oil-preserved garlic pickle (typical accompaniment serving, not from a specific published recipe)",
     "ingredients": {
       "garlic_raw": 9,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 }
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 6
+      }
     }
   },
   "gajar_ka_achaar": {
@@ -1049,7 +2518,15 @@
     "serving_label": "1 tbsp, oil-preserved carrot pickle (typical accompaniment serving, not from a specific published recipe)",
     "ingredients": {
       "carrot_raw": 9,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 }
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 6
+      }
     }
   },
   "shalgam_ka_achaar": {
@@ -1057,25 +2534,48 @@
     "serving_label": "1 tbsp, oil-preserved turnip pickle (typical accompaniment serving, not from a specific published recipe)",
     "ingredients": {
       "turnip_raw": 9,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 }
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 6
+      }
     }
   },
-
   "raita": {
     "category": "condiment",
     "serving_label": "1 small bowl, yogurt with cucumber and mint (typical accompaniment serving, not from a specific published recipe)",
     "ingredients": {
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 85 },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 85
+      },
       "cucumber_raw": 15
     }
   },
-
   "jalebi": {
     "category": "dessert",
     "serving_label": "3 pieces, fried spirals soaked in sugar syrup (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "maida_refined_flour": 15, "sugar": 20,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 8 }
+      "maida_refined_flour": 15,
+      "sugar": 20,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 8
+      }
     }
   },
   "sheer_khurma": {
@@ -1083,68 +2583,142 @@
     "serving_label": "1 bowl, Eid vermicelli-milk dessert with dates and nuts (typical serving, not from a specific published recipe)",
     "ingredients": {
       "vermicelli_dry": 15,
-      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 150 },
-      "dates_raw": 15, "sugar": 10, "mixed_nuts_dry": 8
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "milk_whole",
+          "milk_low_fat"
+        ],
+        "default": "milk_whole",
+        "grams": 150
+      },
+      "dates_raw": 15,
+      "sugar": 10,
+      "mixed_nuts_dry": 8
     }
   },
   "kulfi": {
     "category": "dessert",
     "serving_label": "1 stick/scoop, dense frozen milk dessert (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 50 },
-      "cream_fresh": 15, "sugar": 12, "mixed_nuts_dry": 3
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "milk_whole",
+          "milk_low_fat"
+        ],
+        "default": "milk_whole",
+        "grams": 50
+      },
+      "cream_fresh": 15,
+      "sugar": 12,
+      "mixed_nuts_dry": 3
     }
   },
   "fruit_custard": {
     "category": "dessert",
     "serving_label": "1 bowl, milk custard with mixed fruit and cream (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 100 },
-      "corn_flour": 8, "sugar": 15, "banana_raw": 30, "apple_raw": 30, "cream_fresh": 15
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "milk_whole",
+          "milk_low_fat"
+        ],
+        "default": "milk_whole",
+        "grams": 100
+      },
+      "corn_flour": 8,
+      "sugar": 15,
+      "banana_raw": 30,
+      "apple_raw": 30,
+      "cream_fresh": 15
     }
   },
   "fruit_chaat": {
     "category": "snack",
     "serving_label": "1 bowl, mixed fruit with chaat masala (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "banana_raw": 40, "apple_raw": 40, "guava_raw": 30, "pomegranate_raw": 30, "kinnow_orange_raw": 40,
+      "banana_raw": 40,
+      "apple_raw": 40,
+      "guava_raw": 30,
+      "pomegranate_raw": 30,
+      "kinnow_orange_raw": 40,
       "sugar": 5
     }
   },
   "puri": {
     "category": "bread",
-    "serving_label": "1 puri, deep-fried puffy bread — completes the halwa-puri-channa combo alongside sooji_halwa and chana_curry (typical serving, not from a specific published recipe)",
+    "serving_label": "1 puri, deep-fried puffy bread \u2014 completes the halwa-puri-channa combo alongside sooji_halwa and chana_curry (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "flour": { "role": "flour", "options": ["atta_whole_wheat_flour", "maida_refined_flour", "atta_multigrain"], "default": "atta_whole_wheat_flour", "grams": 20 },
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 8 }
+      "flour": {
+        "role": "flour",
+        "options": [
+          "atta_whole_wheat_flour",
+          "maida_refined_flour",
+          "atta_multigrain"
+        ],
+        "default": "atta_whole_wheat_flour",
+        "grams": 20
+      },
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 8
+      }
     }
   },
   "rooh_afza_sharbat": {
     "category": "beverage",
     "serving_label": "1 glass (~200ml), rose syrup diluted in water (typical serving, not from a specific published recipe)",
-    "ingredients": { "rose_syrup_concentrate": 30 }
+    "ingredients": {
+      "rose_syrup_concentrate": 30
+    }
   },
   "jaljeera": {
     "category": "beverage",
     "serving_label": "1 glass (~200ml), tangy cumin-mint-tamarind water (typical serving, not from a specific published recipe)",
-    "ingredients": { "tamarind_pulp": 8, "mint_coriander_leaves_raw": 5, "sugar": 5 }
+    "ingredients": {
+      "tamarind_pulp": 8,
+      "mint_coriander_leaves_raw": 5,
+      "sugar": 5
+    }
   },
   "date_milk_shake": {
     "category": "beverage",
     "serving_label": "1 glass (~250ml), blended dates and milk (typical serving, not from a specific published recipe)",
     "ingredients": {
       "dates_raw": 40,
-      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 200 },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "milk_whole",
+          "milk_low_fat"
+        ],
+        "default": "milk_whole",
+        "grams": 200
+      },
       "sugar": 5
     }
   },
-
   "mango_shake": {
     "category": "beverage",
     "serving_label": "1 glass (~280ml), Pakistan's national summer drink (typical serving, not from a specific published recipe)",
     "ingredients": {
       "mango_raw": 120,
-      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 150 },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "milk_whole",
+          "milk_low_fat"
+        ],
+        "default": "milk_whole",
+        "grams": 150
+      },
       "sugar": 10
     }
   },
@@ -1153,7 +2727,15 @@
     "serving_label": "1 glass (~240ml), blended Oreo cookies and milk -- Pakistan's most popular generic shake flavor; no ice cream ingredient modeled, approximated with cream (typical serving, not from a specific published recipe)",
     "ingredients": {
       "oreo_cookie": 40,
-      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 180 },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "milk_whole",
+          "milk_low_fat"
+        ],
+        "default": "milk_whole",
+        "grams": 180
+      },
       "cream_fresh": 20
     }
   },
@@ -1162,7 +2744,15 @@
     "serving_label": "1 glass (~225ml) (typical serving, not from a specific published recipe)",
     "ingredients": {
       "chocolate_syrup": 30,
-      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 180 },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "milk_whole",
+          "milk_low_fat"
+        ],
+        "default": "milk_whole",
+        "grams": 180
+      },
       "cream_fresh": 15
     }
   },
@@ -1171,7 +2761,15 @@
     "serving_label": "1 glass (~260ml) (typical serving, not from a specific published recipe)",
     "ingredients": {
       "strawberry_raw": 100,
-      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 150 },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "milk_whole",
+          "milk_low_fat"
+        ],
+        "default": "milk_whole",
+        "grams": 150
+      },
       "sugar": 12
     }
   },
@@ -1180,438 +2778,863 @@
     "serving_label": "1 glass (~280ml) (typical serving, not from a specific published recipe)",
     "ingredients": {
       "banana_raw": 120,
-      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 150 },
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "milk_whole",
+          "milk_low_fat"
+        ],
+        "default": "milk_whole",
+        "grams": 150
+      },
       "sugar": 8
     }
   },
   "sugarcane_juice": {
     "category": "beverage",
     "serving_label": "1 glass (~250ml), ganne ka ras (typical serving, not from a specific published recipe)",
-    "ingredients": { "sugarcane_juice": 250 }
+    "ingredients": {
+      "sugarcane_juice": 250
+    }
   },
   "fresh_lime_soda": {
     "category": "beverage",
     "serving_label": "1 glass (~250ml), sweet nimbu soda (typical serving, not from a specific published recipe)",
-    "ingredients": { "lemon_lime_raw": 30, "sugar": 15 }
+    "ingredients": {
+      "lemon_lime_raw": 30,
+      "sugar": 15
+    }
   },
   "fresh_orange_juice": {
     "category": "beverage",
     "serving_label": "1 glass (~250ml) (typical serving, not from a specific published recipe)",
-    "ingredients": { "orange_juice_fresh": 250 }
+    "ingredients": {
+      "orange_juice_fresh": 250
+    }
   },
   "cold_coffee": {
     "category": "beverage",
     "serving_label": "1 glass (~225ml) (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 200 },
-      "sugar": 15, "cream_fresh": 10
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "milk_whole",
+          "milk_low_fat"
+        ],
+        "default": "milk_whole",
+        "grams": 200
+      },
+      "sugar": 15,
+      "cream_fresh": 10
     }
   },
   "cola_soft_drink": {
     "category": "beverage",
     "serving_label": "1 glass/can (~300ml), generic cola/soft drink (typical serving, not from a specific published recipe)",
-    "ingredients": { "cola_soft_drink": 300 }
+    "ingredients": {
+      "cola_soft_drink": 300
+    }
   },
   "iced_tea": {
     "category": "beverage",
     "serving_label": "1 glass (~250ml), sweetened (typical serving, not from a specific published recipe)",
-    "ingredients": { "sugar": 20 }
+    "ingredients": {
+      "sugar": 20
+    }
   },
-
   "grilled_chicken_breast": {
     "category": "grilled",
-    "serving_label": "1 breast (~150g), plain, no oil counted -- the generic lean-protein staple every fitness app has",
-    "ingredients": { "chicken_breast_cooked": 150 }
+    "serving_label": "1 breast (~150g), plain, no oil counted -- the generic lean-protein staple every fitness app has (standard reference nutrition for this ingredient, not a recipe conversion)",
+    "ingredients": {
+      "chicken_breast_cooked": 150
+    }
   },
   "grilled_salmon": {
     "category": "grilled",
-    "serving_label": "1 fillet (~150g), plain grilled/baked",
-    "ingredients": { "salmon_cooked": 150 }
+    "serving_label": "1 fillet (~150g), plain grilled/baked (standard reference nutrition for this ingredient, not a recipe conversion)",
+    "ingredients": {
+      "salmon_cooked": 150
+    }
   },
   "grilled_steak": {
     "category": "grilled",
-    "serving_label": "1 serving (~150g), plain grilled lean beef",
-    "ingredients": { "beef_lean_cooked": 150 }
+    "serving_label": "1 serving (~150g), plain grilled lean beef (standard reference nutrition for this ingredient, not a recipe conversion)",
+    "ingredients": {
+      "beef_lean_cooked": 150
+    }
   },
   "egg_whites": {
     "category": "breakfast",
-    "serving_label": "~3 large egg whites (100g)",
-    "ingredients": { "egg_white_cooked": 100 }
+    "serving_label": "~3 large egg whites (100g) (standard reference nutrition for this ingredient, not a recipe conversion)",
+    "ingredients": {
+      "egg_white_cooked": 100
+    }
   },
   "cottage_cheese": {
     "category": "snack",
-    "serving_label": "1 cup (~150g), plain",
-    "ingredients": { "cottage_cheese": 150 }
+    "serving_label": "1 cup (~150g), plain (standard reference nutrition for this ingredient, not a recipe conversion)",
+    "ingredients": {
+      "cottage_cheese": 150
+    }
   },
   "canned_tuna": {
     "category": "snack",
-    "serving_label": "1 small can (~100g), in water, drained",
-    "ingredients": { "tuna_canned": 100 }
+    "serving_label": "1 small can (~100g), in water, drained (standard reference nutrition for this ingredient, not a recipe conversion)",
+    "ingredients": {
+      "tuna_canned": 100
+    }
   },
   "greek_yogurt_plain": {
     "category": "breakfast",
-    "serving_label": "1 cup (~170g), plain",
-    "ingredients": { "greek_yogurt_plain": 170 }
+    "serving_label": "1 cup (~170g), plain (standard reference nutrition for this ingredient, not a recipe conversion)",
+    "ingredients": {
+      "greek_yogurt_plain": 170
+    }
   },
-
   "oatmeal": {
     "category": "breakfast",
-    "serving_label": "1 bowl, plain oats cooked with a splash of milk",
+    "serving_label": "1 bowl, plain oats cooked with a splash of milk (standard reference nutrition for this ingredient, not a recipe conversion)",
     "ingredients": {
       "oats_dry": 40,
-      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 100 }
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "milk_whole",
+          "milk_low_fat"
+        ],
+        "default": "milk_whole",
+        "grams": 100
+      }
     }
   },
   "brown_rice": {
     "category": "rice_dish",
-    "serving_label": "1 plate, plain",
-    "ingredients": { "brown_rice_cooked": 200 }
+    "serving_label": "1 plate, plain (standard reference nutrition for this ingredient, not a recipe conversion)",
+    "ingredients": {
+      "brown_rice_cooked": 200
+    }
   },
   "whole_wheat_toast": {
     "category": "breakfast",
-    "serving_label": "1 slice, plain",
-    "ingredients": { "whole_wheat_bread": 30 }
+    "serving_label": "1 slice, plain (standard reference nutrition for this ingredient, not a recipe conversion)",
+    "ingredients": {
+      "whole_wheat_bread": 30
+    }
   },
   "sweet_potato_baked": {
     "category": "vegetable",
-    "serving_label": "1 medium, baked, plain",
-    "ingredients": { "sweet_potato_cooked": 150 }
+    "serving_label": "1 medium, baked, plain (standard reference nutrition for this ingredient, not a recipe conversion)",
+    "ingredients": {
+      "sweet_potato_cooked": 150
+    }
   },
   "quinoa": {
     "category": "rice_dish",
-    "serving_label": "1 cup cooked, plain",
-    "ingredients": { "quinoa_cooked": 185 }
+    "serving_label": "1 cup cooked, plain (standard reference nutrition for this ingredient, not a recipe conversion)",
+    "ingredients": {
+      "quinoa_cooked": 185
+    }
   },
   "granola": {
     "category": "breakfast",
-    "serving_label": "1 serving (~50g)",
-    "ingredients": { "granola": 50 }
+    "serving_label": "1 serving (~50g) (standard reference nutrition for this ingredient, not a recipe conversion)",
+    "ingredients": {
+      "granola": 50
+    }
   },
-
   "peanut_butter": {
     "category": "snack",
-    "serving_label": "2 tbsp (~32g)",
-    "ingredients": { "peanut_butter": 32 }
+    "serving_label": "2 tbsp (~32g) (standard reference nutrition for this ingredient, not a recipe conversion)",
+    "ingredients": {
+      "peanut_butter": 32
+    }
   },
   "almonds_snack": {
     "category": "snack",
-    "serving_label": "1oz handful (~28g)",
-    "ingredients": { "mixed_nuts_dry": 28 }
+    "serving_label": "1oz handful (~28g) (standard reference nutrition for this ingredient, not a recipe conversion)",
+    "ingredients": {
+      "mixed_nuts_dry": 28
+    }
   },
   "potato_chips": {
     "category": "snack",
-    "serving_label": "1 small bag (~28g)",
-    "ingredients": { "potato_chips": 28 }
+    "serving_label": "1 small bag (~28g) (standard reference nutrition for this ingredient, not a recipe conversion)",
+    "ingredients": {
+      "potato_chips": 28
+    }
   },
   "chocolate_bar": {
     "category": "dessert",
-    "serving_label": "1 standard bar (~45g)",
-    "ingredients": { "chocolate_bar": 45 }
+    "serving_label": "1 standard bar (~45g) (standard reference nutrition for this ingredient, not a recipe conversion)",
+    "ingredients": {
+      "chocolate_bar": 45
+    }
   },
   "cookies": {
     "category": "dessert",
-    "serving_label": "2-3 cookies (~30g)",
-    "ingredients": { "cookie_generic": 30 }
+    "serving_label": "2-3 cookies (~30g) (standard reference nutrition for this ingredient, not a recipe conversion)",
+    "ingredients": {
+      "cookie_generic": 30
+    }
   },
   "popcorn": {
     "category": "snack",
-    "serving_label": "~3 cups, air-popped, plain (~25g)",
-    "ingredients": { "popcorn_plain": 25 }
+    "serving_label": "~3 cups, air-popped, plain (~25g) (standard reference nutrition for this ingredient, not a recipe conversion)",
+    "ingredients": {
+      "popcorn_plain": 25
+    }
   },
-
   "steamed_broccoli": {
     "category": "vegetable",
-    "serving_label": "1 bowl, plain",
-    "ingredients": { "broccoli_cooked": 150 }
+    "serving_label": "1 bowl, plain (standard reference nutrition for this ingredient, not a recipe conversion)",
+    "ingredients": {
+      "broccoli_cooked": 150
+    }
   },
   "avocado": {
     "category": "fruit",
-    "serving_label": "1/2 medium avocado",
-    "ingredients": { "avocado_raw": 100 }
+    "serving_label": "1/2 medium avocado (standard reference nutrition for this ingredient, not a recipe conversion)",
+    "ingredients": {
+      "avocado_raw": 100
+    }
   },
   "hummus": {
     "category": "condiment",
-    "serving_label": "2 tbsp (~30g)",
-    "ingredients": { "hummus": 30 }
+    "serving_label": "2 tbsp (~30g) (standard reference nutrition for this ingredient, not a recipe conversion)",
+    "ingredients": {
+      "hummus": 30
+    }
   },
   "mixed_green_salad": {
     "category": "vegetable_raw",
-    "serving_label": "1 bowl, lettuce/cucumber/tomato with a light oil dressing",
+    "serving_label": "1 bowl, lettuce/cucumber/tomato with a light oil dressing (standard reference nutrition for this ingredient, not a recipe conversion)",
     "ingredients": {
-      "lettuce_raw": 60, "cucumber_raw": 30, "tomato_raw": 30,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+      "lettuce_raw": 60,
+      "cucumber_raw": 30,
+      "tomato_raw": 30,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 5
+      }
     }
   },
-
   "glass_of_milk": {
     "category": "beverage",
-    "serving_label": "1 glass (~240ml)",
+    "serving_label": "1 glass (~240ml) (standard reference nutrition for this ingredient, not a recipe conversion)",
     "ingredients": {
-      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 240 }
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "milk_whole",
+          "milk_low_fat"
+        ],
+        "default": "milk_whole",
+        "grams": 240
+      }
     }
   },
   "cheese_slice": {
     "category": "snack",
-    "serving_label": "1 slice (~20g)",
-    "ingredients": { "cheese_processed": 20 }
+    "serving_label": "1 slice (~20g) (standard reference nutrition for this ingredient, not a recipe conversion)",
+    "ingredients": {
+      "cheese_processed": 20
+    }
   },
   "whey_protein_shake": {
     "category": "beverage",
-    "serving_label": "1 scoop (~30g) mixed with milk",
+    "serving_label": "1 scoop (~30g) mixed with milk (standard reference nutrition for this ingredient, not a recipe conversion)",
     "ingredients": {
       "whey_protein_powder": 30,
-      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 240 }
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "milk_whole",
+          "milk_low_fat"
+        ],
+        "default": "milk_whole",
+        "grams": 240
+      }
     }
   },
-
   "boiled_chicken": {
     "category": "grilled",
-    "serving_label": "1 serving (~150g), plain boiled chicken breast, minimal spices -- a common Pakistani diet staple, distinct in context from grilled_chicken_breast though nutritionally similar",
-    "ingredients": { "chicken_breast_cooked": 150 }
+    "serving_label": "1 serving (~150g), plain boiled chicken breast, minimal spices -- a common Pakistani diet staple, distinct in context from grilled_chicken_breast though nutritionally similar (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "chicken_breast_cooked": 150
+    }
   },
   "daal_soup_diet": {
     "category": "daal_rice",
-    "serving_label": "1 bowl, thin daal with no oil/tarka -- the diet version of daal described directly by the user",
-    "ingredients": { "masoor_daal_cooked": 40 }
+    "serving_label": "1 bowl, thin daal with no oil/tarka -- the diet version of daal described directly by the user (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "masoor_daal_cooked": 40
+    }
   },
   "chicken_yakhni_soup": {
     "category": "curry",
     "serving_label": "1 bowl, clear chicken broth soup, no oil (typical serving, not from a specific published recipe)",
-    "ingredients": { "chicken_breast_cooked": 50, "onion_raw": 10 }
+    "ingredients": {
+      "chicken_breast_cooked": 50,
+      "onion_raw": 10
+    }
   },
   "tandoori_grilled_fish": {
     "category": "grilled",
     "serving_label": "1 fillet (~150g), tandoori-spiced, no oil (typical serving, not from a specific published recipe)",
     "ingredients": {
       "fish_fillet_cooked": 150,
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_low_fat", "grams": 10 }
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_low_fat",
+        "grams": 10
+      }
     }
   },
   "roasted_chana": {
     "category": "snack",
-    "serving_label": "1 handful (~30g), dry-roasted chickpeas",
-    "ingredients": { "roasted_chana": 30 }
+    "serving_label": "1 handful (~30g), dry-roasted chickpeas (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "roasted_chana": 30
+    }
   },
-
   "desi_ghee_paratha": {
     "category": "bread",
-    "serving_label": "1 paratha, extra-ghee weight-gain version (regular paratha uses 12g ghee; this uses more)",
+    "serving_label": "1 paratha, extra-ghee weight-gain version (regular paratha uses 12g ghee; this uses more) (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "flour": { "role": "flour", "options": ["atta_whole_wheat_flour", "maida_refined_flour", "atta_multigrain"], "default": "atta_whole_wheat_flour", "grams": 45 },
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 25 }
+      "flour": {
+        "role": "flour",
+        "options": [
+          "atta_whole_wheat_flour",
+          "maida_refined_flour",
+          "atta_multigrain"
+        ],
+        "default": "atta_whole_wheat_flour",
+        "grams": 45
+      },
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "ghee",
+        "grams": 25
+      }
     }
   },
   "banana_nut_milk_shake": {
     "category": "beverage",
-    "serving_label": "1 glass (~365ml), traditional Pakistani mass-gain shake -- banana, dates, milk, nuts, honey",
+    "serving_label": "1 glass (~365ml), traditional Pakistani mass-gain shake -- banana, dates, milk, nuts, honey (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "banana_raw": 120, "dates_raw": 20,
-      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 200 },
-      "mixed_nuts_dry": 15, "honey": 10
+      "banana_raw": 120,
+      "dates_raw": 20,
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "milk_whole",
+          "milk_low_fat"
+        ],
+        "default": "milk_whole",
+        "grams": 200
+      },
+      "mixed_nuts_dry": 15,
+      "honey": 10
     }
   },
   "full_cream_nutty_lassi": {
     "category": "beverage",
-    "serving_label": "1 glass (~260ml), mass-gain lassi with nuts",
+    "serving_label": "1 glass (~260ml), mass-gain lassi with nuts (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 200 },
-      "milk_whole": 30, "sugar": 20, "mixed_nuts_dry": 10
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "yogurt_whole_milk",
+          "yogurt_low_fat"
+        ],
+        "default": "yogurt_whole_milk",
+        "grams": 200
+      },
+      "milk_whole": 30,
+      "sugar": 20,
+      "mixed_nuts_dry": 10
     }
   },
-
   "egg_white_omelette": {
     "category": "breakfast",
-    "serving_label": "1 omelette (~130g), diet version made with egg whites only",
+    "serving_label": "1 omelette (~130g), diet version made with egg whites only (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "egg_white_cooked": 120, "onion_raw": 10,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 2 }
+      "egg_white_cooked": 120,
+      "onion_raw": 10,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 2
+      }
     }
   },
   "grilled_chicken_veg_stirfry": {
     "category": "fast_food",
     "serving_label": "1 bowl, zero/minimal-oil chicken and vegetable stir-fry (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "chicken_breast_cooked": 120, "cabbage_raw": 40, "carrot_raw": 30,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 3 }
+      "chicken_breast_cooked": 120,
+      "cabbage_raw": 40,
+      "carrot_raw": 30,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 3
+      }
     }
   },
   "protein_oats": {
     "category": "breakfast",
-    "serving_label": "1 bowl, oats mixed with a scoop of whey protein",
+    "serving_label": "1 bowl, oats mixed with a scoop of whey protein (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "oats_dry": 40, "whey_protein_powder": 30,
-      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 100 }
+      "oats_dry": 40,
+      "whey_protein_powder": 30,
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "milk_whole",
+          "milk_low_fat"
+        ],
+        "default": "milk_whole",
+        "grams": 100
+      }
     }
   },
-
   "mass_gainer_shake": {
     "category": "beverage",
-    "serving_label": "1 glass (~420ml), protein + peanut butter + banana + oats blended with milk",
+    "serving_label": "1 glass (~420ml), protein + peanut butter + banana + oats blended with milk (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "whey_protein_powder": 30, "peanut_butter": 20, "banana_raw": 100, "oats_dry": 20,
-      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 250 }
+      "whey_protein_powder": 30,
+      "peanut_butter": 20,
+      "banana_raw": 100,
+      "oats_dry": 20,
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "milk_whole",
+          "milk_low_fat"
+        ],
+        "default": "milk_whole",
+        "grams": 250
+      }
     }
   },
   "trail_mix": {
     "category": "snack",
-    "serving_label": "1 handful (~35g), nuts and dried fruit",
-    "ingredients": { "mixed_nuts_dry": 20, "raisins_dry": 15 }
+    "serving_label": "1 handful (~35g), nuts and dried fruit (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "mixed_nuts_dry": 20,
+      "raisins_dry": 15
+    }
   },
   "bulking_rice_bowl": {
     "category": "rice_dish",
-    "serving_label": "1 bowl, rice with chicken, avocado, and a peanut butter drizzle -- a high-calorie balanced weight-gain meal",
+    "serving_label": "1 bowl, rice with chicken, avocado, and a peanut butter drizzle -- a high-calorie balanced weight-gain meal (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "rice_white_cooked": 250, "chicken_breast_cooked": 120, "avocado_raw": 50, "peanut_butter": 10
+      "rice_white_cooked": 250,
+      "chicken_breast_cooked": 120,
+      "avocado_raw": 50,
+      "peanut_butter": 10
     }
   },
-
   "beef_burger": {
     "category": "fast_food",
     "serving_label": "1 burger, plain beef patty (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "white_bread_bun": 80, "beef_mince_keema_cooked": 100, "onion_raw": 10, "tomato_raw": 10,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+      "white_bread_bun": 80,
+      "beef_mince_keema_cooked": 100,
+      "onion_raw": 10,
+      "tomato_raw": 10,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 5
+      }
     }
   },
   "cheeseburger": {
     "category": "fast_food",
     "serving_label": "1 burger, beef patty with cheese (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "white_bread_bun": 80, "beef_mince_keema_cooked": 100, "cheese_processed": 20, "onion_raw": 10,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+      "white_bread_bun": 80,
+      "beef_mince_keema_cooked": 100,
+      "onion_raw": 10,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 5
+      },
+      "cheddar_cheese": 20
     }
   },
   "grilled_chicken_burger": {
     "category": "fast_food",
     "serving_label": "1 burger, grilled chicken patty -- distinct from the fried zinger_burger already in the database (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "white_bread_bun": 80, "chicken_breast_cooked": 110, "tomato_raw": 10, "onion_raw": 10,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 3 }
+      "white_bread_bun": 80,
+      "chicken_breast_cooked": 110,
+      "tomato_raw": 10,
+      "onion_raw": 10,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 3
+      }
     }
   },
   "veggie_burger": {
     "category": "fast_food",
     "serving_label": "1 burger, bean/vegetable patty (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "white_bread_bun": 80, "veggie_patty": 90, "tomato_raw": 10, "onion_raw": 10,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+      "white_bread_bun": 80,
+      "veggie_patty": 90,
+      "tomato_raw": 10,
+      "onion_raw": 10,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 5
+      }
     }
   },
-
   "pepperoni_pizza_slice": {
     "category": "fast_food",
     "serving_label": "1 slice, medium pizza (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "maida_refined_flour": 45, "cheese_processed": 35, "tomato_raw": 20, "pepperoni": 20,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 }
+      "maida_refined_flour": 45,
+      "tomato_raw": 20,
+      "pepperoni": 20,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 6
+      },
+      "mozzarella_cheese": 35
     }
   },
   "chicken_tikka_pizza_slice": {
     "category": "fast_food",
     "serving_label": "1 slice, medium pizza -- one of the most popular pizza toppings in Pakistan specifically (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "maida_refined_flour": 45, "cheese_processed": 35, "tomato_raw": 20, "chicken_breast_cooked": 25,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 }
+      "maida_refined_flour": 45,
+      "tomato_raw": 20,
+      "chicken_breast_cooked": 25,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 6
+      },
+      "mozzarella_cheese": 35
     }
   },
   "vegetable_pizza_slice": {
     "category": "fast_food",
     "serving_label": "1 slice, medium pizza (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "maida_refined_flour": 45, "cheese_processed": 30, "tomato_raw": 25, "onion_raw": 10,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 6 }
+      "maida_refined_flour": 45,
+      "tomato_raw": 25,
+      "onion_raw": 10,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 6
+      },
+      "mozzarella_cheese": 30
     }
   },
-
   "red_sauce_pasta": {
     "category": "fast_food",
     "serving_label": "1 plate, tomato/marinara sauce -- distinct from the existing white_sauce_pasta (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "pasta_cooked": 220, "tomato_raw": 100, "onion_raw": 15,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 10 }
+      "pasta_cooked": 220,
+      "tomato_raw": 100,
+      "onion_raw": 15,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 10
+      }
     }
   },
   "mac_and_cheese": {
     "category": "fast_food",
     "serving_label": "1 plate (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "pasta_cooked": 200, "cheese_processed": 50,
-      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 40 },
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 8 }
+      "pasta_cooked": 200,
+      "dairy": {
+        "role": "dairy",
+        "options": [
+          "milk_whole",
+          "milk_low_fat"
+        ],
+        "default": "milk_whole",
+        "grams": 40
+      },
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 8
+      },
+      "cheddar_cheese": 50
     }
   },
-
   "loaded_fries": {
     "category": "fast_food",
     "serving_label": "1 serving, fries with cheese and beef topping -- distinct from plain french_fries (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "potato_fried_fries": 150, "cheese_processed": 30, "beef_mince_keema_cooked": 30,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+      "potato_fried_fries": 150,
+      "beef_mince_keema_cooked": 30,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 5
+      },
+      "cheddar_cheese": 30
     }
   },
   "onion_rings": {
     "category": "fast_food",
     "serving_label": "1 serving, battered and fried (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "onion_raw": 80, "besan_gram_flour": 30,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 20 }
+      "onion_raw": 80,
+      "besan_gram_flour": 30,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 20
+      }
     }
   },
-
   "grilled_chicken_sandwich": {
     "category": "fast_food",
     "serving_label": "1 sandwich, 2 slices (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "whole_wheat_bread": 60, "chicken_breast_cooked": 100, "tomato_raw": 15, "cheese_processed": 15,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 3 }
+      "whole_wheat_bread": 60,
+      "chicken_breast_cooked": 100,
+      "tomato_raw": 15,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 3
+      },
+      "cheddar_cheese": 15
     }
   },
   "club_sandwich": {
     "category": "fast_food",
     "serving_label": "1 sandwich, 3 slices with chicken and egg (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "whole_wheat_bread": 80, "chicken_breast_cooked": 80, "egg_cooked": 30, "cheese_processed": 15, "tomato_raw": 15,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+      "whole_wheat_bread": 80,
+      "chicken_breast_cooked": 80,
+      "egg_cooked": 30,
+      "tomato_raw": 15,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 5
+      },
+      "cheddar_cheese": 15
     }
   },
   "fried_chicken_sandwich": {
     "category": "fast_food",
     "serving_label": "1 sandwich, crispy fried chicken fillet (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "white_bread_bun": 80, "chicken_breaded_fried": 130, "cheese_processed": 15, "tomato_raw": 10,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+      "white_bread_bun": 80,
+      "chicken_breaded_fried": 130,
+      "tomato_raw": 10,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 5
+      },
+      "cheddar_cheese": 15
     }
   },
-
   "chicken_wings": {
     "category": "fast_food",
     "serving_label": "1 serving (~5-6 wings), fried with a light glaze (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "chicken_wing_cooked": 150, "sugar": 5,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 10 }
+      "chicken_wing_cooked": 150,
+      "sugar": 5,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 10
+      }
     }
   },
   "chicken_nuggets": {
     "category": "fast_food",
-    "serving_label": "1 serving (~6-8 pieces)",
-    "ingredients": { "chicken_breaded_fried": 130 }
+    "serving_label": "1 serving (~6-8 pieces) (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "chicken_breaded_fried": 130
+    }
   },
   "hot_dog": {
     "category": "fast_food",
-    "serving_label": "1 hot dog",
+    "serving_label": "1 hot dog (typical serving, not from a specific published recipe)",
     "ingredients": {
-      "white_bread_bun": 60, "hot_dog_sausage": 60,
-      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 3 }
+      "white_bread_bun": 60,
+      "hot_dog_sausage": 60,
+      "fat": {
+        "role": "fat",
+        "options": [
+          "ghee",
+          "cooking_oil"
+        ],
+        "default": "cooking_oil",
+        "grams": 3
+      }
     }
   },
   "nachos": {
     "category": "fast_food",
     "serving_label": "1 serving, tortilla chips with cheese and salsa (typical serving, not from a specific published recipe)",
-    "ingredients": { "tortilla_chips": 60, "cheese_processed": 30, "tomato_raw": 20 }
+    "ingredients": {
+      "tortilla_chips": 60,
+      "tomato_raw": 20,
+      "cheddar_cheese": 30
+    }
   },
   "mozzarella_sticks": {
     "category": "fast_food",
-    "serving_label": "1 serving (~4-5 sticks), breaded and fried",
-    "ingredients": { "mozzarella_stick_breaded_fried": 100 }
+    "serving_label": "1 serving (~4-5 sticks), breaded and fried (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "mozzarella_stick_breaded_fried": 100
+    }
+  },
+
+  "chicken_nihari": {
+    "category": "curry",
+    "serving_label": "1 bowl, slow-cooked chicken nihari -- distinct from the existing beef_nihari (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "chicken_thigh_skin_cooked": 150,
+      "atta_whole_wheat_flour": 10,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 18 }
+    }
+  },
+  "reshmi_kebab": {
+    "category": "grilled",
+    "serving_label": "2 kebabs, silky cream-marinated minced chicken skewers (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "chicken_mince_cooked": 120, "cream_fresh": 20,
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 10 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+    }
+  },
+  "lachha_paratha": {
+    "category": "bread",
+    "serving_label": "1 paratha, layered/flaky -- more ghee than the existing plain paratha due to the layering technique (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "flour": { "role": "flour", "options": ["atta_whole_wheat_flour", "maida_refined_flour", "atta_multigrain"], "default": "atta_whole_wheat_flour", "grams": 50 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 18 }
+    }
+  },
+  "karak_chai": {
+    "category": "beverage",
+    "serving_label": "1 cup (~180ml), strong milk-boiled tea -- more concentrated than the existing chai_regular (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "dairy": { "role": "dairy", "options": ["milk_whole", "milk_low_fat"], "default": "milk_whole", "grams": 150 },
+      "sugar": 15
+    }
+  },
+  "chicken_65": {
+    "category": "fast_food",
+    "serving_label": "1 serving, deep-fried spicy chicken bites -- Pakistani-Chinese fusion (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "chicken_breast_cooked": 130, "besan_gram_flour": 15,
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 10 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 15 }
+    }
+  },
+  "spring_rolls": {
+    "category": "fast_food",
+    "serving_label": "3 rolls, fried chicken and vegetable rolls -- Pakistani-Chinese fusion (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "maida_refined_flour": 20, "cabbage_raw": 40, "chicken_breast_cooked": 30,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 }
+    }
   }
 }

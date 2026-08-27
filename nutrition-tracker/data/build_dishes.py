@@ -27,7 +27,7 @@ import json
 from pathlib import Path
 
 DATA_DIR = Path(__file__).parent
-FIELDS = ["kcal", "protein_g", "carbs_g", "fat_g", "fiber_g"]
+FIELDS = ["kcal", "protein_g", "carbs_g", "fat_g", "fiber_g", "sugar_g", "sodium_mg"]
 
 with open(DATA_DIR / "ingredients.json") as f:
     ingredients = json.load(f)

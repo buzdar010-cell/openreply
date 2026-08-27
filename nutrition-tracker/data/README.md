@@ -1,6 +1,44 @@
-# Pakistani + common Western food database — v13
+# Pakistani + common Western food database — v14
 
-210 dishes: 194 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+216 dishes: 200 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+
+## v14: fixing the 7 gaps found in a real self-audit
+
+A genuine critical pass was run on the v13 database (not a rubber-stamp review) and found 7 real gaps, rated 7/10 overall. All 7 are fixed in this batch:
+
+**1. Sodium was completely absent.** Added `sodium_mg` to all 117 ingredients and to `build_dishes.py`'s `FIELDS` list, so every dish now reports sodium alongside kcal/protein/carbs/fat/fiber. **Honest limitation, not hidden**: this does not capture salt added by hand during home cooking, since salt-as-seasoning was never modeled anywhere in this project (same reason garlic/cumin/chili powder were always excluded) -- so sodium numbers are a floor for home-cooked dishes, not the true total. It's accurate for packaged/processed items (cheese, pickles, cured meats, soft drinks, chips) where the sodium is baked into the ingredient itself.
+
+**2. No sugar-vs-total-carbs split.** Added `sugar_g` (a subset of `carbs_g`) to all 117 ingredients, same mechanism. Sugar itself is ~100g sugar/100g, honey/syrups near-100%, fruits get their real sugar fraction, rice/flour/daal near-0, dairy gets its lactose content.
+
+**3. 105 of 210 dishes had no confidence-tier language at all.** The "sourced / analogy / typical serving" honesty convention that's been core to this project since v3 was never applied to the original ~65 v1/v2 foundational dishes, the 26 v11 generic staples, or a handful of v12/v13 stragglers. All 105 now carry an honest tier marker -- the original dishes are explicitly labeled as pre-dating the sourcing convention, built from general recipe knowledge rather than a specific published recipe.
+
+**4. `portion_presets` was built in v2 but used on only 3 of 210 dishes.** Added presets to the 8 highest-value, genuinely size-variable dishes: `roti`, `naan`, `paratha`, `samosa` (small/regular/large), `gulab_jamun` (1/2/4 pieces), and `chicken_biryani`/`plain_rice`/`beef_pulao` (small/regular/large plate).
+
+**5. Cheese was flattened to one generic ingredient across 13 structurally different dishes.** Split `cheese_processed` into `mozzarella_cheese` (280 kcal/100g, used for pizza + `white_sauce_pasta`) and `cheddar_cheese` (403 kcal/100g, used for burgers/mac-and-cheese/sandwiches/loaded-fries/nachos). `cheese_processed` itself is kept only for `cheese_slice` and its American-style profile. Every affected dish's calories shifted slightly to reflect the real cheese -- e.g. `pizza_slice_cheese` dropped from 325 to 318 kcal (mozzarella is leaner than the old generic value), `mac_and_cheese` rose from 507 to 559 kcal (cheddar is richer).
+
+**6. 6 real, commonly-eaten dishes were missing**, verified absent by direct search before building: `chicken_nihari` (only beef existed), `reshmi_kebab`, `lachha_paratha`, `karak_chai`, and the Pakistani-Chinese fusion staples `chicken_65` and `spring_rolls`. All built and checked against real-world calorie ranges for these specific items -- held up, no corrections needed.
+
+**7. No canonical category list was documented anywhere.** Added the table below. Also re-checked all 216 dishes against it -- no miscategorization found, no near-duplicate categories crept in across the 6 new dishes.
+
+### Category reference (14 categories, 216 dishes)
+
+| Category | Count | What it's for |
+|---|---|---|
+| `curry` | 29 | Gravy-based main dishes -- karahi, korma, nihari, daal-based curries with meat |
+| `fast_food` | 31 | Burgers, pizza, pasta, fries, sandwiches, Chinese-fusion, Western chain staples |
+| `beverage` | 24 | Drinks, shakes, chai, lassi, juices |
+| `grilled` | 18 | Tikka, kebabs, roast, plain grilled proteins |
+| `snack` | 17 | Chaat, fried snacks, nuts, chips, small savory bites |
+| `vegetable` | 15 | Cooked vegetable side dishes |
+| `condiment` | 14 | Chutneys, pickles/achaar, raita, hummus -- eaten in spoonfuls, not as a meal |
+| `dessert` | 12 | Sweets -- halwa, kheer, gulab jamun, jalebi, ice cream/kulfi |
+| `rice_dish` | 12 | Biryani, pulao, plain rice, quinoa |
+| `breakfast` | 11 | Eggs, paratha, oats, granola, toast |
+| `fruit` | 10 | Standalone raw fruit (and avocado) |
+| `daal_rice` | 9 | Daal and chickpea/kidney-bean dishes, typically eaten with rice or roti |
+| `bread` | 9 | Roti, naan, paratha and its variants |
+| `vegetable_raw` | 5 | Raw vegetables and salads |
+
 
 ## v13: expanded fast food — burgers, pizza, pasta, fries, sandwiches, wings
 
