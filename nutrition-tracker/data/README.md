@@ -1,6 +1,16 @@
-# Pakistani + common Western food database — v14
+# Pakistani + common Western food database — v15
 
-216 dishes: 200 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+224 dishes: 208 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+
+## v15: Pakistani street food
+
+Scoped against what was already built first (`samosa`, `pakora`, `chana_chaat`, `dahi_bhalla`, `aloo_tikki`, `fruit_chaat`, `chicken_tikka`, `chapli_kebab`, `jalebi`, `sugarcane_juice` all already covered common street-food ground). 8 genuinely missing:
+
+`gol_gappay` (pani puri -- the single most iconic Pakistani street snack), `bun_kebab` (the Karachi street-food burger, distinct from the Western burgers in v13), `dahi_puri` (crispy puri shells, distinct from the already-built `dahi_bhalla`, which is fried lentil dumplings), `papri_chaat`, `chicken_tikka_roll` (Lahore's signature tikka-in-lachha-paratha wrap with a fried-egg seal), `bhutta` (roasted corn on the cob), `ice_gola` (shaved ice with syrup), `roasted_peanuts`.
+
+Heavy ingredient reuse rather than new additions -- `tamarind_pulp`, `chickpeas_cooked`, `atta_whole_wheat_flour`, and `rose_syrup_concentrate` (already in the database from earlier batches) covered most of this batch. Only 2 new base ingredients needed: `corn_on_cob_cooked`, `peanuts_roasted`. Both include `sodium_mg`/`sugar_g` from the start, matching the schema completed in v14.
+
+Same tier as v9-v14: typical realistic serving proportions, not from a specific published recipe. All 8 checked against real-world street-food calorie ranges and held up -- no corrections needed.
 
 ## v14: fixing the 7 gaps found in a real self-audit
 

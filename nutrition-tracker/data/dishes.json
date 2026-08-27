@@ -5320,6 +5320,190 @@
         "sugar_g": 1.5,
         "sodium_mg": 29.8
       }
+    },
+    "gol_gappay": {
+      "category": "snack",
+      "serving_label": "6 pieces, crispy fried shells with chickpea-potato filling and tamarind water -- the most iconic Pakistani street snack (typical serving, not from a specific published recipe)",
+      "default_serving_g": 75.0,
+      "per_100g": {
+        "kcal": 228.4,
+        "protein_g": 5.73,
+        "carbs_g": 36.02,
+        "fat_g": 7.87,
+        "fiber_g": 5.5,
+        "sugar_g": 7.24,
+        "sodium_mg": 8.47
+      },
+      "default_serving": {
+        "kcal": 171.3,
+        "protein_g": 4.3,
+        "carbs_g": 27.0,
+        "fat_g": 5.9,
+        "fiber_g": 4.1,
+        "sugar_g": 5.4,
+        "sodium_mg": 6.4
+      }
+    },
+    "bun_kebab": {
+      "category": "fast_food",
+      "serving_label": "1 sandwich, the Karachi street-food burger -- spiced mince-and-daal patty in a bun, distinct from the Western burgers already in the database (typical serving, not from a specific published recipe)",
+      "default_serving_g": 170.0,
+      "per_100g": {
+        "kcal": 256.53,
+        "protein_g": 14.44,
+        "carbs_g": 23.14,
+        "fat_g": 11.62,
+        "fiber_g": 1.8,
+        "sugar_g": 2.57,
+        "sodium_mg": 231.35
+      },
+      "default_serving": {
+        "kcal": 436.1,
+        "protein_g": 24.5,
+        "carbs_g": 39.3,
+        "fat_g": 19.8,
+        "fiber_g": 3.1,
+        "sugar_g": 4.4,
+        "sodium_mg": 393.3
+      }
+    },
+    "dahi_puri": {
+      "category": "snack",
+      "serving_label": "6 pieces, crispy puri shells with chickpea-potato filling, yogurt, and tamarind chutney -- distinct from the existing dahi_bhalla, which is fried lentil dumplings not puri shells (typical serving, not from a specific published recipe)",
+      "default_serving_g": 111.0,
+      "per_100g": {
+        "kcal": 180.66,
+        "protein_g": 5.03,
+        "carbs_g": 27.19,
+        "fat_g": 6.49,
+        "fiber_g": 3.55,
+        "sugar_g": 8.41,
+        "sodium_mg": 21.61
+      },
+      "default_serving": {
+        "kcal": 200.5,
+        "protein_g": 5.6,
+        "carbs_g": 30.2,
+        "fat_g": 7.2,
+        "fiber_g": 3.9,
+        "sugar_g": 9.3,
+        "sodium_mg": 24.0
+      }
+    },
+    "papri_chaat": {
+      "category": "snack",
+      "serving_label": "1 bowl, flat crispy wafers with chickpea, potato, yogurt, and tamarind chutney (typical serving, not from a specific published recipe)",
+      "default_serving_g": 153.0,
+      "per_100g": {
+        "kcal": 194.98,
+        "protein_g": 5.65,
+        "carbs_g": 29.19,
+        "fat_g": 6.95,
+        "fiber_g": 4.59,
+        "sugar_g": 5.2,
+        "sodium_mg": 15.07
+      },
+      "default_serving": {
+        "kcal": 298.3,
+        "protein_g": 8.7,
+        "carbs_g": 44.7,
+        "fat_g": 10.6,
+        "fiber_g": 7.0,
+        "sugar_g": 8.0,
+        "sodium_mg": 23.1
+      }
+    },
+    "chicken_tikka_roll": {
+      "category": "fast_food",
+      "serving_label": "1 roll, Lahore's signature street wrap -- tikka boti in a lachha paratha with green chutney, onions, and a fried-egg seal (typical serving, not from a specific published recipe)",
+      "default_serving_g": 215.0,
+      "per_100g": {
+        "kcal": 242.26,
+        "protein_g": 18.96,
+        "carbs_g": 17.74,
+        "fat_g": 10.56,
+        "fiber_g": 2.68,
+        "sugar_g": 1.1,
+        "sodium_mg": 52.42
+      },
+      "default_serving": {
+        "kcal": 520.9,
+        "protein_g": 40.8,
+        "carbs_g": 38.1,
+        "fat_g": 22.7,
+        "fiber_g": 5.8,
+        "sugar_g": 2.4,
+        "sodium_mg": 112.7
+      }
+    },
+    "bhutta": {
+      "category": "snack",
+      "serving_label": "1 corn on the cob, roasted/boiled with butter and spices",
+      "default_serving_g": 155.0,
+      "per_100g": {
+        "kcal": 121.42,
+        "protein_g": 3.29,
+        "carbs_g": 20.32,
+        "fat_g": 4.68,
+        "fiber_g": 2.32,
+        "sugar_g": 4.35,
+        "sodium_mg": 14.52
+      },
+      "default_serving": {
+        "kcal": 188.2,
+        "protein_g": 5.1,
+        "carbs_g": 31.5,
+        "fat_g": 7.2,
+        "fiber_g": 3.6,
+        "sugar_g": 6.8,
+        "sodium_mg": 22.5
+      }
+    },
+    "ice_gola": {
+      "category": "dessert",
+      "serving_label": "1 cone, shaved ice with flavored syrup -- ice itself isn't counted (0 kcal), only the syrup",
+      "default_serving_g": 30.0,
+      "per_100g": {
+        "kcal": 281.17,
+        "protein_g": 0.08,
+        "carbs_g": 70.83,
+        "fat_g": 0.0,
+        "fiber_g": 0.0,
+        "sugar_g": 70.83,
+        "sodium_mg": 8.33
+      },
+      "default_serving": {
+        "kcal": 84.3,
+        "protein_g": 0.0,
+        "carbs_g": 21.2,
+        "fat_g": 0.0,
+        "fiber_g": 0.0,
+        "sugar_g": 21.2,
+        "sodium_mg": 2.5
+      }
+    },
+    "roasted_peanuts": {
+      "category": "snack",
+      "serving_label": "1 handful (~30g), lightly salted street-vendor style",
+      "default_serving_g": 30.0,
+      "per_100g": {
+        "kcal": 567.0,
+        "protein_g": 25.8,
+        "carbs_g": 16.1,
+        "fat_g": 49.2,
+        "fiber_g": 8.5,
+        "sugar_g": 4.0,
+        "sodium_mg": 230.0
+      },
+      "default_serving": {
+        "kcal": 170.1,
+        "protein_g": 7.7,
+        "carbs_g": 4.8,
+        "fat_g": 14.8,
+        "fiber_g": 2.5,
+        "sugar_g": 1.2,
+        "sodium_mg": 69.0
+      }
     }
   }
 }

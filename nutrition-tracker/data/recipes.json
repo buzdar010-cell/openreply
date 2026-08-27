@@ -3636,5 +3636,71 @@
       "maida_refined_flour": 20, "cabbage_raw": 40, "chicken_breast_cooked": 30,
       "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 12 }
     }
+  },
+
+  "gol_gappay": {
+    "category": "snack",
+    "serving_label": "6 pieces, crispy fried shells with chickpea-potato filling and tamarind water -- the most iconic Pakistani street snack (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "atta_whole_wheat_flour": 15, "chickpeas_cooked": 20, "potato_cooked": 20,
+      "tamarind_pulp": 10, "onion_raw": 5,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+    }
+  },
+  "bun_kebab": {
+    "category": "fast_food",
+    "serving_label": "1 sandwich, the Karachi street-food burger -- spiced mince-and-daal patty in a bun, distinct from the Western burgers already in the database (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "white_bread_bun": 70, "beef_mince_keema_cooked": 70, "chana_daal_cooked": 15, "onion_raw": 10,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+    }
+  },
+  "dahi_puri": {
+    "category": "snack",
+    "serving_label": "6 pieces, crispy puri shells with chickpea-potato filling, yogurt, and tamarind chutney -- distinct from the existing dahi_bhalla, which is fried lentil dumplings not puri shells (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "atta_whole_wheat_flour": 15, "chickpeas_cooked": 20, "potato_cooked": 20,
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 40 },
+      "tamarind_pulp": 8, "sugar": 3,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+    }
+  },
+  "papri_chaat": {
+    "category": "snack",
+    "serving_label": "1 bowl, flat crispy wafers with chickpea, potato, yogurt, and tamarind chutney (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "atta_whole_wheat_flour": 25, "chickpeas_cooked": 40, "potato_cooked": 40,
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 30 },
+      "tamarind_pulp": 10,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 8 }
+    }
+  },
+  "chicken_tikka_roll": {
+    "category": "fast_food",
+    "serving_label": "1 roll, Lahore's signature street wrap -- tikka boti in a lachha paratha with green chutney, onions, and a fried-egg seal (typical serving, not from a specific published recipe)",
+    "ingredients": {
+      "flour": { "role": "flour", "options": ["atta_whole_wheat_flour", "maida_refined_flour", "atta_multigrain"], "default": "atta_whole_wheat_flour", "grams": 50 },
+      "chicken_breast_cooked": 100, "egg_cooked": 25, "onion_raw": 15,
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 10 },
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "ghee", "grams": 15 }
+    }
+  },
+  "bhutta": {
+    "category": "snack",
+    "serving_label": "1 corn on the cob, roasted/boiled with butter and spices",
+    "ingredients": {
+      "corn_on_cob_cooked": 150,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 5 }
+    }
+  },
+  "ice_gola": {
+    "category": "dessert",
+    "serving_label": "1 cone, shaved ice with flavored syrup -- ice itself isn't counted (0 kcal), only the syrup",
+    "ingredients": { "rose_syrup_concentrate": 25, "sugar": 5 }
+  },
+  "roasted_peanuts": {
+    "category": "snack",
+    "serving_label": "1 handful (~30g), lightly salted street-vendor style",
+    "ingredients": { "peanuts_roasted": 30 }
   }
 }

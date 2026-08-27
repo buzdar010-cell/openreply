@@ -1140,5 +1140,8 @@
     "fiber_g": 0.0,
     "sodium_mg": 620,
     "sugar_g": 0.5
-  }
+  },
+
+  "corn_on_cob_cooked": { "kcal": 96, "protein_g": 3.4, "carbs_g": 21.0, "fat_g": 1.5, "fiber_g": 2.4, "sodium_mg": 15, "sugar_g": 4.5, "note": "bhutta, boiled/roasted" },
+  "peanuts_roasted": { "kcal": 567, "protein_g": 25.8, "carbs_g": 16.1, "fat_g": 49.2, "fiber_g": 8.5, "sodium_mg": 230, "sugar_g": 4.0, "note": "moongfali, lightly salted, street-vendor style" }
 }
