@@ -1,6 +1,15 @@
-# Pakistani + common Western food database — v3
+# Pakistani + common Western food database — v4
 
-77 dishes: 61 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+83 dishes: 67 composed dishes plus 16 standalone raw fruits/vegetables. Every dish stores **per-100g nutrition**, not one fixed total — see "Why the schema changed" below.
+
+## v4: the rest of the confirmed-URL batch, plus a real inconsistency found
+
+Went back to Tea for Turmeric after the rate limit cleared (paced with delays between requests this time, not fired in parallel). 6 of the remaining 8 confirmed dishes came through clean: `maash_ki_daal`, `kali_daal` (whole masoor), `aloo_methi`, `yakhni_pulao`, `mutton_korma`, `kadhi_pakora`. Two didn't make it in:
+
+- **Achari Chicken** — hit the bot-verification page again on this specific URL even with pacing. Not retried further; still just a name + URL for a future pass.
+- **Chicken Kofta** — the recipe came through fine, but it turned out to be a Western-fusion version (panko breadcrumbs, mozzarella/parmesan, olive oil), not a traditional Pakistani kofta curry. Not built — passing that off as an authentic home-cooked dish would have been dishonest, given the whole point of this database is getting Pakistani food actually right.
+
+**A real inconsistency this batch surfaced, not silently fixed:** the newly-sourced `kali_daal` and `maash_ki_daal` use ~50g of cooked lentil per serving (derived directly from a real recipe: 200g lentil, 4 servings). The earlier, self-estimated `chana_daal` and `moong_daal` use 200g of lentil per bowl — roughly 4x more. That's not a rounding difference; it's a real disagreement about what "one bowl of daal" means; a hearty standalone bowl, or a lighter portion eaten as one part of a bigger thali. Both are legitimate framings, but the database currently has both conventions in it at once, inconsistently. Worth a decision before this goes further, not a silent pick on my part.
 
 ## v3: real sourced recipes, not estimated ones
 
@@ -16,16 +25,10 @@ Four new base ingredients were added to support these: `mustard_greens_cooked` (
 
 ## Hit a real wall partway through this pass
 
-Tea for Turmeric started serving a bot-verification page after repeated rapid requests against the same domain — not a content problem, a rate-limit/anti-bot response. Stopped rather than push through it. **Confirmed real, with working URLs, but not yet pulled into the database:**
+Tea for Turmeric started serving a bot-verification page after repeated rapid requests against the same domain — not a content problem, a rate-limit/anti-bot response. Stopped rather than push through it. Came back after ~2 hours, paced requests with delays, and got through 6 of the remaining 8 (see v4 above). **Still outstanding:**
 
-- Maash ki Dal (Urad Dal) — `teaforturmeric.com/maash-ki-daal-urad-dal/`
-- Whole Masoor Dal / "Kali Dal" — `teaforturmeric.com/whole-masoor-dal/`
-- Aloo Methi (potato + fenugreek leaves) — `teaforturmeric.com/aloo-methi-potato-fenugreek-leaves/`
-- Yakhni Pulao (chicken pulao) — `teaforturmeric.com/chicken-pulao-yakhni-pulao/`
-- Achari Chicken — `teaforturmeric.com/web-stories/achari-chicken/`
-- Mutton Korma — `teaforturmeric.com/mutton-korma-lamb-korma/`
-- Chicken Kofta — `teaforturmeric.com/chicken-kofta/`
-- Kadhi Pakora — `teaforturmeric.com/kadhi-pakora/`
+- Achari Chicken — `teaforturmeric.com/achari-chicken/` (blocked again on this specific URL even with pacing)
+- Chicken Kofta — real recipe exists at `teaforturmeric.com/chicken-kofta/`, but it's a Western-fusion version, not traditional — would need a different, more traditional source instead
 
 Also named as existing (from the earlier roundup and Pakistan Eats' homepage) but not yet URL-confirmed for a direct fetch: Rajma Masala, Matar Paneer, Dahi Bhalla, Aloo Tikki, Matar Pulao, Zarda, Hariyali Chicken, Kali Mirch Chicken, Chicken Keema, Prawn Biryani, Seviyan, Sweet Dalia.
 

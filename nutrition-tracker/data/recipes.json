@@ -597,5 +597,60 @@
       "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 17 },
       "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 4 }
     }
+  },
+
+  "maash_ki_daal": {
+    "category": "daal_rice",
+    "serving_label": "1 bowl (sourced: Tea for Turmeric, 4 servings)",
+    "ingredients": {
+      "urad_daal_cooked": 50, "onion_raw": 38, "tomato_raw": 25,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 19 }
+    }
+  },
+  "kali_daal": {
+    "category": "daal_rice",
+    "serving_label": "1 bowl, whole masoor/brown lentil (sourced: Tea for Turmeric, 4 servings)",
+    "ingredients": {
+      "masoor_daal_cooked": 50, "onion_raw": 41, "tomato_raw": 19,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 19 }
+    }
+  },
+  "aloo_methi": {
+    "category": "vegetable",
+    "serving_label": "1 bowl (sourced: Tea for Turmeric, 4 servings)",
+    "ingredients": {
+      "methi_leaves_cooked": 94, "potato_cooked": 114, "tomato_raw": 50,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 28 }
+    }
+  },
+  "yakhni_pulao": {
+    "category": "rice_dish",
+    "serving_label": "1 plate, chicken pulao (sourced: Tea for Turmeric, 4 servings)",
+    "ingredients": {
+      "rice_white_cooked": 200,
+      "protein": { "role": "protein_cut", "options": ["chicken_breast_cooked", "chicken_thigh_skin_cooked"], "default": "chicken_breast_cooked", "grams": 78 },
+      "onion_raw": 44, "tomato_raw": 25,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 21 },
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 6 }
+    }
+  },
+  "mutton_korma": {
+    "category": "curry",
+    "serving_label": "1 serving (sourced: Tea for Turmeric, 5 servings)",
+    "ingredients": {
+      "mutton_curry_cut_cooked": 100, "onion_raw": 8,
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 25 },
+      "cream_fresh": 6,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 19 }
+    }
+  },
+  "kadhi_pakora": {
+    "category": "curry",
+    "serving_label": "1 bowl, yogurt-besan curry with fritters (sourced: Tea for Turmeric, 4 servings)",
+    "ingredients": {
+      "dairy": { "role": "dairy", "options": ["yogurt_whole_milk", "yogurt_low_fat"], "default": "yogurt_whole_milk", "grams": 63 },
+      "besan_gram_flour": 30, "onion_raw": 31, "potato_cooked": 13,
+      "fat": { "role": "fat", "options": ["ghee", "cooking_oil"], "default": "cooking_oil", "grams": 21 }
+    }
   }
 }
