@@ -1,13 +1,14 @@
-type Tab = 'log' | 'today';
+export type Tab = 'home' | 'logs' | 'settings';
 
 export function BottomNav({ tab, onChange }: { tab: Tab; onChange: (t: Tab) => void }) {
   const items: { id: Tab; label: string; emoji: string }[] = [
-    { id: 'log', label: 'Log', emoji: '📝' },
-    { id: 'today', label: 'Today', emoji: '📊' },
+    { id: 'home', label: 'Home', emoji: '🏠' },
+    { id: 'logs', label: 'Logs', emoji: '📋' },
+    { id: 'settings', label: 'Settings', emoji: '⚙️' },
   ];
 
   return (
-    <nav className="border-cream-200 flex border-t bg-white pb-safe">
+    <nav className="border-cream-200 fixed bottom-0 left-0 right-0 z-30 mx-auto flex max-w-[480px] border-t bg-white pb-[env(safe-area-inset-bottom)]">
       {items.map((item) => (
         <button
           key={item.id}

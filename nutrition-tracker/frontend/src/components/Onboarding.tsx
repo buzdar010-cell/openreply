@@ -1,59 +1,120 @@
 import { useState } from 'react';
+import { OnboardingShell } from './onboarding/OnboardingShell';
+import { IntroStep, INTRO_SLIDE_COUNT } from './onboarding/IntroStep';
+import { GoalsStep, isGoalsDataValid, type GoalsData } from './onboarding/GoalsStep';
+import { GamificationStep } from './onboarding/GamificationStep';
+import { InstallStep } from './onboarding/InstallStep';
+import { saveProfile } from '../lib/api';
+import { getDeviceId } from '../lib/device';
 
-const STEPS = [
-  {
-    title: 'Log food your way',
-    body: 'Just type what you ate — "chicken karahi and two rotis" — or snap a photo. No searching through endless menus.',
-    emoji: '📝',
-  },
-  {
-    title: 'Built for Pakistani food',
-    body: 'Karahi, biryani, nihari, daal chawal — real dishes with real portion sizes, not generic estimates.',
-    emoji: '🍛',
-  },
-  {
-    title: "See where you're at",
-    body: 'Track calories, protein, carbs, and fat for the day at a glance.',
-    emoji: '📊',
-  },
-];
+type Phase = 'intro' | 'goals' | 'gamification' | 'install';
+const PHASE_ORDER: Phase[] = ['intro', 'goals', 'gamification', 'install'];
+const TOTAL_STEPS = INTRO_SLIDE_COUNT + 3; // 3 intro slides + goals + gamification + install
+
+const DEFAULT_GOALS: GoalsData = {
+  weight_kg: '',
+  height_cm: '',
+  age: '',
+  gender: 'male',
+  activity_level: 'moderate',
+  goal: 'maintain',
+};
 
 export function Onboarding({ onDone }: { onDone: () => void }) {
-  const [step, setStep] = useState(0);
-  const isLast = step === STEPS.length - 1;
-  const current = STEPS[step];
+  const [phase, setPhase] = useState<Phase>('intro');
+  const [introSlide, setIntroSlide] = useState(0);
+  const [goals, setGoals] = useState<GoalsData>(DEFAULT_GOALS);
+  const [gamificationEnabled, setGamificationEnabled] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const stepIndex =
+    phase === 'intro'
+      ? introSlide
+      : phase === 'goals'
+        ? INTRO_SLIDE_COUNT
+        : phase === 'gamification'
+          ? INTRO_SLIDE_COUNT + 1
+          : INTRO_SLIDE_COUNT + 2;
+
+  async function finish() {
+    setSaving(true);
+    try {
+      // Goals are optional -- if left blank, skip saving a profile rather
+      // than send invalid numbers; the app falls back sensibly without one.
+      if (isGoalsDataValid(goals)) {
+        await saveProfile(getDeviceId(), {
+          weight_kg: Number(goals.weight_kg),
+          height_cm: Number(goals.height_cm),
+          age: Number(goals.age),
+          gender: goals.gender,
+          activity_level: goals.activity_level,
+          goal: goals.goal,
+          gamification_enabled: gamificationEnabled,
+        });
+      }
+    } catch {
+      // Non-fatal -- onboarding shouldn't get stuck if the network hiccups;
+      // Settings lets them set this up later regardless.
+    } finally {
+      setSaving(false);
+      onDone();
+    }
+  }
+
+  function goToNextPhase() {
+    const idx = PHASE_ORDER.indexOf(phase);
+    if (idx < PHASE_ORDER.length - 1) setPhase(PHASE_ORDER[idx + 1]);
+    else finish();
+  }
+
+  if (phase === 'intro') {
+    const isLastIntroSlide = introSlide === INTRO_SLIDE_COUNT - 1;
+    return (
+      <OnboardingShell
+        stepIndex={stepIndex}
+        totalSteps={TOTAL_STEPS}
+        primaryLabel={isLastIntroSlide ? 'Next' : 'Next'}
+        onPrimary={() => (isLastIntroSlide ? goToNextPhase() : setIntroSlide((s) => s + 1))}
+        secondaryLabel="Skip setup"
+        onSecondary={finish}
+      >
+        <IntroStep slide={introSlide} />
+      </OnboardingShell>
+    );
+  }
+
+  if (phase === 'goals') {
+    return (
+      <OnboardingShell
+        stepIndex={stepIndex}
+        totalSteps={TOTAL_STEPS}
+        primaryLabel="Continue"
+        onPrimary={goToNextPhase}
+        secondaryLabel="Skip this"
+        onSecondary={goToNextPhase}
+      >
+        <GoalsStep data={goals} onChange={setGoals} />
+      </OnboardingShell>
+    );
+  }
+
+  if (phase === 'gamification') {
+    return (
+      <OnboardingShell stepIndex={stepIndex} totalSteps={TOTAL_STEPS} primaryLabel="Continue" onPrimary={goToNextPhase}>
+        <GamificationStep enabled={gamificationEnabled} onChange={setGamificationEnabled} />
+      </OnboardingShell>
+    );
+  }
 
   return (
-    <div className="flex flex-1 flex-col justify-between px-6 pt-16 pb-8">
-      <div className="flex flex-col items-center text-center">
-        <div className="mb-8 text-6xl">{current.emoji}</div>
-        <h1 className="text-ink-900 mb-3 text-2xl font-extrabold">{current.title}</h1>
-        <p className="text-ink-600 max-w-xs leading-relaxed">{current.body}</p>
-      </div>
-
-      <div>
-        <div className="mb-6 flex justify-center gap-2">
-          {STEPS.map((_, i) => (
-            <div
-              key={i}
-              className={`h-2 rounded-full transition-all ${
-                i === step ? 'bg-primary-500 w-6' : 'bg-primary-100 w-2'
-              }`}
-            />
-          ))}
-        </div>
-        <button
-          onClick={() => (isLast ? onDone() : setStep((s) => s + 1))}
-          className="bg-primary-500 hover:bg-primary-600 w-full rounded-2xl py-4 text-lg font-bold text-white shadow-sm transition-colors"
-        >
-          {isLast ? "Let's go" : 'Next'}
-        </button>
-        {!isLast && (
-          <button onClick={onDone} className="text-ink-400 mt-3 w-full py-2 text-sm font-medium">
-            Skip
-          </button>
-        )}
-      </div>
-    </div>
+    <OnboardingShell
+      stepIndex={stepIndex}
+      totalSteps={TOTAL_STEPS}
+      primaryLabel={saving ? 'Getting things ready…' : "Let's go"}
+      onPrimary={finish}
+      primaryDisabled={saving}
+    >
+      <InstallStep />
+    </OnboardingShell>
   );
 }
