@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { getDeviceId } from '../lib/device';
-import { getProfile, saveProfile, submitFeedback } from '../lib/api';
+import { getProfile, saveProfile, setGamification as setGamificationApi, submitFeedback, type Gender, type ActivityLevel } from '../lib/api';
 import { GoalsStep, isGoalsDataValid, type GoalsData } from './onboarding/GoalsStep';
 import { GamificationStep } from './onboarding/GamificationStep';
 import { ThemePicker } from './ThemePicker';
+import { showToast } from '../lib/toast';
 
 const ONBOARDED_KEY = 'nutrition-tracker-onboarded';
 const DEVICE_KEY = 'nutrition-tracker-device-id';
@@ -12,75 +13,95 @@ const EMPTY_GOALS: GoalsData = {
   weight_kg: '',
   height_cm: '',
   age: '',
-  gender: 'male',
-  activity_level: 'moderate',
+  gender: '',
+  activity_level: '',
   goal: 'maintain',
 };
 
 export function SettingsScreen() {
   const [goals, setGoals] = useState<GoalsData>(EMPTY_GOALS);
-  const [gamification, setGamification] = useState(false);
+  const [savedGoals, setSavedGoals] = useState<GoalsData>(EMPTY_GOALS); // last-persisted state, for dirty-checking
+  const [gamification, setGamificationState] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [saving, setSaving] = useState(false);
 
   const [feedback, setFeedback] = useState('');
-  const [feedbackStatus, setFeedbackStatus] = useState<'idle' | 'sending' | 'sent'>('idle');
+  const [sendingFeedback, setSendingFeedback] = useState(false);
 
   useEffect(() => {
     getProfile(getDeviceId())
       .then((p) => {
         if (p) {
-          setGoals({
+          const loaded: GoalsData = {
             weight_kg: p.weight_kg?.toString() ?? '',
             height_cm: p.height_cm?.toString() ?? '',
             age: p.age?.toString() ?? '',
-            gender: p.gender ?? 'male',
-            activity_level: p.activity_level ?? 'moderate',
+            gender: p.gender ?? '',
+            activity_level: p.activity_level ?? '',
             goal: p.goal ?? 'maintain',
-          });
-          setGamification(p.gamification_enabled === 1);
+          };
+          setGoals(loaded);
+          setSavedGoals(loaded);
+          setGamificationState(p.gamification_enabled === 1);
         }
       })
       .finally(() => setLoading(false));
   }, []);
 
+  const isDirty = JSON.stringify(goals) !== JSON.stringify(savedGoals);
+
   async function handleSaveGoals() {
-    if (!isGoalsDataValid(goals)) return;
-    setSaveStatus('saving');
+    if (!isGoalsDataValid(goals) || !isDirty) return;
+    setSaving(true);
     try {
       await saveProfile(getDeviceId(), {
         weight_kg: Number(goals.weight_kg),
         height_cm: Number(goals.height_cm),
         age: Number(goals.age),
-        gender: goals.gender,
-        activity_level: goals.activity_level,
+        gender: goals.gender as Gender,
+        activity_level: goals.activity_level as ActivityLevel,
         goal: goals.goal,
         gamification_enabled: gamification,
       });
-      setSaveStatus('saved');
-      setTimeout(() => setSaveStatus('idle'), 2000);
+      setSavedGoals(goals);
+      showToast('Profile updated');
     } catch {
-      setSaveStatus('idle');
+      showToast('Failed to save — try again', 'error');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleGamificationToggle(enabled: boolean) {
+    setGamificationState(enabled); // optimistic
+    try {
+      await setGamificationApi(getDeviceId(), enabled);
+      showToast(enabled ? 'Gamification turned on' : 'Gamification turned off');
+    } catch {
+      setGamificationState(!enabled); // revert on failure
+      showToast('Failed to update — try again', 'error');
     }
   }
 
   async function handleSendFeedback() {
     if (!feedback.trim()) return;
-    setFeedbackStatus('sending');
+    setSendingFeedback(true);
     try {
       await submitFeedback(getDeviceId(), feedback.trim(), 'settings');
       setFeedback('');
-      setFeedbackStatus('sent');
-      setTimeout(() => setFeedbackStatus('idle'), 2500);
+      showToast('Feedback sent — thank you!');
     } catch {
-      setFeedbackStatus('idle');
+      showToast('Failed to send — try again', 'error');
+    } finally {
+      setSendingFeedback(false);
     }
   }
 
   function handleResetApp() {
+    showToast('App reset');
     localStorage.removeItem(ONBOARDED_KEY);
     localStorage.removeItem(DEVICE_KEY);
-    window.location.reload();
+    setTimeout(() => window.location.reload(), 500);
   }
 
   if (loading) {
@@ -102,15 +123,15 @@ export function SettingsScreen() {
       </div>
       <button
         onClick={handleSaveGoals}
-        disabled={!isGoalsDataValid(goals) || saveStatus === 'saving'}
+        disabled={!isGoalsDataValid(goals) || !isDirty || saving}
         className="bg-primary-500 hover:bg-primary-600 mb-8 rounded-2xl py-3 font-bold text-white shadow-sm transition-colors disabled:opacity-40"
       >
-        {saveStatus === 'saved' ? 'Saved ✓' : saveStatus === 'saving' ? 'Saving…' : 'Save goal'}
+        {saving ? 'Saving…' : 'Save goal'}
       </button>
 
       <h2 className="text-ink-900 mb-3 text-lg font-bold">Gamification</h2>
       <div className="mb-8">
-        <GamificationStep enabled={gamification} onChange={setGamification} />
+        <GamificationStep enabled={gamification} onChange={handleGamificationToggle} />
       </div>
 
       <h2 className="text-ink-900 mb-3 text-lg font-bold">Feedback</h2>
@@ -123,10 +144,10 @@ export function SettingsScreen() {
       />
       <button
         onClick={handleSendFeedback}
-        disabled={!feedback.trim() || feedbackStatus === 'sending'}
+        disabled={!feedback.trim() || sendingFeedback}
         className="bg-primary-500 hover:bg-primary-600 mb-8 rounded-2xl py-3 font-bold text-white shadow-sm transition-colors disabled:opacity-40"
       >
-        {feedbackStatus === 'sent' ? 'Sent ✓' : feedbackStatus === 'sending' ? 'Sending…' : 'Send feedback'}
+        {sendingFeedback ? 'Sending…' : 'Send feedback'}
       </button>
 
       <h2 className="text-ink-900 mb-3 text-lg font-bold">Data</h2>

@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { getDeviceId } from '../lib/device';
 import { logText, logPhoto, type LogResultEntry } from '../lib/api';
+import { showToast } from '../lib/toast';
 
 const EXAMPLES = ['chicken karahi and two rotis', 'one plate biryani', 'a bowl of daal chawal', '3 samosas'];
 
@@ -64,6 +65,7 @@ export function AddLogSheet({ onClose, onLogged }: { onClose: () => void; onLogg
       setResults(res);
       setText('');
       onLogged();
+      if (res.some((r) => r.matched)) showToast('Logged!');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Try again.');
     } finally {
@@ -82,6 +84,7 @@ export function AddLogSheet({ onClose, onLogged }: { onClose: () => void; onLogg
       setPhotoPreview(null);
       setText('');
       onLogged();
+      if (res.some((r) => r.matched)) showToast('Logged!');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Try again.');
     } finally {

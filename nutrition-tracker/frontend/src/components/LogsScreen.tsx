@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { getDeviceId } from '../lib/device';
 import { deleteLog, getLogs, type LogListItem } from '../lib/api';
 import { groupByDay, groupByMonth, logsToCsv, type DayGroup, type MonthGroup } from '../lib/dateGroups';
+import { showToast } from '../lib/toast';
 
 const WEEK_SECONDS = 7 * 86400;
 const HISTORY_SECONDS = 180 * 86400; // ~6 months back for "view all"
@@ -95,7 +96,9 @@ export function LogsScreen({ refreshKey }: { refreshKey: number }) {
     setItems((prev) => prev.filter((i) => i.id !== logId)); // optimistic
     try {
       await deleteLog(getDeviceId(), logId);
+      showToast('Deleted');
     } catch {
+      showToast('Failed to delete — try again', 'error');
       // Re-fetch on failure to correct any optimistic-update drift.
       const deviceId = getDeviceId();
       const now = Math.floor(Date.now() / 1000);

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { getThemePreference, setThemePreference, type ThemePreference } from '../lib/theme';
+import { showToast } from '../lib/toast';
 
 const OPTIONS: { value: ThemePreference; label: string; emoji: string }[] = [
   { value: 'system', label: 'Match phone', emoji: '📱' },
@@ -17,8 +18,10 @@ export function ThemePicker() {
           key={opt.value}
           type="button"
           onClick={() => {
+            if (opt.value === pref) return;
             setPref(opt.value);
             setThemePreference(opt.value);
+            showToast(`Theme set to ${opt.label}`);
           }}
           className={`rounded-xl border-2 py-3 text-center text-xs font-semibold transition-colors ${
             pref === opt.value ? 'border-primary-500 bg-primary-50 text-primary-600' : 'border-cream-200 bg-surface text-ink-600'

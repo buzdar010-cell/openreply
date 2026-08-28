@@ -4,8 +4,8 @@ export interface GoalsData {
   weight_kg: string;
   height_cm: string;
   age: string;
-  gender: Gender;
-  activity_level: ActivityLevel;
+  gender: Gender | '';
+  activity_level: ActivityLevel | '';
   goal: Goal;
 }
 
@@ -55,7 +55,7 @@ export function GoalsStep({
         </>
       )}
       <p className="text-ink-400 mb-4 text-xs">
-        Weight, height, and age (<span className="text-danger-500">*</span>) are required to calculate it.
+        Weight, height, age, gender, and activity level (<span className="text-danger-500">*</span>) are all required to calculate it.
       </p>
 
       <div className="flex flex-col gap-3">
@@ -123,11 +123,13 @@ export function GoalsStep({
             <select
               className={inputClass}
               value={data.gender}
-              onChange={(e) => onChange({ ...data, gender: e.target.value as Gender })}
+              onChange={(e) => onChange({ ...data, gender: e.target.value as Gender | '' })}
             >
+              <option value="">Please select</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
             </select>,
+            true,
           )}
         </div>
 
@@ -136,14 +138,16 @@ export function GoalsStep({
           <select
             className={inputClass}
             value={data.activity_level}
-            onChange={(e) => onChange({ ...data, activity_level: e.target.value as ActivityLevel })}
+            onChange={(e) => onChange({ ...data, activity_level: e.target.value as ActivityLevel | '' })}
           >
+            <option value="">Please select</option>
             {ACTIVITY_OPTIONS.map((a) => (
               <option key={a.value} value={a.value}>
                 {a.label}
               </option>
             ))}
           </select>,
+          true,
         )}
       </div>
     </div>
@@ -154,5 +158,14 @@ export function isGoalsDataValid(d: GoalsData): boolean {
   const weight = Number(d.weight_kg);
   const height = Number(d.height_cm);
   const age = Number(d.age);
-  return weight > 0 && weight < 500 && height > 0 && height < 300 && age > 0 && age < 120;
+  return (
+    weight > 0 &&
+    weight < 500 &&
+    height > 0 &&
+    height < 300 &&
+    age > 0 &&
+    age < 120 &&
+    d.gender !== '' &&
+    d.activity_level !== ''
+  );
 }

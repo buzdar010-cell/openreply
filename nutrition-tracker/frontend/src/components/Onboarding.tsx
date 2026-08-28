@@ -4,7 +4,7 @@ import { IntroStep, INTRO_SLIDE_COUNT } from './onboarding/IntroStep';
 import { GoalsStep, isGoalsDataValid, type GoalsData } from './onboarding/GoalsStep';
 import { GamificationStep } from './onboarding/GamificationStep';
 import { InstallStep } from './onboarding/InstallStep';
-import { saveProfile } from '../lib/api';
+import { saveProfile, setGamification, type Gender, type ActivityLevel } from '../lib/api';
 import { getDeviceId } from '../lib/device';
 
 type Phase = 'intro' | 'goals' | 'gamification' | 'install';
@@ -15,8 +15,8 @@ const DEFAULT_GOALS: GoalsData = {
   weight_kg: '',
   height_cm: '',
   age: '',
-  gender: 'male',
-  activity_level: 'moderate',
+  gender: '',
+  activity_level: '',
   goal: 'maintain',
 };
 
@@ -36,18 +36,30 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
           ? INTRO_SLIDE_COUNT + 1
           : INTRO_SLIDE_COUNT + 2;
 
+  function handleGamificationChange(enabled: boolean) {
+    setGamificationEnabled(enabled);
+    // Standalone save -- never gated on the rest of the profile being
+    // complete (that coupling was exactly the bug: toggle it during
+    // onboarding via "Skip this" on goals, and it used to silently never
+    // persist). Fire-and-forget, no toast here -- this is mid-flow, not a
+    // standalone user action, so a banner would just be noise.
+    setGamification(getDeviceId(), enabled).catch(() => {});
+  }
+
   async function finish() {
     setSaving(true);
     try {
       // Goals are optional -- if left blank, skip saving a profile rather
       // than send invalid numbers; the app falls back sensibly without one.
+      // (Gamification itself is already saved independently above, so
+      // skipping this never loses that choice.)
       if (isGoalsDataValid(goals)) {
         await saveProfile(getDeviceId(), {
           weight_kg: Number(goals.weight_kg),
           height_cm: Number(goals.height_cm),
           age: Number(goals.age),
-          gender: goals.gender,
-          activity_level: goals.activity_level,
+          gender: goals.gender as Gender,
+          activity_level: goals.activity_level as ActivityLevel,
           goal: goals.goal,
           gamification_enabled: gamificationEnabled,
         });
@@ -102,7 +114,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
   if (phase === 'gamification') {
     return (
       <OnboardingShell stepIndex={stepIndex} totalSteps={TOTAL_STEPS} primaryLabel="Continue" onPrimary={goToNextPhase}>
-        <GamificationStep enabled={gamificationEnabled} onChange={setGamificationEnabled} />
+        <GamificationStep enabled={gamificationEnabled} onChange={handleGamificationChange} />
       </OnboardingShell>
     );
   }

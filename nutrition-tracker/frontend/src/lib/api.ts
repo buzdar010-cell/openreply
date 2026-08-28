@@ -137,6 +137,11 @@ export async function saveProfile(deviceId: string, input: ProfileInput): Promis
   return postJson('/profile', { deviceId, ...input });
 }
 
+/** Standalone -- never requires the rest of the profile to be filled in, unlike saveProfile. */
+export async function setGamification(deviceId: string, enabled: boolean): Promise<void> {
+  await postJson('/profile/gamification', { deviceId, enabled });
+}
+
 export async function submitFeedback(deviceId: string, message: string, context?: string): Promise<void> {
   await postJson('/feedback', { deviceId, message, context });
 }
