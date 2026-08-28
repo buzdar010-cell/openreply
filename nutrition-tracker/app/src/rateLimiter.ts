@@ -35,10 +35,19 @@ export interface TokenBucketOptions {
   refillIntervalMs: number; // time to add one token (60000 / RPM)
 }
 
+// Mirrors GeminiRateLimiterDO's MIN_DISPATCH_SPACING_MS (see rateLimiterDO.ts
+// for why): banked tokens alone let a burst of concurrent requests all get
+// granted in the same instant, which tripped Gemini's own transient 429
+// protection under production load-testing even while staying under the
+// 15 RPM average. Staggering grants fixes that without slowing single-user
+// usage.
+const MIN_DISPATCH_SPACING_MS = 1500;
+
 export class TokenBucket {
   private opts: TokenBucketOptions;
   private tokens: number;
   private lastRefill: number;
+  private lastDispatch = 0;
 
   constructor(opts: TokenBucketOptions, now: number = Date.now()) {
     this.opts = opts;
@@ -62,9 +71,14 @@ export class TokenBucket {
    */
   tryAcquire(now: number = Date.now()): number {
     this.refill(now);
-    if (this.tokens > 0) {
+    const sinceLastDispatch = now - this.lastDispatch;
+    if (this.tokens > 0 && sinceLastDispatch >= MIN_DISPATCH_SPACING_MS) {
       this.tokens -= 1;
+      this.lastDispatch = now;
       return 0;
+    }
+    if (this.tokens > 0) {
+      return MIN_DISPATCH_SPACING_MS - sinceLastDispatch;
     }
     const msSinceLastRefill = now - this.lastRefill;
     return Math.max(0, this.opts.refillIntervalMs - msSinceLastRefill);

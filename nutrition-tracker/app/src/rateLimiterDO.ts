@@ -21,10 +21,20 @@ export const GEMINI_LIMITER_ID = "gemini-flash-lite-global";
 interface BucketState {
   tokens: number;
   lastRefill: number;
+  lastDispatch: number;
 }
 
 const CAPACITY = 15; // matches gemini-3.1-flash-lite's confirmed free-tier RPM
 const REFILL_INTERVAL_MS = 60_000 / CAPACITY; // one token every 4 seconds
+
+// Banked tokens let a burst of concurrent requests all get granted in the
+// same instant -- fine for our own 15/min accounting, but a real burst like
+// that still tripped Gemini's own (undocumented) transient 429 protection
+// under production load-testing, even while staying under the 15 RPM
+// average. Spacing grants out by this much, even when tokens are available,
+// staggers a burst without meaningfully slowing single-user usage (nobody
+// logs two meals in the same 500ms).
+const MIN_DISPATCH_SPACING_MS = 1500;
 
 export class GeminiRateLimiterDO {
   private state: DurableObjectState;
@@ -35,7 +45,13 @@ export class GeminiRateLimiterDO {
 
   private async getBucket(): Promise<BucketState> {
     const stored = await this.state.storage.get<BucketState>("bucket");
-    return stored ?? { tokens: CAPACITY, lastRefill: Date.now() };
+    if (!stored) return { tokens: CAPACITY, lastRefill: Date.now(), lastDispatch: 0 };
+    // Defensive: a bucket written by a pre-lastDispatch version of this class
+    // (this DO's storage outlives any single Worker deploy) would be missing
+    // the field entirely, and `now - undefined` is NaN, not a real gap --
+    // treat that the same as "never dispatched" rather than let NaN leak
+    // into the comparison below and produce a NaN waitMs.
+    return { ...stored, lastDispatch: stored.lastDispatch ?? 0 };
   }
 
   private refill(bucket: BucketState, now: number): BucketState {
@@ -43,6 +59,7 @@ export class GeminiRateLimiterDO {
     const tokensToAdd = Math.floor(elapsed / REFILL_INTERVAL_MS);
     if (tokensToAdd <= 0) return bucket;
     return {
+      ...bucket,
       tokens: Math.min(CAPACITY, bucket.tokens + tokensToAdd),
       lastRefill: bucket.lastRefill + tokensToAdd * REFILL_INTERVAL_MS,
     };
@@ -59,15 +76,21 @@ export class GeminiRateLimiterDO {
     let bucket = await this.getBucket();
     bucket = this.refill(bucket, now);
 
-    if (bucket.tokens > 0) {
-      bucket = { ...bucket, tokens: bucket.tokens - 1 };
+    const sinceLastDispatch = now - bucket.lastDispatch;
+    if (bucket.tokens > 0 && sinceLastDispatch >= MIN_DISPATCH_SPACING_MS) {
+      bucket = { ...bucket, tokens: bucket.tokens - 1, lastDispatch: now };
       await this.state.storage.put("bucket", bucket);
       return Response.json({ waitMs: 0 });
     }
 
+    await this.state.storage.put("bucket", bucket); // persist the refill progress even on failure
+
+    if (bucket.tokens > 0) {
+      // Token available, but too soon after the last grant -- stagger it.
+      return Response.json({ waitMs: MIN_DISPATCH_SPACING_MS - sinceLastDispatch });
+    }
     const msSinceLastRefill = now - bucket.lastRefill;
     const waitMs = Math.max(0, REFILL_INTERVAL_MS - msSinceLastRefill);
-    await this.state.storage.put("bucket", bucket); // persist the refill progress even on failure
     return Response.json({ waitMs });
   }
 }
