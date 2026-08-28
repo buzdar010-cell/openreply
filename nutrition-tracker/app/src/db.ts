@@ -1,4 +1,5 @@
 import { type Candidate, type DishRecord } from "./candidateSearch.ts";
+import { type Gender, type ActivityLevel, type Goal } from "./goalCalc.ts";
 
 export interface DishRow {
   dish_id: string;
@@ -260,4 +261,198 @@ export async function getTotalsForRange(
     .bind(deviceId, startUnix, endUnix)
     .first<DailyTotals>();
   return row!;
+}
+
+/** An individual logged item -- for the day-grouped history feed, not just the summed totals above. */
+export interface LogListItem {
+  id: string;
+  dish_id: string;
+  free_text_description: string | null;
+  quantity: number;
+  kcal: number;
+  protein_g: number;
+  carbs_g: number;
+  fat_g: number;
+  fiber_g: number;
+  sugar_g: number;
+  sodium_mg: number;
+  logged_at: number;
+}
+
+export async function getLogsForRange(
+  db: D1Database,
+  deviceId: string,
+  startUnix: number,
+  endUnix: number,
+): Promise<LogListItem[]> {
+  const { results } = await db
+    .prepare(
+      `SELECT id, dish_id, free_text_description, quantity, kcal, protein_g, carbs_g, fat_g, fiber_g, sugar_g, sodium_mg, logged_at
+       FROM logs WHERE device_id = ? AND logged_at >= ? AND logged_at < ? ORDER BY logged_at DESC`,
+    )
+    .bind(deviceId, startUnix, endUnix)
+    .all<LogListItem>();
+  return results;
+}
+
+/** Ownership-checked lookup -- a user can only edit/delete their own logs, keyed by device_id since there's no login system. */
+export async function getLogOwnedByDevice(
+  db: D1Database,
+  deviceId: string,
+  logId: string,
+): Promise<{ id: string; resolved_grams: number } | null> {
+  const row = await db
+    .prepare(`SELECT id, resolved_grams FROM logs WHERE id = ? AND device_id = ?`)
+    .bind(logId, deviceId)
+    .first<{ id: string; resolved_grams: number }>();
+  return row ?? null;
+}
+
+export async function userEditLog(
+  db: D1Database,
+  logId: string,
+  dish: {
+    dish_id: string;
+    kcal: number;
+    protein_g: number;
+    carbs_g: number;
+    fat_g: number;
+    fiber_g: number;
+    sugar_g: number;
+    sodium_mg: number;
+  },
+): Promise<void> {
+  await db
+    .prepare(
+      `UPDATE logs SET dish_id = ?, kcal = ?, protein_g = ?, carbs_g = ?, fat_g = ?, fiber_g = ?, sugar_g = ?, sodium_mg = ? WHERE id = ?`,
+    )
+    .bind(dish.dish_id, dish.kcal, dish.protein_g, dish.carbs_g, dish.fat_g, dish.fiber_g, dish.sugar_g, dish.sodium_mg, logId)
+    .run();
+}
+
+export async function userDeleteLog(db: D1Database, logId: string): Promise<void> {
+  await db.prepare(`DELETE FROM logs WHERE id = ?`).bind(logId).run();
+}
+
+export interface ProfileRow {
+  device_id: string;
+  weight_kg: number | null;
+  height_cm: number | null;
+  age: number | null;
+  gender: Gender | null;
+  activity_level: ActivityLevel | null;
+  goal: Goal | null;
+  daily_calorie_target: number | null;
+  gamification_enabled: number;
+  current_streak: number;
+  longest_streak: number;
+  last_logged_date: string | null;
+  xp: number;
+}
+
+export async function getProfile(db: D1Database, deviceId: string): Promise<ProfileRow | null> {
+  const row = await db.prepare(`SELECT * FROM user_profiles WHERE device_id = ?`).bind(deviceId).first<ProfileRow>();
+  return row ?? null;
+}
+
+export interface ProfileUpsert {
+  device_id: string;
+  weight_kg: number;
+  height_cm: number;
+  age: number;
+  gender: Gender;
+  activity_level: ActivityLevel;
+  goal: Goal;
+  daily_calorie_target: number;
+  gamification_enabled: boolean;
+}
+
+/**
+ * Sets the profile/goal fields. Deliberately does NOT touch streak/xp/
+ * last_logged_date -- those are updated only by recordLogForStreak, never
+ * reset just because someone edits their weight or goal in Settings.
+ */
+export async function upsertProfile(db: D1Database, p: ProfileUpsert): Promise<void> {
+  const now = Math.floor(Date.now() / 1000);
+  await db
+    .prepare(
+      `INSERT INTO user_profiles (device_id, weight_kg, height_cm, age, gender, activity_level, goal, daily_calorie_target, gamification_enabled, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       ON CONFLICT(device_id) DO UPDATE SET
+         weight_kg = excluded.weight_kg, height_cm = excluded.height_cm, age = excluded.age,
+         gender = excluded.gender, activity_level = excluded.activity_level, goal = excluded.goal,
+         daily_calorie_target = excluded.daily_calorie_target, gamification_enabled = excluded.gamification_enabled,
+         updated_at = excluded.updated_at`,
+    )
+    .bind(
+      p.device_id,
+      p.weight_kg,
+      p.height_cm,
+      p.age,
+      p.gender,
+      p.activity_level,
+      p.goal,
+      p.daily_calorie_target,
+      p.gamification_enabled ? 1 : 0,
+      now,
+      now,
+    )
+    .run();
+}
+
+/**
+ * Called after every successful (matched) log, regardless of whether
+ * gamification is enabled -- streak/XP keep accruing in the background so
+ * turning gamification on later doesn't unfairly start someone at zero.
+ * Only the UI decides whether to show it.
+ */
+export async function recordLogForStreak(db: D1Database, deviceId: string): Promise<void> {
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD, UTC
+  const now = Math.floor(Date.now() / 1000);
+  const existing = await db
+    .prepare(`SELECT current_streak, longest_streak, last_logged_date, xp FROM user_profiles WHERE device_id = ?`)
+    .bind(deviceId)
+    .first<{ current_streak: number; longest_streak: number; last_logged_date: string | null; xp: number }>();
+
+  if (!existing) {
+    await db
+      .prepare(
+        `INSERT INTO user_profiles (device_id, gamification_enabled, current_streak, longest_streak, last_logged_date, xp, created_at, updated_at)
+         VALUES (?, 0, 1, 1, ?, 10, ?, ?)`,
+      )
+      .bind(deviceId, today, now, now)
+      .run();
+    return;
+  }
+
+  if (existing.last_logged_date === today) return; // already logged today, streak already counted
+
+  const yesterday = new Date(Date.now() - 86400_000).toISOString().slice(0, 10);
+  const newStreak = existing.last_logged_date === yesterday ? existing.current_streak + 1 : 1;
+
+  await db
+    .prepare(
+      `UPDATE user_profiles SET current_streak = ?, longest_streak = MAX(longest_streak, ?), last_logged_date = ?, xp = xp + 10, updated_at = ?
+       WHERE device_id = ?`,
+    )
+    .bind(newStreak, newStreak, today, now, deviceId)
+    .run();
+}
+
+export async function insertFeedback(
+  db: D1Database,
+  f: { id: string; device_id: string; message: string; context: string | null; created_at: number },
+): Promise<void> {
+  await db
+    .prepare(`INSERT INTO feedback (id, device_id, message, context, created_at) VALUES (?, ?, ?, ?, ?)`)
+    .bind(f.id, f.device_id, f.message, f.context, f.created_at)
+    .run();
+}
+
+export async function getFeedback(db: D1Database, limit = 200) {
+  const { results } = await db
+    .prepare(`SELECT id, device_id, message, context, created_at FROM feedback ORDER BY created_at DESC LIMIT ?`)
+    .bind(limit)
+    .all();
+  return results;
 }

@@ -13,10 +13,20 @@ import {
   getRecentLogsForReview,
   getLogById,
   correctLog,
+  getLogsForRange,
+  getLogOwnedByDevice,
+  userEditLog,
+  userDeleteLog,
+  getProfile,
+  upsertProfile,
+  recordLogForStreak,
+  insertFeedback,
+  getFeedback,
 } from "./db.ts";
 import { resolvePortion } from "./resolvePortion.ts";
 import { storePhoto, getPhoto } from "./r2.ts";
 import { GeminiRateLimiterDO } from "./rateLimiterDO.ts";
+import { calculateDailyCalorieTarget, isValidProfileInput } from "./goalCalc.ts";
 
 export { GeminiRateLimiterDO };
 
@@ -105,6 +115,7 @@ async function handleTextLog(request: Request, env: Env): Promise<Response> {
       alt_candidates_json: JSON.stringify(entry.alt_candidates),
       photo_key: null,
     });
+    await recordLogForStreak(env.DB, body.deviceId);
     results.push({
       matched: true,
       logId,
@@ -212,6 +223,7 @@ async function handlePhotoLog(request: Request, env: Env): Promise<Response> {
       alt_candidates_json: JSON.stringify(entry.alt_candidates),
       photo_key: photoKey,
     });
+    await recordLogForStreak(env.DB, body.deviceId);
     results.push({
       matched: true,
       logId,
@@ -238,6 +250,118 @@ async function handleTotals(request: Request, env: Env): Promise<Response> {
   return jsonResponse(totals);
 }
 
+/** Individual logged items in a range, e.g. for a day-grouped history feed -- /totals only gives the sum. */
+async function handleGetLogs(request: Request, env: Env): Promise<Response> {
+  const url = new URL(request.url);
+  const deviceId = url.searchParams.get("deviceId");
+  const startUnix = url.searchParams.get("start");
+  const endUnix = url.searchParams.get("end");
+  if (!deviceId || !startUnix || !endUnix) {
+    return jsonResponse({ error: "deviceId, start, and end (unix seconds) are required" }, 400);
+  }
+  const logs = await getLogsForRange(env.DB, deviceId, Number(startUnix), Number(endUnix));
+  return jsonResponse({ logs });
+}
+
+/**
+ * User-facing edit -- distinct from /admin/correct. Ownership-checked via
+ * device_id (the only identity this app has) so one device can't edit
+ * another's logs. Recalculates nutrition from the portion size that was
+ * already resolved, same reasoning as the admin correction endpoint.
+ */
+async function handleUserEditLog(request: Request, env: Env): Promise<Response> {
+  const body = (await request.json()) as { deviceId?: string; logId?: string; correctDishId?: string };
+  if (
+    typeof body.deviceId !== "string" ||
+    !body.deviceId ||
+    typeof body.logId !== "string" ||
+    !body.logId ||
+    typeof body.correctDishId !== "string" ||
+    !body.correctDishId
+  ) {
+    return jsonResponse({ error: "deviceId, logId, and correctDishId are required" }, 400);
+  }
+
+  const log = await getLogOwnedByDevice(env.DB, body.deviceId, body.logId);
+  if (!log) return jsonResponse({ error: "log not found" }, 404);
+
+  const dish = await getDishById(env.DB, body.correctDishId);
+  if (!dish) return jsonResponse({ error: "correctDishId is not a real dish" }, 404);
+
+  const scale = log.resolved_grams / 100;
+  await userEditLog(env.DB, log.id, {
+    dish_id: dish.dish_id,
+    kcal: dish.per_100g_kcal * scale,
+    protein_g: dish.per_100g_protein_g * scale,
+    carbs_g: dish.per_100g_carbs_g * scale,
+    fat_g: dish.per_100g_fat_g * scale,
+    fiber_g: dish.per_100g_fiber_g * scale,
+    sugar_g: dish.per_100g_sugar_g * scale,
+    sodium_mg: dish.per_100g_sodium_mg * scale,
+  });
+  return jsonResponse({ ok: true });
+}
+
+async function handleUserDeleteLog(request: Request, env: Env): Promise<Response> {
+  const body = (await request.json()) as { deviceId?: string; logId?: string };
+  if (typeof body.deviceId !== "string" || !body.deviceId || typeof body.logId !== "string" || !body.logId) {
+    return jsonResponse({ error: "deviceId and logId are required" }, 400);
+  }
+  const log = await getLogOwnedByDevice(env.DB, body.deviceId, body.logId);
+  if (!log) return jsonResponse({ error: "log not found" }, 404);
+  await userDeleteLog(env.DB, log.id);
+  return jsonResponse({ ok: true });
+}
+
+async function handleGetProfile(request: Request, env: Env): Promise<Response> {
+  const deviceId = new URL(request.url).searchParams.get("deviceId");
+  if (!deviceId) return jsonResponse({ error: "deviceId is required" }, 400);
+  const profile = await getProfile(env.DB, deviceId);
+  return jsonResponse({ profile });
+}
+
+/** Computes the real daily_calorie_target server-side -- the client sends raw inputs, never the target itself. */
+async function handlePostProfile(request: Request, env: Env): Promise<Response> {
+  const body = (await request.json()) as {
+    deviceId?: string;
+    gamification_enabled?: boolean;
+  } & Record<string, unknown>;
+  if (typeof body.deviceId !== "string" || !body.deviceId) {
+    return jsonResponse({ error: "deviceId is required" }, 400);
+  }
+  if (!isValidProfileInput(body)) {
+    return jsonResponse({ error: "weight_kg, height_cm, age, gender, activity_level, and goal are required and must be valid" }, 400);
+  }
+  const daily_calorie_target = calculateDailyCalorieTarget(body);
+  await upsertProfile(env.DB, {
+    device_id: body.deviceId,
+    weight_kg: body.weight_kg,
+    height_cm: body.height_cm,
+    age: body.age,
+    gender: body.gender,
+    activity_level: body.activity_level,
+    goal: body.goal,
+    daily_calorie_target,
+    gamification_enabled: body.gamification_enabled === true,
+  });
+  return jsonResponse({ ok: true, daily_calorie_target });
+}
+
+async function handlePostFeedback(request: Request, env: Env): Promise<Response> {
+  const body = (await request.json()) as { deviceId?: string; message?: string; context?: string };
+  if (typeof body.deviceId !== "string" || !body.deviceId || typeof body.message !== "string" || !body.message.trim()) {
+    return jsonResponse({ error: "deviceId and message are required" }, 400);
+  }
+  await insertFeedback(env.DB, {
+    id: crypto.randomUUID(),
+    device_id: body.deviceId,
+    message: body.message.trim(),
+    context: typeof body.context === "string" ? body.context : null,
+    created_at: Math.floor(Date.now() / 1000),
+  });
+  return jsonResponse({ ok: true });
+}
+
 // Gate on a shared secret set via `wrangler secret put ADMIN_TOKEN` -- these
 // endpoints expose user descriptions and internal error text, so they can't
 // be left open.
@@ -255,6 +379,12 @@ async function handleAdminUnmatched(request: Request, env: Env): Promise<Respons
 async function handleAdminErrors(request: Request, env: Env): Promise<Response> {
   if (!isAdmin(request, env)) return jsonResponse({ error: "unauthorized" }, 401);
   const rows = await getErrorLogs(env.DB);
+  return jsonResponse({ count: rows.length, rows });
+}
+
+async function handleAdminFeedback(request: Request, env: Env): Promise<Response> {
+  if (!isAdmin(request, env)) return jsonResponse({ error: "unauthorized" }, 401);
+  const rows = await getFeedback(env.DB);
   return jsonResponse({ count: rows.length, rows });
 }
 
@@ -346,11 +476,32 @@ export default {
       if (request.method === "GET" && url.pathname === "/totals") {
         return await handleTotals(request, env);
       }
+      if (request.method === "GET" && url.pathname === "/logs") {
+        return await handleGetLogs(request, env);
+      }
+      if (request.method === "POST" && url.pathname === "/logs/edit") {
+        return await handleUserEditLog(request, env);
+      }
+      if (request.method === "POST" && url.pathname === "/logs/delete") {
+        return await handleUserDeleteLog(request, env);
+      }
+      if (request.method === "GET" && url.pathname === "/profile") {
+        return await handleGetProfile(request, env);
+      }
+      if (request.method === "POST" && url.pathname === "/profile") {
+        return await handlePostProfile(request, env);
+      }
+      if (request.method === "POST" && url.pathname === "/feedback") {
+        return await handlePostFeedback(request, env);
+      }
       if (request.method === "GET" && url.pathname === "/admin/unmatched") {
         return await handleAdminUnmatched(request, env);
       }
       if (request.method === "GET" && url.pathname === "/admin/errors") {
         return await handleAdminErrors(request, env);
+      }
+      if (request.method === "GET" && url.pathname === "/admin/feedback") {
+        return await handleAdminFeedback(request, env);
       }
       if (request.method === "GET" && url.pathname === "/admin/review") {
         return await handleAdminReview(request, env);
