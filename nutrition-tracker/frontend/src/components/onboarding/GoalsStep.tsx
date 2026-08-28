@@ -33,7 +33,7 @@ function field(label: string, input: React.ReactNode) {
 }
 
 const inputClass =
-  'border-primary-100 focus:border-primary-500 text-ink-900 w-full rounded-xl border-2 bg-white px-3 py-2.5 text-base outline-none';
+  'border-primary-100 focus:border-primary-500 text-ink-900 w-full rounded-xl border-2 bg-surface px-3 py-2.5 text-base outline-none';
 
 export function GoalsStep({ data, onChange }: { data: GoalsData; onChange: (d: GoalsData) => void }) {
   return (
@@ -49,7 +49,7 @@ export function GoalsStep({ data, onChange }: { data: GoalsData; onChange: (d: G
               type="button"
               onClick={() => onChange({ ...data, goal: g.value })}
               className={`rounded-xl border-2 py-3 text-center text-xs font-semibold transition-colors ${
-                data.goal === g.value ? 'border-primary-500 bg-primary-50 text-primary-600' : 'border-cream-200 bg-white text-ink-600'
+                data.goal === g.value ? 'border-primary-500 bg-primary-50 text-primary-600' : 'border-cream-200 bg-surface text-ink-600'
               }`}
             >
               <div className="mb-1 text-lg">{g.emoji}</div>

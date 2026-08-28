@@ -8,7 +8,7 @@ export function BottomNav({ tab, onChange }: { tab: Tab; onChange: (t: Tab) => v
   ];
 
   return (
-    <nav className="border-cream-200 fixed bottom-0 left-0 right-0 z-30 mx-auto flex max-w-[480px] border-t bg-white pb-[env(safe-area-inset-bottom)]">
+    <nav className="border-cream-200 fixed bottom-0 left-0 right-0 z-30 mx-auto flex max-w-[480px] border-t bg-surface pb-[env(safe-area-inset-bottom)]">
       {items.map((item) => (
         <button
           key={item.id}

@@ -3,6 +3,7 @@ import { getDeviceId } from '../lib/device';
 import { getProfile, saveProfile, submitFeedback } from '../lib/api';
 import { GoalsStep, isGoalsDataValid, type GoalsData } from './onboarding/GoalsStep';
 import { GamificationStep } from './onboarding/GamificationStep';
+import { ThemePicker } from './ThemePicker';
 
 const ONBOARDED_KEY = 'nutrition-tracker-onboarded';
 const DEVICE_KEY = 'nutrition-tracker-device-id';
@@ -90,6 +91,11 @@ export function SettingsScreen() {
     <div className="flex flex-1 flex-col overflow-y-auto px-5 pt-8 pb-24">
       <h1 className="text-ink-900 mb-6 text-2xl font-extrabold">Settings</h1>
 
+      <h2 className="text-ink-900 mb-3 text-lg font-bold">Appearance</h2>
+      <div className="mb-8">
+        <ThemePicker />
+      </div>
+
       <h2 className="text-ink-900 mb-3 text-lg font-bold">Your goal</h2>
       <div className="mb-3">
         <GoalsStep data={goals} onChange={setGoals} />
@@ -113,7 +119,7 @@ export function SettingsScreen() {
         onChange={(e) => setFeedback(e.target.value)}
         placeholder="Something wrong, or an idea for the app? Let us know."
         rows={3}
-        className="border-primary-100 focus:border-primary-500 text-ink-900 mb-3 resize-none rounded-2xl border-2 bg-white p-4 text-base outline-none placeholder:text-gray-400"
+        className="border-primary-100 focus:border-primary-500 text-ink-900 mb-3 resize-none rounded-2xl border-2 bg-surface p-4 text-base outline-none placeholder:text-ink-400/60"
       />
       <button
         onClick={handleSendFeedback}

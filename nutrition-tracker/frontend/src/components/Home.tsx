@@ -12,7 +12,7 @@ const TIPS = [
 
 function StatCard({ label, value, unit }: { label: string; value: number; unit: string }) {
   return (
-    <div className="border-cream-200 rounded-2xl border bg-white p-4 text-center">
+    <div className="border-cream-200 rounded-2xl border bg-surface p-4 text-center">
       <div className="text-primary-600 text-xl font-extrabold">
         {Math.round(value)}
         <span className="text-ink-400 ml-1 text-xs font-semibold">{unit}</span>
@@ -72,7 +72,7 @@ export function Home({ refreshKey }: { refreshKey: number }) {
         <div className="text-ink-400 py-8 text-center text-sm">Loading…</div>
       ) : (
         <>
-          <div className="border-cream-200 mb-4 rounded-2xl border bg-white p-6">
+          <div className="border-cream-200 mb-4 rounded-2xl border bg-surface p-6">
             <div className="mb-3 flex items-baseline justify-between">
               <span className="text-ink-900 text-3xl font-extrabold">{Math.round(totals?.kcal ?? 0)}</span>
               <span className="text-ink-400 text-sm">of {target} kcal</span>
@@ -93,7 +93,7 @@ export function Home({ refreshKey }: { refreshKey: number }) {
       <h2 className="text-ink-900 mb-3 text-lg font-bold">Tips for you</h2>
       <div className="flex flex-col gap-3">
         {TIPS.map((tip) => (
-          <div key={tip.title} className="border-cream-200 flex gap-3 rounded-2xl border bg-white p-4">
+          <div key={tip.title} className="border-cream-200 flex gap-3 rounded-2xl border bg-surface p-4">
             <span className="text-2xl">{tip.emoji}</span>
             <div>
               <div className="text-ink-900 text-sm font-bold">{tip.title}</div>

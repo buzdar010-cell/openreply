@@ -23,7 +23,7 @@ export function InstallStep() {
       ) : ios ? (
         <div className="text-ink-600 max-w-xs text-left leading-relaxed">
           <p className="mb-3 text-center">iPhone doesn't allow one-tap installs, but it only takes a few taps:</p>
-          <ol className="border-cream-200 flex flex-col gap-2 rounded-2xl border bg-white p-4 text-sm">
+          <ol className="border-cream-200 flex flex-col gap-2 rounded-2xl border bg-surface p-4 text-sm">
             <li>
               1. Tap the <b>Share</b> icon <span className="inline-block">⬆️</span> in Safari's toolbar
             </li>

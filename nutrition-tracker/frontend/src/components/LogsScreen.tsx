@@ -11,7 +11,7 @@ function LogRow({ item, onDelete }: { item: LogListItem; onDelete: (id: string) 
   const label = item.free_text_description ?? item.dish_id.replace(/_/g, ' ');
 
   return (
-    <div className="border-cream-200 rounded-xl border bg-white p-3">
+    <div className="border-cream-200 rounded-xl border bg-surface p-3">
       <div className="flex items-center justify-between">
         <div className="min-w-0">
           <div className="text-ink-900 truncate text-sm font-bold capitalize">

@@ -20,7 +20,7 @@ function fileToBase64(file: File): Promise<{ base64: string; mimeType: 'image/jp
 
 function ResultCard({ r }: { r: LogResultEntry }) {
   return (
-    <div className="border-cream-200 rounded-2xl border bg-white p-4">
+    <div className="border-cream-200 rounded-2xl border bg-surface p-4">
       {r.matched ? (
         <>
           <div className="flex items-center justify-between">
@@ -132,7 +132,7 @@ export function AddLogSheet({ onClose, onLogged }: { onClose: () => void; onLogg
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   placeholder="Optional caption (e.g. 'large portion')"
-                  className="border-primary-100 focus:border-primary-500 text-ink-900 w-full rounded-xl border-2 bg-white px-3 py-2 text-sm outline-none"
+                  className="border-primary-100 focus:border-primary-500 text-ink-900 w-full rounded-xl border-2 bg-surface px-3 py-2 text-sm outline-none"
                 />
               </div>
             ) : (
@@ -141,7 +141,7 @@ export function AddLogSheet({ onClose, onLogged }: { onClose: () => void; onLogg
                 onChange={(e) => setText(e.target.value)}
                 placeholder='e.g. "chicken karahi and two rotis"'
                 rows={3}
-                className="border-primary-100 focus:border-primary-500 text-ink-900 mb-3 resize-none rounded-2xl border-2 bg-white p-4 text-base outline-none placeholder:text-gray-400"
+                className="border-primary-100 focus:border-primary-500 text-ink-900 mb-3 resize-none rounded-2xl border-2 bg-surface p-4 text-base outline-none placeholder:text-ink-400/60"
               />
             )}
 

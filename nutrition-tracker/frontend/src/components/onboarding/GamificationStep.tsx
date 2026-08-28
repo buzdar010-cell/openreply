@@ -8,7 +8,7 @@ export function GamificationStep({ enabled, onChange }: { enabled: boolean; onCh
         optional, and never something to feel bad about missing.
       </p>
 
-      <div className="border-cream-200 flex w-full items-center justify-between rounded-2xl border bg-white p-4">
+      <div className="border-cream-200 flex w-full items-center justify-between rounded-2xl border bg-surface p-4">
         <div className="text-left">
           <div className="text-ink-900 font-bold">{enabled ? 'Turned on' : 'Turned off'}</div>
           <div className="text-ink-400 text-xs">You can change this anytime in Settings</div>
@@ -18,7 +18,7 @@ export function GamificationStep({ enabled, onChange }: { enabled: boolean; onCh
           onClick={() => onChange(!enabled)}
           className={`h-8 w-14 shrink-0 rounded-full p-1 transition-colors ${enabled ? 'bg-primary-500' : 'bg-cream-200'}`}
         >
-          <div className={`h-6 w-6 rounded-full bg-white shadow-sm transition-transform ${enabled ? 'translate-x-6' : ''}`} />
+          <div className={`h-6 w-6 rounded-full bg-surface shadow-sm transition-transform ${enabled ? 'translate-x-6' : ''}`} />
         </button>
       </div>
     </div>
