@@ -25,10 +25,20 @@ export interface Env {
   ADMIN_TOKEN: string;
 }
 
+// The frontend (Cloudflare Pages, a different origin from this Worker's
+// own workers.dev domain) needs CORS to call this API from a browser at
+// all -- without these headers every fetch() from the deployed app would
+// fail silently with an opaque CORS error, never reaching this code.
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, X-Admin-Token",
+};
+
 function jsonResponse(data: unknown, status = 200): Response {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...CORS_HEADERS },
   });
 }
 
@@ -236,6 +246,9 @@ async function handleAdminErrors(request: Request, env: Env): Promise<Response> 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+    if (request.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: CORS_HEADERS });
+    }
     try {
       if (request.method === "POST" && url.pathname === "/log/text") {
         return await handleTextLog(request, env);
