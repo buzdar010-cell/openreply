@@ -90,6 +90,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
         totalSteps={TOTAL_STEPS}
         primaryLabel="Continue"
         onPrimary={goToNextPhase}
+        primaryDisabled={!isGoalsDataValid(goals)}
         secondaryLabel="Skip this"
         onSecondary={goToNextPhase}
       >

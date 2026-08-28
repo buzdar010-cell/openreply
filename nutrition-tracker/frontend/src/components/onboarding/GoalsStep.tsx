@@ -23,10 +23,12 @@ const GOAL_OPTIONS: { value: Goal; label: string; emoji: string }[] = [
   { value: 'gain', label: 'Gain weight', emoji: '📈' },
 ];
 
-function field(label: string, input: React.ReactNode) {
+function field(label: string, input: React.ReactNode, required = false) {
   return (
     <label className="block">
-      <span className="text-ink-600 mb-1 block text-xs font-semibold">{label}</span>
+      <span className="text-ink-600 mb-1 block text-xs font-semibold">
+        {label} {required && <span className="text-danger-500">*</span>}
+      </span>
       {input}
     </label>
   );
@@ -35,11 +37,26 @@ function field(label: string, input: React.ReactNode) {
 const inputClass =
   'border-primary-100 focus:border-primary-500 text-ink-900 w-full rounded-xl border-2 bg-surface px-3 py-2.5 text-base outline-none';
 
-export function GoalsStep({ data, onChange }: { data: GoalsData; onChange: (d: GoalsData) => void }) {
+export function GoalsStep({
+  data,
+  onChange,
+  showHeading = true,
+}: {
+  data: GoalsData;
+  onChange: (d: GoalsData) => void;
+  showHeading?: boolean;
+}) {
   return (
     <div className="flex flex-1 flex-col">
-      <h1 className="text-ink-900 mb-1 text-2xl font-extrabold">Let's set your goal</h1>
-      <p className="text-ink-600 mb-5 text-sm">This tunes your daily calorie target — you can change it anytime in Settings.</p>
+      {showHeading && (
+        <>
+          <h1 className="text-ink-900 mb-1 text-2xl font-extrabold">Let's set your goal</h1>
+          <p className="text-ink-600 mb-1 text-sm">This tunes your daily calorie target — you can change it anytime in Settings.</p>
+        </>
+      )}
+      <p className="text-ink-400 mb-4 text-xs">
+        Weight, height, and age (<span className="text-danger-500">*</span>) are required to calculate it.
+      </p>
 
       <div className="flex flex-col gap-3">
         <div className="grid grid-cols-3 gap-2">
@@ -64,22 +81,26 @@ export function GoalsStep({ data, onChange }: { data: GoalsData; onChange: (d: G
             <input
               type="number"
               inputMode="decimal"
+              required
               className={inputClass}
               value={data.weight_kg}
               onChange={(e) => onChange({ ...data, weight_kg: e.target.value })}
               placeholder="70"
             />,
+            true,
           )}
           {field(
             'Height (cm)',
             <input
               type="number"
               inputMode="decimal"
+              required
               className={inputClass}
               value={data.height_cm}
               onChange={(e) => onChange({ ...data, height_cm: e.target.value })}
               placeholder="170"
             />,
+            true,
           )}
         </div>
 
@@ -89,11 +110,13 @@ export function GoalsStep({ data, onChange }: { data: GoalsData; onChange: (d: G
             <input
               type="number"
               inputMode="numeric"
+              required
               className={inputClass}
               value={data.age}
               onChange={(e) => onChange({ ...data, age: e.target.value })}
               placeholder="30"
             />,
+            true,
           )}
           {field(
             'Gender',

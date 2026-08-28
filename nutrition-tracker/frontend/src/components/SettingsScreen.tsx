@@ -98,7 +98,7 @@ export function SettingsScreen() {
 
       <h2 className="text-ink-900 mb-3 text-lg font-bold">Your goal</h2>
       <div className="mb-3">
-        <GoalsStep data={goals} onChange={setGoals} />
+        <GoalsStep data={goals} onChange={setGoals} showHeading={false} />
       </div>
       <button
         onClick={handleSaveGoals}
