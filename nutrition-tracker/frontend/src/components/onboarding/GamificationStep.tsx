@@ -1,3 +1,5 @@
+import { ToggleSwitch } from '../ToggleSwitch';
+
 export function GamificationStep({ enabled, onChange }: { enabled: boolean; onChange: (v: boolean) => void }) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center text-center">
@@ -13,13 +15,7 @@ export function GamificationStep({ enabled, onChange }: { enabled: boolean; onCh
           <div className="text-ink-900 font-bold">{enabled ? 'Turned on' : 'Turned off'}</div>
           <div className="text-ink-400 text-xs">You can change this anytime in Settings</div>
         </div>
-        <button
-          type="button"
-          onClick={() => onChange(!enabled)}
-          className={`h-8 w-14 shrink-0 rounded-full p-1 transition-colors ${enabled ? 'bg-primary-500' : 'bg-cream-200'}`}
-        >
-          <div className={`h-6 w-6 rounded-full bg-surface shadow-sm transition-transform ${enabled ? 'translate-x-6' : ''}`} />
-        </button>
+        <ToggleSwitch enabled={enabled} onChange={onChange} />
       </div>
     </div>
   );

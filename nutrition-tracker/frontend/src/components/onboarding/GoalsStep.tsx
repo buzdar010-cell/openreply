@@ -17,7 +17,7 @@ const ACTIVITY_OPTIONS: { value: ActivityLevel; label: string }[] = [
   { value: 'very_active', label: 'Very active (physical job or 2x/day)' },
 ];
 
-const GOAL_OPTIONS: { value: Goal; label: string; emoji: string }[] = [
+export const GOAL_OPTIONS: { value: Goal; label: string; emoji: string }[] = [
   { value: 'lose', label: 'Lose weight', emoji: '📉' },
   { value: 'maintain', label: 'Maintain weight', emoji: '⚖️' },
   { value: 'gain', label: 'Gain weight', emoji: '📈' },
