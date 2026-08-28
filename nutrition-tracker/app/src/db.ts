@@ -48,14 +48,21 @@ export interface LogRowToInsert {
   sugar_g: number;
   sodium_mg: number;
   logged_at: number;
+  // Audit-trail fields -- what the AI actually decided (not just the final
+  // resolved numbers) and a photo reference, so a matched log can be
+  // reviewed for correctness, not just trusted. See getRecentLogsForReview.
+  confidence: "high" | "low" | null;
+  alt_candidates_json: string | null;
+  photo_key: string | null;
 }
 
 export async function insertLog(db: D1Database, log: LogRowToInsert): Promise<void> {
   await db
     .prepare(
       `INSERT INTO logs (id, device_id, dish_id, free_text_description, quantity, resolved_grams,
-        swaps_json, kcal, protein_g, carbs_g, fat_g, fiber_g, sugar_g, sodium_mg, logged_at, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        swaps_json, kcal, protein_g, carbs_g, fat_g, fiber_g, sugar_g, sodium_mg, logged_at, created_at,
+        confidence, alt_candidates_json, photo_key)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .bind(
       log.id,
@@ -74,8 +81,35 @@ export async function insertLog(db: D1Database, log: LogRowToInsert): Promise<vo
       log.sodium_mg,
       log.logged_at,
       Math.floor(Date.now() / 1000),
+      log.confidence,
+      log.alt_candidates_json,
+      log.photo_key,
     )
     .run();
+}
+
+export interface RecentLogForReview {
+  id: string;
+  device_id: string;
+  dish_id: string;
+  free_text_description: string | null;
+  quantity: number;
+  confidence: string | null;
+  alt_candidates_json: string | null;
+  photo_key: string | null;
+  created_at: number;
+}
+
+/** For QA: recent matched logs with the AI's decision context, newest first. */
+export async function getRecentLogsForReview(db: D1Database, limit = 100): Promise<RecentLogForReview[]> {
+  const { results } = await db
+    .prepare(
+      `SELECT id, device_id, dish_id, free_text_description, quantity, confidence, alt_candidates_json, photo_key, created_at
+       FROM logs ORDER BY created_at DESC LIMIT ?`,
+    )
+    .bind(limit)
+    .all<RecentLogForReview>();
+  return results;
 }
 
 export interface UnmatchedLogToInsert {
@@ -84,12 +118,15 @@ export interface UnmatchedLogToInsert {
   description: string;
   source: "text" | "photo";
   created_at: number;
+  photo_key: string | null;
 }
 
 export async function insertUnmatchedLog(db: D1Database, log: UnmatchedLogToInsert): Promise<void> {
   await db
-    .prepare(`INSERT INTO unmatched_logs (id, device_id, description, source, created_at) VALUES (?, ?, ?, ?, ?)`)
-    .bind(log.id, log.device_id, log.description, log.source, log.created_at)
+    .prepare(
+      `INSERT INTO unmatched_logs (id, device_id, description, source, created_at, photo_key) VALUES (?, ?, ?, ?, ?, ?)`,
+    )
+    .bind(log.id, log.device_id, log.description, log.source, log.created_at, log.photo_key)
     .run();
 }
 
@@ -99,11 +136,14 @@ export interface UnmatchedLogRow {
   description: string;
   source: string;
   created_at: number;
+  photo_key: string | null;
 }
 
 export async function getUnmatchedLogs(db: D1Database, limit = 200): Promise<UnmatchedLogRow[]> {
   const { results } = await db
-    .prepare(`SELECT id, device_id, description, source, created_at FROM unmatched_logs ORDER BY created_at DESC LIMIT ?`)
+    .prepare(
+      `SELECT id, device_id, description, source, created_at, photo_key FROM unmatched_logs ORDER BY created_at DESC LIMIT ?`,
+    )
     .bind(limit)
     .all<UnmatchedLogRow>();
   return results;

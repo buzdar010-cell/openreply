@@ -10,9 +10,10 @@ import {
   getUnmatchedLogs,
   insertErrorLog,
   getErrorLogs,
+  getRecentLogsForReview,
 } from "./db.ts";
 import { resolvePortion } from "./resolvePortion.ts";
-import { storePhoto } from "./r2.ts";
+import { storePhoto, getPhoto } from "./r2.ts";
 import { GeminiRateLimiterDO } from "./rateLimiterDO.ts";
 
 export { GeminiRateLimiterDO };
@@ -71,6 +72,7 @@ async function handleTextLog(request: Request, env: Env): Promise<Response> {
         description: entry.free_text_description ?? body.text,
         source: "text",
         created_at: Math.floor(Date.now() / 1000),
+        photo_key: null,
       });
       continue;
     }
@@ -97,6 +99,9 @@ async function handleTextLog(request: Request, env: Env): Promise<Response> {
       sugar_g: resolved.sugar_g,
       sodium_mg: resolved.sodium_mg,
       logged_at: loggedAt,
+      confidence: entry.confidence,
+      alt_candidates_json: JSON.stringify(entry.alt_candidates),
+      photo_key: null,
     });
     results.push({
       matched: true,
@@ -156,9 +161,15 @@ async function handlePhotoLog(request: Request, env: Env): Promise<Response> {
   const loggedAt = body.loggedAt ?? Math.floor(Date.now() / 1000);
   const results = [];
 
-  for (const entry of parsed) {
-    const logId = crypto.randomUUID();
+  // Save every submitted photo -- matched or not -- so nothing is lost for
+  // QA review. Previously this only ran inside the matched branch, which
+  // meant a low-confidence or wrong AI call couldn't be checked against the
+  // actual photo it was looking at.
+  const imageBytes = Uint8Array.from(atob(body.imageBase64), (c) => c.charCodeAt(0)).buffer;
+  const photoLogId = crypto.randomUUID();
+  const photoKey = await storePhoto(env.PHOTOS, body.deviceId, photoLogId, imageBytes, mimeType);
 
+  for (const entry of parsed) {
     if (entry.dish_id === "none_of_these") {
       results.push({ matched: false, description: entry.free_text_description });
       await insertUnmatchedLog(env.DB, {
@@ -167,6 +178,7 @@ async function handlePhotoLog(request: Request, env: Env): Promise<Response> {
         description: entry.free_text_description ?? body.caption ?? "(photo, no caption)",
         source: "photo",
         created_at: Math.floor(Date.now() / 1000),
+        photo_key: photoKey,
       });
       continue;
     }
@@ -176,10 +188,8 @@ async function handlePhotoLog(request: Request, env: Env): Promise<Response> {
       continue;
     }
 
-    const imageBytes = Uint8Array.from(atob(body.imageBase64), (c) => c.charCodeAt(0)).buffer;
-    await storePhoto(env.PHOTOS, body.deviceId, logId, imageBytes, mimeType);
-
     const resolved = resolvePortion(entry, dish);
+    const logId = crypto.randomUUID();
     await insertLog(env.DB, {
       id: logId,
       device_id: body.deviceId,
@@ -196,6 +206,9 @@ async function handlePhotoLog(request: Request, env: Env): Promise<Response> {
       sugar_g: resolved.sugar_g,
       sodium_mg: resolved.sodium_mg,
       logged_at: loggedAt,
+      confidence: entry.confidence,
+      alt_candidates_json: JSON.stringify(entry.alt_candidates),
+      photo_key: photoKey,
     });
     results.push({
       matched: true,
@@ -243,6 +256,38 @@ async function handleAdminErrors(request: Request, env: Env): Promise<Response> 
   return jsonResponse({ count: rows.length, rows });
 }
 
+/**
+ * QA endpoint: recent matched logs with what the AI actually decided
+ * (confidence, alternates it weighed) and a link to the photo endpoint
+ * below when there was one, so a human can judge whether the AI got it
+ * right -- not just see the final resolved nutrition numbers.
+ */
+async function handleAdminReview(request: Request, env: Env): Promise<Response> {
+  if (!isAdmin(request, env)) return jsonResponse({ error: "unauthorized" }, 401);
+  const rows = await getRecentLogsForReview(env.DB);
+  const withPhotoUrls = rows.map((row) => ({
+    ...row,
+    alt_candidates: row.alt_candidates_json ? JSON.parse(row.alt_candidates_json) : [],
+    photo_url: row.photo_key ? `/admin/photo?key=${encodeURIComponent(row.photo_key)}` : null,
+  }));
+  return jsonResponse({ count: rows.length, rows: withPhotoUrls });
+}
+
+/** Streams a stored photo back for review -- gated the same as the other admin endpoints. */
+async function handleAdminPhoto(request: Request, env: Env): Promise<Response> {
+  if (!isAdmin(request, env)) return jsonResponse({ error: "unauthorized" }, 401);
+  const key = new URL(request.url).searchParams.get("key");
+  if (!key) return jsonResponse({ error: "key query param is required" }, 400);
+  const object = await getPhoto(env.PHOTOS, key);
+  if (!object) return jsonResponse({ error: "not found" }, 404);
+  return new Response(object.body, {
+    headers: {
+      "Content-Type": object.httpMetadata?.contentType ?? "application/octet-stream",
+      ...CORS_HEADERS,
+    },
+  });
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
@@ -264,6 +309,12 @@ export default {
       }
       if (request.method === "GET" && url.pathname === "/admin/errors") {
         return await handleAdminErrors(request, env);
+      }
+      if (request.method === "GET" && url.pathname === "/admin/review") {
+        return await handleAdminReview(request, env);
+      }
+      if (request.method === "GET" && url.pathname === "/admin/photo") {
+        return await handleAdminPhoto(request, env);
       }
       return jsonResponse({ error: "not found" }, 404);
     } catch (err) {
