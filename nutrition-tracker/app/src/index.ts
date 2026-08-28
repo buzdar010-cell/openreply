@@ -11,6 +11,8 @@ import {
   insertErrorLog,
   getErrorLogs,
   getRecentLogsForReview,
+  getLogById,
+  correctLog,
 } from "./db.ts";
 import { resolvePortion } from "./resolvePortion.ts";
 import { storePhoto, getPhoto } from "./r2.ts";
@@ -273,6 +275,46 @@ async function handleAdminReview(request: Request, env: Env): Promise<Response> 
   return jsonResponse({ count: rows.length, rows: withPhotoUrls });
 }
 
+/**
+ * Fixes a wrong AI match: re-fetches the correct dish and recalculates
+ * nutrition using the portion size that was already resolved (grams), so
+ * this only corrects *which dish* it was -- not the amount, which the AI
+ * usually gets right even when it picks the wrong dish. Keeps
+ * original_dish_id from the first correction only, so a later re-correction
+ * can't erase the record of what the AI actually guessed.
+ */
+async function handleAdminCorrect(request: Request, env: Env): Promise<Response> {
+  if (!isAdmin(request, env)) return jsonResponse({ error: "unauthorized" }, 401);
+  const body = (await request.json()) as { logId?: string; correctDishId?: string };
+  if (typeof body.logId !== "string" || !body.logId || typeof body.correctDishId !== "string" || !body.correctDishId) {
+    return jsonResponse({ error: "logId and correctDishId are required" }, 400);
+  }
+
+  const log = await getLogById(env.DB, body.logId);
+  if (!log) return jsonResponse({ error: "log not found" }, 404);
+
+  const dish = await getDishById(env.DB, body.correctDishId);
+  if (!dish) return jsonResponse({ error: "correctDishId is not a real dish" }, 404);
+
+  const grams = log.resolved_grams;
+  const scale = grams / 100;
+  await correctLog(env.DB, log.id, {
+    dish_id: dish.dish_id,
+    // First correction: keep what the AI actually guessed. A later
+    // correction on an already-corrected row: don't overwrite that.
+    original_dish_id: log.original_dish_id ?? log.dish_id,
+    kcal: dish.per_100g_kcal * scale,
+    protein_g: dish.per_100g_protein_g * scale,
+    carbs_g: dish.per_100g_carbs_g * scale,
+    fat_g: dish.per_100g_fat_g * scale,
+    fiber_g: dish.per_100g_fiber_g * scale,
+    sugar_g: dish.per_100g_sugar_g * scale,
+    sodium_mg: dish.per_100g_sodium_mg * scale,
+  });
+
+  return jsonResponse({ ok: true, logId: log.id, correctedTo: dish.dish_id });
+}
+
 /** Streams a stored photo back for review -- gated the same as the other admin endpoints. */
 async function handleAdminPhoto(request: Request, env: Env): Promise<Response> {
   if (!isAdmin(request, env)) return jsonResponse({ error: "unauthorized" }, 401);
@@ -315,6 +357,9 @@ export default {
       }
       if (request.method === "GET" && url.pathname === "/admin/photo") {
         return await handleAdminPhoto(request, env);
+      }
+      if (request.method === "POST" && url.pathname === "/admin/correct") {
+        return await handleAdminCorrect(request, env);
       }
       return jsonResponse({ error: "not found" }, 404);
     } catch (err) {

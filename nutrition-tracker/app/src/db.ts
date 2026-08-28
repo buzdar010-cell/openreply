@@ -98,18 +98,65 @@ export interface RecentLogForReview {
   alt_candidates_json: string | null;
   photo_key: string | null;
   created_at: number;
+  original_dish_id: string | null;
+  corrected: number;
 }
 
 /** For QA: recent matched logs with the AI's decision context, newest first. */
 export async function getRecentLogsForReview(db: D1Database, limit = 100): Promise<RecentLogForReview[]> {
   const { results } = await db
     .prepare(
-      `SELECT id, device_id, dish_id, free_text_description, quantity, confidence, alt_candidates_json, photo_key, created_at
+      `SELECT id, device_id, dish_id, free_text_description, quantity, confidence, alt_candidates_json,
+         photo_key, created_at, original_dish_id, corrected
        FROM logs ORDER BY created_at DESC LIMIT ?`,
     )
     .bind(limit)
     .all<RecentLogForReview>();
   return results;
+}
+
+export interface LogRowForCorrection {
+  id: string;
+  dish_id: string;
+  resolved_grams: number;
+  original_dish_id: string | null;
+}
+
+export async function getLogById(db: D1Database, logId: string): Promise<LogRowForCorrection | null> {
+  const row = await db
+    .prepare(`SELECT id, dish_id, resolved_grams, original_dish_id FROM logs WHERE id = ?`)
+    .bind(logId)
+    .first<LogRowForCorrection>();
+  return row ?? null;
+}
+
+export interface LogCorrection {
+  dish_id: string;
+  original_dish_id: string;
+  kcal: number;
+  protein_g: number;
+  carbs_g: number;
+  fat_g: number;
+  fiber_g: number;
+  sugar_g: number;
+  sodium_mg: number;
+}
+
+/**
+ * Applies a correction to a log's matched dish. original_dish_id is passed
+ * in by the caller (not computed here) specifically so a *second* correction
+ * doesn't overwrite the record of what the AI actually guessed the first
+ * time -- see handleAdminCorrect in index.ts.
+ */
+export async function correctLog(db: D1Database, logId: string, c: LogCorrection): Promise<void> {
+  await db
+    .prepare(
+      `UPDATE logs SET dish_id = ?, original_dish_id = ?, corrected = 1,
+         kcal = ?, protein_g = ?, carbs_g = ?, fat_g = ?, fiber_g = ?, sugar_g = ?, sodium_mg = ?
+       WHERE id = ?`,
+    )
+    .bind(c.dish_id, c.original_dish_id, c.kcal, c.protein_g, c.carbs_g, c.fat_g, c.fiber_g, c.sugar_g, c.sodium_mg, logId)
+    .run();
 }
 
 export interface UnmatchedLogToInsert {
