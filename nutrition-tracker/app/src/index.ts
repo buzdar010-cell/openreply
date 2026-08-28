@@ -1,7 +1,16 @@
 import { buildSearchIndex, shortlist } from "./candidateSearch.ts";
 import { parseTextLog, parsePhotoLog } from "./parseLog.ts";
 import { acquireViaDurableObject } from "./rateLimiter.ts";
-import { loadAllDishRecords, getDishById, insertLog, getTotalsForRange } from "./db.ts";
+import {
+  loadAllDishRecords,
+  getDishById,
+  insertLog,
+  getTotalsForRange,
+  insertUnmatchedLog,
+  getUnmatchedLogs,
+  insertErrorLog,
+  getErrorLogs,
+} from "./db.ts";
 import { resolvePortion } from "./resolvePortion.ts";
 import { storePhoto } from "./r2.ts";
 import { GeminiRateLimiterDO } from "./rateLimiterDO.ts";
@@ -13,6 +22,7 @@ export interface Env {
   PHOTOS: R2Bucket;
   RATE_LIMITER: DurableObjectNamespace;
   GEMINI_API_KEY: string;
+  ADMIN_TOKEN: string;
 }
 
 function jsonResponse(data: unknown, status = 200): Response {
@@ -24,8 +34,8 @@ function jsonResponse(data: unknown, status = 200): Response {
 
 async function handleTextLog(request: Request, env: Env): Promise<Response> {
   const body = (await request.json()) as { deviceId?: string; text?: string; loggedAt?: number };
-  if (!body.deviceId || !body.text) {
-    return jsonResponse({ error: "deviceId and text are required" }, 400);
+  if (typeof body.deviceId !== "string" || !body.deviceId || typeof body.text !== "string" || !body.text) {
+    return jsonResponse({ error: "deviceId and text are required and must be strings" }, 400);
   }
 
   const allDishes = await loadAllDishRecords(env.DB);
@@ -45,6 +55,13 @@ async function handleTextLog(request: Request, env: Env): Promise<Response> {
   for (const entry of parsed) {
     if (entry.dish_id === "none_of_these") {
       results.push({ matched: false, description: entry.free_text_description });
+      await insertUnmatchedLog(env.DB, {
+        id: crypto.randomUUID(),
+        device_id: body.deviceId,
+        description: entry.free_text_description ?? body.text,
+        source: "text",
+        created_at: Math.floor(Date.now() / 1000),
+      });
       continue;
     }
     const dish = await getDishById(env.DB, entry.dish_id);
@@ -93,8 +110,18 @@ async function handlePhotoLog(request: Request, env: Env): Promise<Response> {
     caption?: string;
     loggedAt?: number;
   };
-  if (!body.deviceId || !body.imageBase64 || !body.mimeType) {
-    return jsonResponse({ error: "deviceId, imageBase64, and mimeType are required" }, 400);
+  const mimeType = body.mimeType;
+  if (
+    typeof body.deviceId !== "string" ||
+    !body.deviceId ||
+    typeof body.imageBase64 !== "string" ||
+    !body.imageBase64 ||
+    (mimeType !== "image/jpeg" && mimeType !== "image/png" && mimeType !== "image/webp")
+  ) {
+    return jsonResponse(
+      { error: "deviceId and imageBase64 must be strings; mimeType must be one of image/jpeg, image/png, image/webp" },
+      400,
+    );
   }
 
   const allDishes = await loadAllDishRecords(env.DB);
@@ -109,7 +136,7 @@ async function handlePhotoLog(request: Request, env: Env): Promise<Response> {
   const acquire = () => acquireViaDurableObject(env.RATE_LIMITER);
   const parsed = await parsePhotoLog(
     body.imageBase64,
-    body.mimeType,
+    mimeType,
     candidates,
     env.GEMINI_API_KEY,
     body.caption,
@@ -124,6 +151,13 @@ async function handlePhotoLog(request: Request, env: Env): Promise<Response> {
 
     if (entry.dish_id === "none_of_these") {
       results.push({ matched: false, description: entry.free_text_description });
+      await insertUnmatchedLog(env.DB, {
+        id: crypto.randomUUID(),
+        device_id: body.deviceId,
+        description: entry.free_text_description ?? body.caption ?? "(photo, no caption)",
+        source: "photo",
+        created_at: Math.floor(Date.now() / 1000),
+      });
       continue;
     }
     const dish = await getDishById(env.DB, entry.dish_id);
@@ -133,7 +167,7 @@ async function handlePhotoLog(request: Request, env: Env): Promise<Response> {
     }
 
     const imageBytes = Uint8Array.from(atob(body.imageBase64), (c) => c.charCodeAt(0)).buffer;
-    await storePhoto(env.PHOTOS, body.deviceId, logId, imageBytes, body.mimeType);
+    await storePhoto(env.PHOTOS, body.deviceId, logId, imageBytes, mimeType);
 
     const resolved = resolvePortion(entry, dish);
     await insertLog(env.DB, {
@@ -179,6 +213,26 @@ async function handleTotals(request: Request, env: Env): Promise<Response> {
   return jsonResponse(totals);
 }
 
+// Gate on a shared secret set via `wrangler secret put ADMIN_TOKEN` -- these
+// endpoints expose user descriptions and internal error text, so they can't
+// be left open.
+function isAdmin(request: Request, env: Env): boolean {
+  const token = request.headers.get("X-Admin-Token");
+  return token !== null && token === env.ADMIN_TOKEN;
+}
+
+async function handleAdminUnmatched(request: Request, env: Env): Promise<Response> {
+  if (!isAdmin(request, env)) return jsonResponse({ error: "unauthorized" }, 401);
+  const rows = await getUnmatchedLogs(env.DB);
+  return jsonResponse({ count: rows.length, rows });
+}
+
+async function handleAdminErrors(request: Request, env: Env): Promise<Response> {
+  if (!isAdmin(request, env)) return jsonResponse({ error: "unauthorized" }, 401);
+  const rows = await getErrorLogs(env.DB);
+  return jsonResponse({ count: rows.length, rows });
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
@@ -192,9 +246,27 @@ export default {
       if (request.method === "GET" && url.pathname === "/totals") {
         return await handleTotals(request, env);
       }
+      if (request.method === "GET" && url.pathname === "/admin/unmatched") {
+        return await handleAdminUnmatched(request, env);
+      }
+      if (request.method === "GET" && url.pathname === "/admin/errors") {
+        return await handleAdminErrors(request, env);
+      }
       return jsonResponse({ error: "not found" }, 404);
     } catch (err) {
-      return jsonResponse({ error: err instanceof Error ? err.message : String(err) }, 500);
+      const message = err instanceof Error ? err.message : String(err);
+      try {
+        await insertErrorLog(env.DB, {
+          id: crypto.randomUUID(),
+          endpoint: url.pathname,
+          device_id: null,
+          message,
+          created_at: Math.floor(Date.now() / 1000),
+        });
+      } catch {
+        // Don't let a failure to record the error mask the real error response.
+      }
+      return jsonResponse({ error: message }, 500);
     }
   },
 };

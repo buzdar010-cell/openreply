@@ -78,6 +78,68 @@ export async function insertLog(db: D1Database, log: LogRowToInsert): Promise<vo
     .run();
 }
 
+export interface UnmatchedLogToInsert {
+  id: string;
+  device_id: string;
+  description: string;
+  source: "text" | "photo";
+  created_at: number;
+}
+
+export async function insertUnmatchedLog(db: D1Database, log: UnmatchedLogToInsert): Promise<void> {
+  await db
+    .prepare(`INSERT INTO unmatched_logs (id, device_id, description, source, created_at) VALUES (?, ?, ?, ?, ?)`)
+    .bind(log.id, log.device_id, log.description, log.source, log.created_at)
+    .run();
+}
+
+export interface UnmatchedLogRow {
+  id: string;
+  device_id: string;
+  description: string;
+  source: string;
+  created_at: number;
+}
+
+export async function getUnmatchedLogs(db: D1Database, limit = 200): Promise<UnmatchedLogRow[]> {
+  const { results } = await db
+    .prepare(`SELECT id, device_id, description, source, created_at FROM unmatched_logs ORDER BY created_at DESC LIMIT ?`)
+    .bind(limit)
+    .all<UnmatchedLogRow>();
+  return results;
+}
+
+export interface ErrorLogToInsert {
+  id: string;
+  endpoint: string;
+  device_id: string | null;
+  message: string;
+  created_at: number;
+}
+
+export async function insertErrorLog(db: D1Database, log: ErrorLogToInsert): Promise<void> {
+  await db
+    .prepare(`INSERT INTO error_logs (id, endpoint, device_id, message, created_at) VALUES (?, ?, ?, ?, ?)`)
+    .bind(log.id, log.endpoint, log.device_id, log.message, log.created_at)
+    .run();
+}
+
+export interface ErrorLogRow {
+  id: string;
+  endpoint: string;
+  device_id: string | null;
+  message: string;
+  created_at: number;
+}
+
+export async function getErrorLogs(db: D1Database, limit = 200): Promise<ErrorLogRow[]> {
+  const { results } = await db
+    .prepare(`SELECT id, endpoint, device_id, message, created_at FROM error_logs ORDER BY created_at DESC LIMIT ?`)
+    .bind(limit)
+    .all<ErrorLogRow>();
+  return results;
+}
+
 export interface DailyTotals {
   kcal: number;
   protein_g: number;
