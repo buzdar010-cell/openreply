@@ -1,0 +1,59 @@
+@import 'tailwindcss';
+
+/*
+ * Palette rationale (see design research this was built from):
+ * Nutrition-tracking apps deliberately avoid the red/orange "stimulate
+ * appetite" palette that food-delivery apps use (warm colors measurably
+ * increase appetite) -- MyFitnessPal, Cronometer, and Lose It all lean
+ * blue/green instead, since the job here is mindful tracking and a sense
+ * of control, not impulse eating. Primary is a grounded green (trust,
+ * health, fresh) with a warm spice-gold accent used sparingly for CTAs --
+ * enough cultural warmth for a Pakistani-food app to not read as a
+ * generic clinical health app, without tipping into "order food now."
+ */
+@theme {
+  --font-sans: 'Nunito', system-ui, 'Segoe UI', Roboto, sans-serif;
+
+  --color-primary-50: #eef6f1;
+  --color-primary-100: #d3e8db;
+  --color-primary-300: #7fb597;
+  --color-primary-500: #2f6f4f;
+  --color-primary-600: #275d42;
+  --color-primary-700: #1f4a35;
+
+  --color-accent-100: #faecc8;
+  --color-accent-300: #edc06e;
+  --color-accent-500: #e0a63c;
+  --color-accent-600: #c08a28;
+
+  --color-cream-50: #fdfcf9;
+  --color-cream-100: #faf7f0;
+  --color-cream-200: #f2ead9;
+
+  --color-ink-900: #1f2a24;
+  --color-ink-600: #4b5a52;
+  --color-ink-400: #7c887f;
+
+  --color-danger-500: #c1462f;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  background: var(--color-cream-100);
+  color: var(--color-ink-900);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100svh;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-cream-50);
+}
