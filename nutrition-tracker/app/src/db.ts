@@ -439,6 +439,25 @@ export async function recordLogForStreak(db: D1Database, deviceId: string): Prom
     .run();
 }
 
+/**
+ * Toggling gamification is a standalone action -- it must never require a
+ * complete weight/height/age/etc. profile to exist first (that was exactly
+ * the bug reported: the toggle shared its save action with the full goals
+ * form, so flipping it with an incomplete profile silently didn't persist).
+ * Upserts a bare row if none exists yet, same pattern as recordLogForStreak.
+ */
+export async function setGamificationEnabled(db: D1Database, deviceId: string, enabled: boolean): Promise<void> {
+  const now = Math.floor(Date.now() / 1000);
+  await db
+    .prepare(
+      `INSERT INTO user_profiles (device_id, gamification_enabled, created_at, updated_at)
+       VALUES (?, ?, ?, ?)
+       ON CONFLICT(device_id) DO UPDATE SET gamification_enabled = excluded.gamification_enabled, updated_at = excluded.updated_at`,
+    )
+    .bind(deviceId, enabled ? 1 : 0, now, now)
+    .run();
+}
+
 export async function insertFeedback(
   db: D1Database,
   f: { id: string; device_id: string; message: string; context: string | null; created_at: number },

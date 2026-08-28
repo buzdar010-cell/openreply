@@ -19,6 +19,7 @@ import {
   userDeleteLog,
   getProfile,
   upsertProfile,
+  setGamificationEnabled,
   recordLogForStreak,
   insertFeedback,
   getFeedback,
@@ -320,6 +321,21 @@ async function handleGetProfile(request: Request, env: Env): Promise<Response> {
   return jsonResponse({ profile });
 }
 
+/**
+ * Standalone endpoint so toggling gamification never requires a complete
+ * profile to exist -- it previously shared a save action with the full
+ * goals form, which meant flipping it with an incomplete profile silently
+ * never persisted. This can never fail on missing weight/height/etc.
+ */
+async function handlePostGamification(request: Request, env: Env): Promise<Response> {
+  const body = (await request.json()) as { deviceId?: string; enabled?: boolean };
+  if (typeof body.deviceId !== "string" || !body.deviceId || typeof body.enabled !== "boolean") {
+    return jsonResponse({ error: "deviceId and enabled (boolean) are required" }, 400);
+  }
+  await setGamificationEnabled(env.DB, body.deviceId, body.enabled);
+  return jsonResponse({ ok: true });
+}
+
 /** Computes the real daily_calorie_target server-side -- the client sends raw inputs, never the target itself. */
 async function handlePostProfile(request: Request, env: Env): Promise<Response> {
   const body = (await request.json()) as {
@@ -490,6 +506,9 @@ export default {
       }
       if (request.method === "POST" && url.pathname === "/profile") {
         return await handlePostProfile(request, env);
+      }
+      if (request.method === "POST" && url.pathname === "/profile/gamification") {
+        return await handlePostGamification(request, env);
       }
       if (request.method === "POST" && url.pathname === "/feedback") {
         return await handlePostFeedback(request, env);
