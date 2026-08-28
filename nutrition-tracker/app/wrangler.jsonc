@@ -9,10 +9,7 @@
     {
       "binding": "DB",
       "database_name": "nutrition-tracker-db",
-      // Placeholder -- real value is assigned when `wrangler d1 create`
-      // is run against an actual Cloudflare account. Local dev/testing
-      // works fine without this being real.
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "4b7cdc79-e520-4c40-afbd-9b77c1190d09",
       "migrations_dir": "migrations"
     }
   ],
