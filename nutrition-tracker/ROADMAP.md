@@ -86,8 +86,13 @@ Fix before anyone outside trusted testers uses the app.
    target + exercise burned as the real budget; Logs shows food and
    exercise merged into one time-sorted feed, each independently
    deletable.
-7. **Macro targets on Home** — calories get a real target + progress bar;
-   protein/carbs/fat just show raw totals with nothing to compare against.
+7. ✅ **Macro targets on Home** — DONE. Protein/carbs/fat used to show raw
+   totals with nothing to compare against. Targets now computed at profile
+   save (protein by bodyweight at 1.6 g/kg, fat at 30% of calories, carbs
+   get the remainder -- the standard approach mainstream macro
+   calculators use) and stored alongside daily_calorie_target. Each
+   macro card on Home shows its own progress bar now, with a clean
+   "set a goal for a target" fallback before a profile exists.
 8. **Backdating a log** — the backend already supports a custom
    `loggedAt`, but the UI never exposes it. Can't record a forgotten meal
    against the right time (e.g. logging breakfast at dinner time).
