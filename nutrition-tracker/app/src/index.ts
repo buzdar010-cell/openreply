@@ -23,11 +23,26 @@ import {
   recordLogForStreak,
   insertFeedback,
   getFeedback,
+  getUserByEmail,
+  getUserById,
+  createUser,
+  markEmailVerified,
+  updatePassword,
+  createSession,
+  getUserIdFromSession,
+  deleteSession,
+  deleteAllSessionsForUser,
+  isTrustedDevice,
+  upsertTrustedDevice,
+  createOtpCode,
+  consumeOtpCode,
 } from "./db.ts";
 import { resolvePortion } from "./resolvePortion.ts";
 import { storePhoto, getPhoto } from "./r2.ts";
 import { GeminiRateLimiterDO } from "./rateLimiterDO.ts";
 import { calculateDailyCalorieTarget, isValidProfileInput } from "./goalCalc.ts";
+import { hashPassword, verifyPassword, generateSessionToken, generateDeviceToken, generateOtpCode, hashOtpCode } from "./auth.ts";
+import { sendOtpEmail } from "./email.ts";
 
 export { GeminiRateLimiterDO };
 
@@ -37,7 +52,11 @@ export interface Env {
   RATE_LIMITER: DurableObjectNamespace;
   GEMINI_API_KEY: string;
   ADMIN_TOKEN: string;
+  RESEND_API_KEY: string;
 }
+
+const SESSION_TTL_SECONDS = 90 * 86400; // 90 days -- casual habit tracker, not a banking app
+const OTP_TTL_SECONDS = 10 * 60;
 
 // The frontend (Cloudflare Pages, a different origin from this Worker's
 // own workers.dev domain) needs CORS to call this API from a browser at
@@ -46,7 +65,7 @@ export interface Env {
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, X-Admin-Token",
+  "Access-Control-Allow-Headers": "Content-Type, X-Admin-Token, Authorization",
 };
 
 function jsonResponse(data: unknown, status = 200): Response {
@@ -56,10 +75,197 @@ function jsonResponse(data: unknown, status = 200): Response {
   });
 }
 
+/** Resolves the bearer session token to a real, server-verified user id -- the only source of identity for every data endpoint below. */
+async function requireAuth(request: Request, env: Env): Promise<string | null> {
+  const header = request.headers.get("Authorization");
+  if (!header?.startsWith("Bearer ")) return null;
+  const token = header.slice("Bearer ".length);
+  return getUserIdFromSession(env.DB, token);
+}
+
+function isValidEmail(email: unknown): email is string {
+  return typeof email === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function isValidPassword(password: unknown): password is string {
+  return typeof password === "string" && password.length >= 8;
+}
+
+// ---- Auth: signup, email verification, login, step-up verification, logout ----
+
+async function handleSignup(request: Request, env: Env): Promise<Response> {
+  const body = (await request.json()) as { email?: string; password?: string };
+  if (!isValidEmail(body.email) || !isValidPassword(body.password)) {
+    return jsonResponse({ error: "a valid email and a password of at least 8 characters are required" }, 400);
+  }
+  const email = body.email.toLowerCase();
+  const existing = await getUserByEmail(env.DB, email);
+  const { hash, salt } = await hashPassword(body.password);
+
+  if (existing) {
+    if (existing.email_verified) {
+      return jsonResponse({ error: "an account with this email already exists -- try logging in instead" }, 409);
+    }
+    // Started signup before but never verified -- update the password (in
+    // case of a typo the first time) and send a fresh code rather than
+    // erroring on an account nobody ever actually finished creating.
+    await updatePassword(env.DB, existing.id, hash, salt);
+  } else {
+    await createUser(env.DB, { id: crypto.randomUUID(), email, password_hash: hash, password_salt: salt });
+  }
+
+  const code = generateOtpCode();
+  await createOtpCode(env.DB, {
+    id: crypto.randomUUID(),
+    email,
+    code_hash: await hashOtpCode(code),
+    purpose: "signup",
+    ttlSeconds: OTP_TTL_SECONDS,
+  });
+  await sendOtpEmail(env.RESEND_API_KEY, email, code, "signup");
+  return jsonResponse({ ok: true });
+}
+
+async function handleVerifySignup(request: Request, env: Env): Promise<Response> {
+  const body = (await request.json()) as { email?: string; code?: string };
+  if (!isValidEmail(body.email) || typeof body.code !== "string") {
+    return jsonResponse({ error: "email and code are required" }, 400);
+  }
+  const email = body.email.toLowerCase();
+  const valid = await consumeOtpCode(env.DB, email, await hashOtpCode(body.code), "signup");
+  if (!valid) return jsonResponse({ error: "that code is invalid or has expired" }, 400);
+
+  const user = await getUserByEmail(env.DB, email);
+  if (!user) return jsonResponse({ error: "account not found" }, 404);
+  await markEmailVerified(env.DB, user.id);
+
+  const sessionToken = generateSessionToken();
+  await createSession(env.DB, sessionToken, user.id, SESSION_TTL_SECONDS);
+  const deviceToken = generateDeviceToken();
+  const country = (request as unknown as { cf?: { country?: string } }).cf?.country ?? null;
+  await upsertTrustedDevice(env.DB, deviceToken, user.id, country);
+
+  return jsonResponse({ sessionToken, deviceToken });
+}
+
+async function handleLogin(request: Request, env: Env): Promise<Response> {
+  const body = (await request.json()) as { email?: string; password?: string; deviceToken?: string };
+  if (!isValidEmail(body.email) || typeof body.password !== "string") {
+    return jsonResponse({ error: "email and password are required" }, 400);
+  }
+  const email = body.email.toLowerCase();
+  const user = await getUserByEmail(env.DB, email);
+  // Same generic error whether the email doesn't exist or the password is
+  // wrong -- never reveal which one it was.
+  const invalidCreds = () => jsonResponse({ error: "invalid email or password" }, 401);
+  if (!user) return invalidCreds();
+  const passwordOk = await verifyPassword(body.password, user.password_hash, user.password_salt);
+  if (!passwordOk) return invalidCreds();
+
+  const country = (request as unknown as { cf?: { country?: string } }).cf?.country ?? null;
+  const trusted =
+    typeof body.deviceToken === "string" && (await isTrustedDevice(env.DB, body.deviceToken, user.id, country));
+
+  if (trusted) {
+    await upsertTrustedDevice(env.DB, body.deviceToken as string, user.id, country);
+    const sessionToken = generateSessionToken();
+    await createSession(env.DB, sessionToken, user.id, SESSION_TTL_SECONDS);
+    return jsonResponse({ status: "logged_in", sessionToken, deviceToken: body.deviceToken });
+  }
+
+  // New device or a location change from what we've seen for this user --
+  // step-up verification before completing the login.
+  const code = generateOtpCode();
+  await createOtpCode(env.DB, {
+    id: crypto.randomUUID(),
+    email,
+    code_hash: await hashOtpCode(code),
+    purpose: "login",
+    ttlSeconds: OTP_TTL_SECONDS,
+  });
+  await sendOtpEmail(env.RESEND_API_KEY, email, code, "login");
+  return jsonResponse({ status: "verification_required" });
+}
+
+async function handleVerifyLogin(request: Request, env: Env): Promise<Response> {
+  const body = (await request.json()) as { email?: string; code?: string };
+  if (!isValidEmail(body.email) || typeof body.code !== "string") {
+    return jsonResponse({ error: "email and code are required" }, 400);
+  }
+  const email = body.email.toLowerCase();
+  const valid = await consumeOtpCode(env.DB, email, await hashOtpCode(body.code), "login");
+  if (!valid) return jsonResponse({ error: "that code is invalid or has expired" }, 400);
+
+  const user = await getUserByEmail(env.DB, email);
+  if (!user) return jsonResponse({ error: "account not found" }, 404);
+
+  const sessionToken = generateSessionToken();
+  await createSession(env.DB, sessionToken, user.id, SESSION_TTL_SECONDS);
+  const deviceToken = generateDeviceToken();
+  const country = (request as unknown as { cf?: { country?: string } }).cf?.country ?? null;
+  await upsertTrustedDevice(env.DB, deviceToken, user.id, country);
+
+  return jsonResponse({ sessionToken, deviceToken });
+}
+
+async function handleForgotPassword(request: Request, env: Env): Promise<Response> {
+  const body = (await request.json()) as { email?: string };
+  if (!isValidEmail(body.email)) return jsonResponse({ error: "a valid email is required" }, 400);
+  const email = body.email.toLowerCase();
+  const user = await getUserByEmail(env.DB, email);
+  // Always return ok, whether or not the account exists -- never let this
+  // endpoint be used to check which emails are registered.
+  if (user) {
+    const code = generateOtpCode();
+    await createOtpCode(env.DB, {
+      id: crypto.randomUUID(),
+      email,
+      code_hash: await hashOtpCode(code),
+      purpose: "reset",
+      ttlSeconds: OTP_TTL_SECONDS,
+    });
+    await sendOtpEmail(env.RESEND_API_KEY, email, code, "reset");
+  }
+  return jsonResponse({ ok: true });
+}
+
+async function handleResetPassword(request: Request, env: Env): Promise<Response> {
+  const body = (await request.json()) as { email?: string; code?: string; newPassword?: string };
+  if (!isValidEmail(body.email) || typeof body.code !== "string" || !isValidPassword(body.newPassword)) {
+    return jsonResponse({ error: "email, code, and a new password of at least 8 characters are required" }, 400);
+  }
+  const email = body.email.toLowerCase();
+  const valid = await consumeOtpCode(env.DB, email, await hashOtpCode(body.code), "reset");
+  if (!valid) return jsonResponse({ error: "that code is invalid or has expired" }, 400);
+
+  const user = await getUserByEmail(env.DB, email);
+  if (!user) return jsonResponse({ error: "account not found" }, 404);
+
+  const { hash, salt } = await hashPassword(body.newPassword);
+  await updatePassword(env.DB, user.id, hash, salt);
+  // Force re-login everywhere, not just on the device that reset it --
+  // standard practice after a password change.
+  await deleteAllSessionsForUser(env.DB, user.id);
+  return jsonResponse({ ok: true });
+}
+
+async function handleLogout(request: Request, env: Env): Promise<Response> {
+  const header = request.headers.get("Authorization");
+  if (header?.startsWith("Bearer ")) {
+    await deleteSession(env.DB, header.slice("Bearer ".length));
+  }
+  return jsonResponse({ ok: true });
+}
+
+// ---- Food logging and the rest of the app, now identity-checked via requireAuth ----
+
 async function handleTextLog(request: Request, env: Env): Promise<Response> {
-  const body = (await request.json()) as { deviceId?: string; text?: string; loggedAt?: number };
-  if (typeof body.deviceId !== "string" || !body.deviceId || typeof body.text !== "string" || !body.text) {
-    return jsonResponse({ error: "deviceId and text are required and must be strings" }, 400);
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+
+  const body = (await request.json()) as { text?: string; loggedAt?: number };
+  if (typeof body.text !== "string" || !body.text) {
+    return jsonResponse({ error: "text is required and must be a string" }, 400);
   }
 
   const allDishes = await loadAllDishRecords(env.DB);
@@ -81,7 +287,7 @@ async function handleTextLog(request: Request, env: Env): Promise<Response> {
       results.push({ matched: false, description: entry.free_text_description });
       await insertUnmatchedLog(env.DB, {
         id: crypto.randomUUID(),
-        device_id: body.deviceId,
+        device_id: userId,
         description: entry.free_text_description ?? body.text,
         source: "text",
         created_at: Math.floor(Date.now() / 1000),
@@ -98,7 +304,7 @@ async function handleTextLog(request: Request, env: Env): Promise<Response> {
     const logId = crypto.randomUUID();
     await insertLog(env.DB, {
       id: logId,
-      device_id: body.deviceId,
+      device_id: userId,
       dish_id: entry.dish_id,
       free_text_description: entry.free_text_description,
       quantity: entry.quantity,
@@ -116,7 +322,7 @@ async function handleTextLog(request: Request, env: Env): Promise<Response> {
       alt_candidates_json: JSON.stringify(entry.alt_candidates),
       photo_key: null,
     });
-    await recordLogForStreak(env.DB, body.deviceId);
+    await recordLogForStreak(env.DB, userId);
     results.push({
       matched: true,
       logId,
@@ -132,8 +338,10 @@ async function handleTextLog(request: Request, env: Env): Promise<Response> {
 }
 
 async function handlePhotoLog(request: Request, env: Env): Promise<Response> {
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+
   const body = (await request.json()) as {
-    deviceId?: string;
     imageBase64?: string;
     mimeType?: "image/jpeg" | "image/png" | "image/webp";
     caption?: string;
@@ -141,14 +349,12 @@ async function handlePhotoLog(request: Request, env: Env): Promise<Response> {
   };
   const mimeType = body.mimeType;
   if (
-    typeof body.deviceId !== "string" ||
-    !body.deviceId ||
     typeof body.imageBase64 !== "string" ||
     !body.imageBase64 ||
     (mimeType !== "image/jpeg" && mimeType !== "image/png" && mimeType !== "image/webp")
   ) {
     return jsonResponse(
-      { error: "deviceId and imageBase64 must be strings; mimeType must be one of image/jpeg, image/png, image/webp" },
+      { error: "imageBase64 must be a string; mimeType must be one of image/jpeg, image/png, image/webp" },
       400,
     );
   }
@@ -181,14 +387,14 @@ async function handlePhotoLog(request: Request, env: Env): Promise<Response> {
   // actual photo it was looking at.
   const imageBytes = Uint8Array.from(atob(body.imageBase64), (c) => c.charCodeAt(0)).buffer;
   const photoLogId = crypto.randomUUID();
-  const photoKey = await storePhoto(env.PHOTOS, body.deviceId, photoLogId, imageBytes, mimeType);
+  const photoKey = await storePhoto(env.PHOTOS, userId, photoLogId, imageBytes, mimeType);
 
   for (const entry of parsed) {
     if (entry.dish_id === "none_of_these") {
       results.push({ matched: false, description: entry.free_text_description });
       await insertUnmatchedLog(env.DB, {
         id: crypto.randomUUID(),
-        device_id: body.deviceId,
+        device_id: userId,
         description: entry.free_text_description ?? body.caption ?? "(photo, no caption)",
         source: "photo",
         created_at: Math.floor(Date.now() / 1000),
@@ -206,7 +412,7 @@ async function handlePhotoLog(request: Request, env: Env): Promise<Response> {
     const logId = crypto.randomUUID();
     await insertLog(env.DB, {
       id: logId,
-      device_id: body.deviceId,
+      device_id: userId,
       dish_id: entry.dish_id,
       free_text_description: entry.free_text_description,
       quantity: entry.quantity,
@@ -224,7 +430,7 @@ async function handlePhotoLog(request: Request, env: Env): Promise<Response> {
       alt_candidates_json: JSON.stringify(entry.alt_candidates),
       photo_key: photoKey,
     });
-    await recordLogForStreak(env.DB, body.deviceId);
+    await recordLogForStreak(env.DB, userId);
     results.push({
       matched: true,
       logId,
@@ -240,50 +446,48 @@ async function handlePhotoLog(request: Request, env: Env): Promise<Response> {
 }
 
 async function handleTotals(request: Request, env: Env): Promise<Response> {
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
   const url = new URL(request.url);
-  const deviceId = url.searchParams.get("deviceId");
   const startUnix = url.searchParams.get("start");
   const endUnix = url.searchParams.get("end");
-  if (!deviceId || !startUnix || !endUnix) {
-    return jsonResponse({ error: "deviceId, start, and end (unix seconds) are required" }, 400);
+  if (!startUnix || !endUnix) {
+    return jsonResponse({ error: "start and end (unix seconds) are required" }, 400);
   }
-  const totals = await getTotalsForRange(env.DB, deviceId, Number(startUnix), Number(endUnix));
+  const totals = await getTotalsForRange(env.DB, userId, Number(startUnix), Number(endUnix));
   return jsonResponse(totals);
 }
 
 /** Individual logged items in a range, e.g. for a day-grouped history feed -- /totals only gives the sum. */
 async function handleGetLogs(request: Request, env: Env): Promise<Response> {
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
   const url = new URL(request.url);
-  const deviceId = url.searchParams.get("deviceId");
   const startUnix = url.searchParams.get("start");
   const endUnix = url.searchParams.get("end");
-  if (!deviceId || !startUnix || !endUnix) {
-    return jsonResponse({ error: "deviceId, start, and end (unix seconds) are required" }, 400);
+  if (!startUnix || !endUnix) {
+    return jsonResponse({ error: "start and end (unix seconds) are required" }, 400);
   }
-  const logs = await getLogsForRange(env.DB, deviceId, Number(startUnix), Number(endUnix));
+  const logs = await getLogsForRange(env.DB, userId, Number(startUnix), Number(endUnix));
   return jsonResponse({ logs });
 }
 
 /**
  * User-facing edit -- distinct from /admin/correct. Ownership-checked via
- * device_id (the only identity this app has) so one device can't edit
- * another's logs. Recalculates nutrition from the portion size that was
- * already resolved, same reasoning as the admin correction endpoint.
+ * the authenticated user id so one account can't edit another's logs.
+ * Recalculates nutrition from the portion size that was already resolved,
+ * same reasoning as the admin correction endpoint.
  */
 async function handleUserEditLog(request: Request, env: Env): Promise<Response> {
-  const body = (await request.json()) as { deviceId?: string; logId?: string; correctDishId?: string };
-  if (
-    typeof body.deviceId !== "string" ||
-    !body.deviceId ||
-    typeof body.logId !== "string" ||
-    !body.logId ||
-    typeof body.correctDishId !== "string" ||
-    !body.correctDishId
-  ) {
-    return jsonResponse({ error: "deviceId, logId, and correctDishId are required" }, 400);
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+
+  const body = (await request.json()) as { logId?: string; correctDishId?: string };
+  if (typeof body.logId !== "string" || !body.logId || typeof body.correctDishId !== "string" || !body.correctDishId) {
+    return jsonResponse({ error: "logId and correctDishId are required" }, 400);
   }
 
-  const log = await getLogOwnedByDevice(env.DB, body.deviceId, body.logId);
+  const log = await getLogOwnedByDevice(env.DB, userId, body.logId);
   if (!log) return jsonResponse({ error: "log not found" }, 404);
 
   const dish = await getDishById(env.DB, body.correctDishId);
@@ -304,20 +508,23 @@ async function handleUserEditLog(request: Request, env: Env): Promise<Response> 
 }
 
 async function handleUserDeleteLog(request: Request, env: Env): Promise<Response> {
-  const body = (await request.json()) as { deviceId?: string; logId?: string };
-  if (typeof body.deviceId !== "string" || !body.deviceId || typeof body.logId !== "string" || !body.logId) {
-    return jsonResponse({ error: "deviceId and logId are required" }, 400);
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+
+  const body = (await request.json()) as { logId?: string };
+  if (typeof body.logId !== "string" || !body.logId) {
+    return jsonResponse({ error: "logId is required" }, 400);
   }
-  const log = await getLogOwnedByDevice(env.DB, body.deviceId, body.logId);
+  const log = await getLogOwnedByDevice(env.DB, userId, body.logId);
   if (!log) return jsonResponse({ error: "log not found" }, 404);
   await userDeleteLog(env.DB, log.id);
   return jsonResponse({ ok: true });
 }
 
 async function handleGetProfile(request: Request, env: Env): Promise<Response> {
-  const deviceId = new URL(request.url).searchParams.get("deviceId");
-  if (!deviceId) return jsonResponse({ error: "deviceId is required" }, 400);
-  const profile = await getProfile(env.DB, deviceId);
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+  const profile = await getProfile(env.DB, userId);
   return jsonResponse({ profile });
 }
 
@@ -328,29 +535,28 @@ async function handleGetProfile(request: Request, env: Env): Promise<Response> {
  * never persisted. This can never fail on missing weight/height/etc.
  */
 async function handlePostGamification(request: Request, env: Env): Promise<Response> {
-  const body = (await request.json()) as { deviceId?: string; enabled?: boolean };
-  if (typeof body.deviceId !== "string" || !body.deviceId || typeof body.enabled !== "boolean") {
-    return jsonResponse({ error: "deviceId and enabled (boolean) are required" }, 400);
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+  const body = (await request.json()) as { enabled?: boolean };
+  if (typeof body.enabled !== "boolean") {
+    return jsonResponse({ error: "enabled (boolean) is required" }, 400);
   }
-  await setGamificationEnabled(env.DB, body.deviceId, body.enabled);
+  await setGamificationEnabled(env.DB, userId, body.enabled);
   return jsonResponse({ ok: true });
 }
 
 /** Computes the real daily_calorie_target server-side -- the client sends raw inputs, never the target itself. */
 async function handlePostProfile(request: Request, env: Env): Promise<Response> {
-  const body = (await request.json()) as {
-    deviceId?: string;
-    gamification_enabled?: boolean;
-  } & Record<string, unknown>;
-  if (typeof body.deviceId !== "string" || !body.deviceId) {
-    return jsonResponse({ error: "deviceId is required" }, 400);
-  }
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+
+  const body = (await request.json()) as { gamification_enabled?: boolean } & Record<string, unknown>;
   if (!isValidProfileInput(body)) {
     return jsonResponse({ error: "weight_kg, height_cm, age, gender, activity_level, and goal are required and must be valid" }, 400);
   }
   const daily_calorie_target = calculateDailyCalorieTarget(body);
   await upsertProfile(env.DB, {
-    device_id: body.deviceId,
+    device_id: userId,
     weight_kg: body.weight_kg,
     height_cm: body.height_cm,
     age: body.age,
@@ -364,13 +570,16 @@ async function handlePostProfile(request: Request, env: Env): Promise<Response> 
 }
 
 async function handlePostFeedback(request: Request, env: Env): Promise<Response> {
-  const body = (await request.json()) as { deviceId?: string; message?: string; context?: string };
-  if (typeof body.deviceId !== "string" || !body.deviceId || typeof body.message !== "string" || !body.message.trim()) {
-    return jsonResponse({ error: "deviceId and message are required" }, 400);
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+
+  const body = (await request.json()) as { message?: string; context?: string };
+  if (typeof body.message !== "string" || !body.message.trim()) {
+    return jsonResponse({ error: "message is required" }, 400);
   }
   await insertFeedback(env.DB, {
     id: crypto.randomUUID(),
-    device_id: body.deviceId,
+    device_id: userId,
     message: body.message.trim(),
     context: typeof body.context === "string" ? body.context : null,
     created_at: Math.floor(Date.now() / 1000),
@@ -483,6 +692,27 @@ export default {
       return new Response(null, { status: 204, headers: CORS_HEADERS });
     }
     try {
+      if (request.method === "POST" && url.pathname === "/auth/signup") {
+        return await handleSignup(request, env);
+      }
+      if (request.method === "POST" && url.pathname === "/auth/verify-signup") {
+        return await handleVerifySignup(request, env);
+      }
+      if (request.method === "POST" && url.pathname === "/auth/login") {
+        return await handleLogin(request, env);
+      }
+      if (request.method === "POST" && url.pathname === "/auth/verify-login") {
+        return await handleVerifyLogin(request, env);
+      }
+      if (request.method === "POST" && url.pathname === "/auth/forgot-password") {
+        return await handleForgotPassword(request, env);
+      }
+      if (request.method === "POST" && url.pathname === "/auth/reset-password") {
+        return await handleResetPassword(request, env);
+      }
+      if (request.method === "POST" && url.pathname === "/auth/logout") {
+        return await handleLogout(request, env);
+      }
       if (request.method === "POST" && url.pathname === "/log/text") {
         return await handleTextLog(request, env);
       }

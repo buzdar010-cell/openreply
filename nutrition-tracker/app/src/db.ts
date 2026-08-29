@@ -475,3 +475,124 @@ export async function getFeedback(db: D1Database, limit = 200) {
     .all();
   return results;
 }
+
+// ---- Accounts: users, sessions, trusted devices, OTP codes ----
+
+export interface UserRow {
+  id: string;
+  email: string;
+  password_hash: string;
+  password_salt: string;
+  email_verified: number;
+  created_at: number;
+}
+
+export async function getUserByEmail(db: D1Database, email: string): Promise<UserRow | null> {
+  const row = await db.prepare(`SELECT * FROM users WHERE email = ?`).bind(email.toLowerCase()).first<UserRow>();
+  return row ?? null;
+}
+
+export async function getUserById(db: D1Database, id: string): Promise<UserRow | null> {
+  const row = await db.prepare(`SELECT * FROM users WHERE id = ?`).bind(id).first<UserRow>();
+  return row ?? null;
+}
+
+export async function createUser(
+  db: D1Database,
+  u: { id: string; email: string; password_hash: string; password_salt: string },
+): Promise<void> {
+  await db
+    .prepare(`INSERT INTO users (id, email, password_hash, password_salt, email_verified, created_at) VALUES (?, ?, ?, ?, 0, ?)`)
+    .bind(u.id, u.email.toLowerCase(), u.password_hash, u.password_salt, Math.floor(Date.now() / 1000))
+    .run();
+}
+
+export async function markEmailVerified(db: D1Database, userId: string): Promise<void> {
+  await db.prepare(`UPDATE users SET email_verified = 1 WHERE id = ?`).bind(userId).run();
+}
+
+export async function updatePassword(db: D1Database, userId: string, hash: string, salt: string): Promise<void> {
+  await db.prepare(`UPDATE users SET password_hash = ?, password_salt = ? WHERE id = ?`).bind(hash, salt, userId).run();
+}
+
+export async function createSession(db: D1Database, token: string, userId: string, ttlSeconds: number): Promise<void> {
+  const now = Math.floor(Date.now() / 1000);
+  await db
+    .prepare(`INSERT INTO sessions (token, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)`)
+    .bind(token, userId, now, now + ttlSeconds)
+    .run();
+}
+
+/** Resolves a bearer token to the authenticated user id, or null if missing/expired -- the one source of truth for "who is calling." */
+export async function getUserIdFromSession(db: D1Database, token: string): Promise<string | null> {
+  const now = Math.floor(Date.now() / 1000);
+  const row = await db
+    .prepare(`SELECT user_id FROM sessions WHERE token = ? AND expires_at > ?`)
+    .bind(token, now)
+    .first<{ user_id: string }>();
+  return row?.user_id ?? null;
+}
+
+export async function deleteSession(db: D1Database, token: string): Promise<void> {
+  await db.prepare(`DELETE FROM sessions WHERE token = ?`).bind(token).run();
+}
+
+/** Called on password reset -- forces re-login everywhere, not just on the device that reset it. */
+export async function deleteAllSessionsForUser(db: D1Database, userId: string): Promise<void> {
+  await db.prepare(`DELETE FROM sessions WHERE user_id = ?`).bind(userId).run();
+}
+
+export async function isTrustedDevice(db: D1Database, deviceToken: string, userId: string, country: string | null): Promise<boolean> {
+  const row = await db
+    .prepare(`SELECT country FROM trusted_devices WHERE device_token = ? AND user_id = ?`)
+    .bind(deviceToken, userId)
+    .first<{ country: string | null }>();
+  if (!row) return false;
+  // Missing country on either side (Cloudflare didn't supply one) is treated as a match rather than
+  // forcing step-up verification on every request purely from an absent signal.
+  if (row.country && country && row.country !== country) return false;
+  return true;
+}
+
+export async function upsertTrustedDevice(db: D1Database, deviceToken: string, userId: string, country: string | null): Promise<void> {
+  const now = Math.floor(Date.now() / 1000);
+  await db
+    .prepare(
+      `INSERT INTO trusted_devices (device_token, user_id, country, created_at, last_used_at)
+       VALUES (?, ?, ?, ?, ?)
+       ON CONFLICT(device_token) DO UPDATE SET country = excluded.country, last_used_at = excluded.last_used_at`,
+    )
+    .bind(deviceToken, userId, country, now, now)
+    .run();
+}
+
+export async function createOtpCode(
+  db: D1Database,
+  o: { id: string; email: string; code_hash: string; purpose: "signup" | "login" | "reset"; ttlSeconds: number },
+): Promise<void> {
+  const now = Math.floor(Date.now() / 1000);
+  await db
+    .prepare(`INSERT INTO otp_codes (id, email, code_hash, purpose, expires_at, used, created_at) VALUES (?, ?, ?, ?, ?, 0, ?)`)
+    .bind(o.id, o.email.toLowerCase(), o.code_hash, o.purpose, now + o.ttlSeconds, now)
+    .run();
+}
+
+/** Finds the newest unused, unexpired code for this email+purpose+hash and marks it used -- atomically enough for this scale (D1 is single-writer per row). */
+export async function consumeOtpCode(
+  db: D1Database,
+  email: string,
+  codeHash: string,
+  purpose: "signup" | "login" | "reset",
+): Promise<boolean> {
+  const now = Math.floor(Date.now() / 1000);
+  const row = await db
+    .prepare(
+      `SELECT id FROM otp_codes WHERE email = ? AND purpose = ? AND code_hash = ? AND used = 0 AND expires_at > ?
+       ORDER BY created_at DESC LIMIT 1`,
+    )
+    .bind(email.toLowerCase(), purpose, codeHash, now)
+    .first<{ id: string }>();
+  if (!row) return false;
+  await db.prepare(`UPDATE otp_codes SET used = 1 WHERE id = ?`).bind(row.id).run();
+  return true;
+}
