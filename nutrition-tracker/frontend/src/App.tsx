@@ -28,6 +28,11 @@ export default function App() {
   });
   const [refreshKey, setRefreshKey] = useState(0);
   const [showAddSheet, setShowAddSheet] = useState(false);
+  // Bumped every time Settings is tapped, even if it's already the active
+  // tab -- tapping it while already active doesn't remount SettingsScreen
+  // (the tab value doesn't change), so nothing else would reset a sub-screen
+  // back to the main list.
+  const [settingsResetSignal, setSettingsResetSignal] = useState(0);
 
   useEffect(() => {
     function handleUnauthorized() {
@@ -38,6 +43,7 @@ export default function App() {
   }, []);
 
   function changeTab(t: Tab) {
+    if (t === 'settings') setSettingsResetSignal((s) => s + 1);
     setTab(t);
     localStorage.setItem(TAB_KEY, t);
   }
@@ -95,7 +101,7 @@ export default function App() {
       <ToastContainer />
       {tab === 'home' && <Home refreshKey={refreshKey} />}
       {tab === 'logs' && <LogsScreen refreshKey={refreshKey} />}
-      {tab === 'settings' && <SettingsScreen />}
+      {tab === 'settings' && <SettingsScreen resetSignal={settingsResetSignal} />}
 
       <FloatingAddButton onClick={() => setShowAddSheet(true)} />
       <BottomNav tab={tab} onChange={changeTab} />

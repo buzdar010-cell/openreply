@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { getProfile, saveProfile, setGamification as setGamificationApi, submitFeedback, logout, getLogs, type Gender, type ActivityLevel } from '../lib/api';
 import { GoalsStep, isGoalsDataValid, GOAL_OPTIONS, type GoalsData } from './onboarding/GoalsStep';
 import { ThemePicker } from './ThemePicker';
@@ -52,8 +52,57 @@ function SettingsRow({
   );
 }
 
-export function SettingsScreen() {
+export function SettingsScreen({ resetSignal }: { resetSignal: number }) {
   const [view, setView] = useState<View>('main');
+  // Kept in sync with `view` after every render (refs don't trigger
+  // re-renders) so the popstate cleanup below always sees the latest
+  // value, not the one from whenever its effect first ran.
+  const viewRef = useRef(view);
+  useEffect(() => {
+    viewRef.current = view;
+  }, [view]);
+
+  // A sub-screen push a real history entry, so the browser/iOS-native
+  // swipe-back gesture (which operates on browser history, not React
+  // state) actually has something to go back to -- without this, the app
+  // never touched window.history, so there was nothing for the gesture
+  // to act on and only the in-app back button worked.
+  useEffect(() => {
+    function handlePopState(e: PopStateEvent) {
+      setView((e.state as { settingsView?: View } | null)?.settingsView ?? 'main');
+    }
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      // Leaving Settings (switching tabs) while a sub-screen pushed an
+      // entry -- pop it now so it doesn't sit there as a stale forward
+      // step the next swipe-back would land on unexpectedly.
+      if (viewRef.current !== 'main') window.history.back();
+    };
+  }, []);
+
+  // Tapping the Settings tab again while already on it doesn't remount
+  // this component (the tab doesn't change), so nothing would otherwise
+  // reset a sub-screen back to the main list. Routes through the same
+  // history.back() as the in-app back button so browser history and
+  // `view` never drift apart.
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    if (viewRef.current !== 'main') window.history.back();
+  }, [resetSignal]);
+
+  function navigateToView(v: View) {
+    window.history.pushState({ settingsView: v }, '');
+    setView(v);
+  }
+
+  function goBack() {
+    window.history.back();
+  }
 
   const [goals, setGoals] = useState<GoalsData>(EMPTY_GOALS);
   const [savedGoals, setSavedGoals] = useState<GoalsData>(EMPTY_GOALS);
@@ -107,7 +156,7 @@ export function SettingsScreen() {
       setSavedGoals(goals);
       setDailyTarget(result.daily_calorie_target);
       showToast('Profile updated');
-      setView('main');
+      goBack();
     } catch {
       showToast('Failed to save — try again', 'error');
     } finally {
@@ -133,7 +182,7 @@ export function SettingsScreen() {
       await submitFeedback(feedback.trim(), 'settings');
       setFeedback('');
       showToast('Feedback sent — thank you!');
-      setView('main');
+      goBack();
     } catch {
       showToast('Failed to send — try again', 'error');
     } finally {
@@ -187,7 +236,7 @@ export function SettingsScreen() {
 
   if (view === 'goals') {
     return (
-      <SettingsSubScreen title="Profile & Goals" onBack={() => setView('main')}>
+      <SettingsSubScreen title="Profile & Goals" onBack={goBack}>
         <GoalsStep data={goals} onChange={setGoals} showHeading={false} />
         <button
           onClick={handleSaveGoals}
@@ -202,7 +251,7 @@ export function SettingsScreen() {
 
   if (view === 'feedback') {
     return (
-      <SettingsSubScreen title="Send Feedback" onBack={() => setView('main')}>
+      <SettingsSubScreen title="Send Feedback" onBack={goBack}>
         <p className="text-ink-600 mb-3 text-sm">Something wrong, or an idea for the app? Let us know.</p>
         <textarea
           value={feedback}
@@ -226,7 +275,7 @@ export function SettingsScreen() {
     return (
       <SettingsSubScreen
         title="Streaks & Levels"
-        onBack={() => setView('main')}
+        onBack={goBack}
         headerAction={<ToggleSwitch enabled={gamification} onChange={handleGamificationToggle} />}
       >
         <div className="text-center">
@@ -254,7 +303,7 @@ export function SettingsScreen() {
           icon="🎯"
           label="Profile & Goals"
           value={dailyTarget ? `${dailyTarget} kcal/day • ${goalLabel}` : 'Not set up yet'}
-          onClick={() => setView('goals')}
+          onClick={() => navigateToView('goals')}
         />
       </SettingsCard>
 
@@ -273,13 +322,13 @@ export function SettingsScreen() {
           icon="🔥"
           label="Gamification"
           value={gamification ? 'On' : 'Off'}
-          onClick={() => setView('gamification')}
+          onClick={() => navigateToView('gamification')}
           trailing={<ToggleSwitch enabled={gamification} onChange={handleGamificationToggle} />}
         />
       </SettingsCard>
 
       <SettingsCard>
-        <SettingsRow icon="💬" label="Send feedback" onClick={() => setView('feedback')} />
+        <SettingsRow icon="💬" label="Send feedback" onClick={() => navigateToView('feedback')} />
       </SettingsCard>
 
       <SettingsCard>
