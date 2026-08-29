@@ -104,11 +104,19 @@ Fix before anyone outside trusted testers uses the app.
    (sodium/protein trends, most-logged dishes, days since exercise, goal),
    seeded by day so picks rotate without needing to persist state. Home
    gained a "Worth a read" articles section with a full-screen reader.
-10. **Weight-trend tracking + adaptive coaching** — let people log their
-    weight daily, smooth it (e.g. 7-day moving average, not reactive to
-    single-day swings), and compare the trend against their goal — keep
-    the calorie target if it's working, surface a tip/suggest a
-    recalculation if it isn't.
+10. ✅ **Weight-trend tracking + adaptive coaching** — DONE. New "Weight"
+    mode in the log sheet; Home shows a trend card (7-day rolling average
+    vs. the prior 7 days, hand-rolled SVG sparkline over the last 14
+    days) comparing the actual weekly rate against what the goal implies
+    (~0.5kg/week lose or gain, flat for maintain) via plain arithmetic —
+    no AI, and it only ever surfaces a "recheck your profile" nudge, never
+    auto-changes the calorie target. Paired with reminders so the trend
+    actually has data to work with: an in-app banner after 24h+ since the
+    last log, plus an opt-in "Weight log reminders" toggle in Settings
+    that subscribes to real Web Push (implemented natively via Web
+    Crypto — VAPID + RFC 8291 payload encryption, checked against the
+    spec's own test vectors — rather than a library), delivered by a
+    daily Cron Trigger to anyone overdue who's opted in.
 
 ## P3 — Nice-to-have (pull from as capacity allows)
 
