@@ -39,7 +39,9 @@ export function Home({ refreshKey }: { refreshKey: number }) {
     });
   }, [refreshKey]);
 
-  const target = profile?.daily_calorie_target ?? DEFAULT_TARGET_KCAL;
+  const baseTarget = profile?.daily_calorie_target ?? DEFAULT_TARGET_KCAL;
+  const exerciseKcal = totals?.exercise_kcal ?? 0;
+  const target = baseTarget + exerciseKcal;
   const pct = totals ? Math.min(100, Math.round((totals.kcal / target) * 100)) : 0;
   const showGamification = profile?.gamification_enabled === 1;
 
@@ -78,6 +80,11 @@ export function Home({ refreshKey }: { refreshKey: number }) {
             <div className="bg-cream-200 h-3 w-full overflow-hidden rounded-full">
               <div className="bg-accent-500 h-full rounded-full transition-all" style={{ width: `${pct}%` }} />
             </div>
+            {exerciseKcal > 0 && (
+              <div className="text-primary-600 mt-2 text-xs font-medium">
+                🏃 +{Math.round(exerciseKcal)} kcal from today's exercise, added to your {baseTarget} target
+              </div>
+            )}
           </div>
 
           <div className="mb-6 grid grid-cols-3 gap-3">

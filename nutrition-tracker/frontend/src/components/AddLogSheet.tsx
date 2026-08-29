@@ -1,8 +1,9 @@
 import { useRef, useState } from 'react';
-import { logText, logPhoto, type LogResultEntry } from '../lib/api';
+import { logText, logPhoto, logExercise, ACTIVITY_LABELS, type LogResultEntry, type ActivityType, type ExerciseLogResult } from '../lib/api';
 import { showToast } from '../lib/toast';
 
 const EXAMPLES = ['chicken karahi and two rotis', 'one plate biryani', 'a bowl of daal chawal', '3 samosas'];
+const ACTIVITY_OPTIONS = Object.entries(ACTIVITY_LABELS) as [ActivityType, string][];
 
 function fileToBase64(file: File): Promise<{ base64: string; mimeType: 'image/jpeg' | 'image/png' | 'image/webp' }> {
   return new Promise((resolve, reject) => {
@@ -47,6 +48,7 @@ function ResultCard({ r }: { r: LogResultEntry }) {
 }
 
 export function AddLogSheet({ onClose, onLogged }: { onClose: () => void; onLogged: () => void }) {
+  const [mode, setMode] = useState<'food' | 'exercise'>('food');
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -54,6 +56,10 @@ export function AddLogSheet({ onClose, onLogged }: { onClose: () => void; onLogg
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [photoFile, setPhotoFile] = useState<{ base64: string; mimeType: 'image/jpeg' | 'image/png' | 'image/webp' } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [activityType, setActivityType] = useState<ActivityType | null>(null);
+  const [durationMinutes, setDurationMinutes] = useState('');
+  const [exerciseResult, setExerciseResult] = useState<ExerciseLogResult | null>(null);
 
   async function submitText() {
     if (!text.trim()) return;
@@ -91,6 +97,25 @@ export function AddLogSheet({ onClose, onLogged }: { onClose: () => void; onLogg
     }
   }
 
+  async function submitExercise() {
+    const minutes = Number(durationMinutes);
+    if (!activityType || !minutes || minutes <= 0) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await logExercise(activityType, minutes);
+      setExerciseResult(res);
+      setActivityType(null);
+      setDurationMinutes('');
+      onLogged();
+      showToast('Logged!');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong. Try again.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function handlePhotoSelected(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -102,14 +127,35 @@ export function AddLogSheet({ onClose, onLogged }: { onClose: () => void; onLogg
   return (
     <div className="bg-cream-50 fixed inset-0 z-50 mx-auto flex max-w-[480px] flex-col overflow-y-auto">
       <div className="flex items-center justify-between px-5 pt-6 pb-2">
-        <h1 className="text-ink-900 text-2xl font-extrabold">Log food</h1>
+        <h1 className="text-ink-900 text-2xl font-extrabold">{mode === 'food' ? 'Log food' : 'Log exercise'}</h1>
         <button onClick={onClose} className="text-ink-400 text-2xl leading-none">
           ×
         </button>
       </div>
 
+      {!results && !exerciseResult && (
+        <div className="border-cream-200 mx-5 mb-2 flex gap-1 rounded-xl border bg-surface p-1">
+          <button
+            onClick={() => setMode('food')}
+            className={`flex-1 rounded-lg py-2 text-sm font-bold transition-colors ${
+              mode === 'food' ? 'bg-primary-500 text-white' : 'text-ink-600'
+            }`}
+          >
+            🍛 Food
+          </button>
+          <button
+            onClick={() => setMode('exercise')}
+            className={`flex-1 rounded-lg py-2 text-sm font-bold transition-colors ${
+              mode === 'exercise' ? 'bg-primary-500 text-white' : 'text-ink-600'
+            }`}
+          >
+            🏃 Exercise
+          </button>
+        </div>
+      )}
+
       <div className="flex flex-1 flex-col px-5 pb-8">
-        {!results && (
+        {!results && mode === 'food' && (
           <>
             <p className="text-ink-600 mb-3 text-sm">
               Describe what you ate in your own words — dish name, quantity, or ingredients all work.
@@ -171,6 +217,66 @@ export function AddLogSheet({ onClose, onLogged }: { onClose: () => void; onLogg
             <p className="text-ink-400 mt-2 text-center text-xs">Snap what's on your plate — no need to type anything.</p>
 
             {error && <div className="bg-danger-500/10 text-danger-500 mt-4 rounded-xl px-4 py-3 text-sm font-medium">{error}</div>}
+          </>
+        )}
+
+        {!exerciseResult && mode === 'exercise' && (
+          <>
+            <p className="text-ink-600 mb-3 text-sm">What did you do, and for how long?</p>
+
+            <div className="mb-4 grid grid-cols-2 gap-2">
+              {ACTIVITY_OPTIONS.map(([value, label]) => (
+                <button
+                  key={value}
+                  onClick={() => setActivityType(value)}
+                  className={`rounded-xl border-2 px-3 py-3 text-left text-sm font-semibold transition-colors ${
+                    activityType === value ? 'border-primary-500 bg-primary-50 text-primary-600' : 'border-cream-200 bg-surface text-ink-600'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            <input
+              type="number"
+              inputMode="numeric"
+              value={durationMinutes}
+              onChange={(e) => setDurationMinutes(e.target.value)}
+              placeholder="Duration in minutes, e.g. 30"
+              className="border-primary-100 focus:border-primary-500 text-ink-900 mb-4 w-full rounded-xl border-2 bg-surface px-3 py-2.5 text-base outline-none"
+            />
+
+            <button
+              onClick={submitExercise}
+              disabled={loading || !activityType || !Number(durationMinutes)}
+              className="bg-primary-500 hover:bg-primary-600 rounded-2xl py-4 text-lg font-bold text-white shadow-sm transition-colors disabled:opacity-40"
+            >
+              {loading ? 'Logging…' : 'Log it'}
+            </button>
+
+            {error && <div className="bg-danger-500/10 text-danger-500 mt-4 rounded-xl px-4 py-3 text-sm font-medium">{error}</div>}
+          </>
+        )}
+
+        {exerciseResult && (
+          <>
+            <div className="border-cream-200 rounded-2xl border bg-surface p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-ink-900 font-bold">{ACTIVITY_LABELS[exerciseResult.activityType]}</span>
+                <span className="text-primary-600 font-bold">-{exerciseResult.caloriesBurned} kcal</span>
+              </div>
+              <div className="text-ink-600 mt-1 text-xs">{exerciseResult.durationMinutes} minutes</div>
+            </div>
+            <button
+              onClick={() => setExerciseResult(null)}
+              className="border-primary-100 text-primary-600 mt-4 rounded-2xl border-2 py-3 text-sm font-bold"
+            >
+              Log something else
+            </button>
+            <button onClick={onClose} className="bg-primary-500 hover:bg-primary-600 mt-3 rounded-2xl py-4 font-bold text-white">
+              Done
+            </button>
           </>
         )}
 

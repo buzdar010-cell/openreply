@@ -20,15 +20,22 @@ export function dayLabel(loggedAtUnix: number): string {
   return DAY_NAMES[date.getUTCDay()];
 }
 
-export interface DayGroup {
+export interface DayGroup<T> {
   label: string;
   dateKey: string;
-  items: LogListItem[];
+  items: T[];
   totalKcal: number;
 }
 
-export function groupByDay(items: LogListItem[]): DayGroup[] {
-  const map = new Map<string, DayGroup>();
+/**
+ * Generic over any item with a logged_at -- used for both the food-only
+ * feed and the merged food+exercise feed. `kcalOf` decides what counts
+ * toward the day header's total (food logs' kcal for a plain feed; food
+ * only, not exercise, when merged -- exercise calories burned show per-row
+ * instead, not blended into that header number).
+ */
+export function groupByDay<T extends { logged_at: number }>(items: T[], kcalOf: (item: T) => number): DayGroup<T>[] {
+  const map = new Map<string, DayGroup<T>>();
   for (const item of items) {
     const date = new Date(item.logged_at * 1000);
     const key = dayKey(date);
@@ -37,19 +44,19 @@ export function groupByDay(items: LogListItem[]): DayGroup[] {
     }
     const group = map.get(key)!;
     group.items.push(item);
-    group.totalKcal += item.kcal;
+    group.totalKcal += kcalOf(item);
   }
   return Array.from(map.values()).sort((a, b) => (a.dateKey < b.dateKey ? 1 : -1));
 }
 
-export interface MonthGroup {
+export interface MonthGroup<T> {
   label: string;
   monthKey: string;
-  items: LogListItem[];
+  items: T[];
 }
 
-export function groupByMonth(items: LogListItem[]): MonthGroup[] {
-  const map = new Map<string, MonthGroup>();
+export function groupByMonth<T extends { logged_at: number }>(items: T[]): MonthGroup<T>[] {
+  const map = new Map<string, MonthGroup<T>>();
   for (const item of items) {
     const date = new Date(item.logged_at * 1000);
     const key = `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`;

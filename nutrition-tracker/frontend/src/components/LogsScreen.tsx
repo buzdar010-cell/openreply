@@ -1,12 +1,33 @@
 import { useEffect, useState } from 'react';
-import { deleteLog, getLogs, type LogListItem } from '../lib/api';
+import {
+  deleteLog,
+  getLogs,
+  deleteExerciseLog,
+  getExerciseLogs,
+  ACTIVITY_LABELS,
+  type LogListItem,
+  type ExerciseLogItem,
+  type ActivityType,
+} from '../lib/api';
 import { groupByDay, groupByMonth, logsToCsv, type DayGroup, type MonthGroup } from '../lib/dateGroups';
 import { showToast } from '../lib/toast';
 
 const WEEK_SECONDS = 7 * 86400;
 const HISTORY_SECONDS = 180 * 86400; // ~6 months back for "view all"
 
-function LogRow({ item, onDelete }: { item: LogListItem; onDelete: (id: string) => void }) {
+type FeedItem =
+  | { kind: 'food'; logged_at: number; data: LogListItem }
+  | { kind: 'exercise'; logged_at: number; data: ExerciseLogItem };
+
+function mergeFeed(foodItems: LogListItem[], exerciseItems: ExerciseLogItem[]): FeedItem[] {
+  const merged: FeedItem[] = [
+    ...foodItems.map((data): FeedItem => ({ kind: 'food', logged_at: data.logged_at, data })),
+    ...exerciseItems.map((data): FeedItem => ({ kind: 'exercise', logged_at: data.logged_at, data })),
+  ];
+  return merged.sort((a, b) => b.logged_at - a.logged_at);
+}
+
+function FoodRow({ item, onDelete }: { item: LogListItem; onDelete: () => void }) {
   const [confirming, setConfirming] = useState(false);
   const label = item.free_text_description ?? item.dish_id.replace(/_/g, ' ');
 
@@ -25,10 +46,7 @@ function LogRow({ item, onDelete }: { item: LogListItem; onDelete: (id: string) 
           <span className="text-accent-600 text-sm font-bold">{Math.round(item.kcal)} kcal</span>
           {confirming ? (
             <div className="flex gap-1">
-              <button
-                onClick={() => onDelete(item.id)}
-                className="bg-danger-500 rounded-lg px-2 py-1 text-xs font-bold text-white"
-              >
+              <button onClick={onDelete} className="bg-danger-500 rounded-lg px-2 py-1 text-xs font-bold text-white">
                 Delete
               </button>
               <button onClick={() => setConfirming(false)} className="text-ink-400 px-2 py-1 text-xs font-semibold">
@@ -46,7 +64,48 @@ function LogRow({ item, onDelete }: { item: LogListItem; onDelete: (id: string) 
   );
 }
 
-function DaySection({ group, onDelete }: { group: DayGroup; onDelete: (id: string) => void }) {
+function ExerciseRow({ item, onDelete }: { item: ExerciseLogItem; onDelete: () => void }) {
+  const [confirming, setConfirming] = useState(false);
+  const label = ACTIVITY_LABELS[item.activity_type as ActivityType] ?? item.activity_type;
+
+  return (
+    <div className="border-cream-200 rounded-xl border bg-surface p-3">
+      <div className="flex items-center justify-between">
+        <div className="min-w-0">
+          <div className="text-ink-900 truncate text-sm font-bold">🏃 {label}</div>
+          <div className="text-ink-400 text-xs">{item.duration_minutes} min</div>
+        </div>
+        <div className="flex shrink-0 items-center gap-3">
+          <span className="text-primary-600 text-sm font-bold">-{Math.round(item.calories_burned)} kcal</span>
+          {confirming ? (
+            <div className="flex gap-1">
+              <button onClick={onDelete} className="bg-danger-500 rounded-lg px-2 py-1 text-xs font-bold text-white">
+                Delete
+              </button>
+              <button onClick={() => setConfirming(false)} className="text-ink-400 px-2 py-1 text-xs font-semibold">
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <button onClick={() => setConfirming(true)} className="text-ink-400 text-lg leading-none">
+              ⋯
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FeedRow({ item, onDelete }: { item: FeedItem; onDelete: (item: FeedItem) => void }) {
+  return item.kind === 'food' ? (
+    <FoodRow item={item.data} onDelete={() => onDelete(item)} />
+  ) : (
+    <ExerciseRow item={item.data} onDelete={() => onDelete(item)} />
+  );
+}
+
+function DaySection({ group, onDelete }: { group: DayGroup<FeedItem>; onDelete: (item: FeedItem) => void }) {
   return (
     <div className="mb-5">
       <div className="mb-2 flex items-baseline justify-between">
@@ -55,20 +114,20 @@ function DaySection({ group, onDelete }: { group: DayGroup; onDelete: (id: strin
       </div>
       <div className="flex flex-col gap-2">
         {group.items.map((item) => (
-          <LogRow key={item.id} item={item} onDelete={onDelete} />
+          <FeedRow key={`${item.kind}-${item.data.id}`} item={item} onDelete={onDelete} />
         ))}
       </div>
     </div>
   );
 }
 
-function MonthSection({ group, onDelete }: { group: MonthGroup; onDelete: (id: string) => void }) {
+function MonthSection({ group, onDelete }: { group: MonthGroup<FeedItem>; onDelete: (item: FeedItem) => void }) {
   return (
     <div className="mb-5">
       <h3 className="text-ink-900 mb-2 font-bold">{group.label}</h3>
       <div className="flex flex-col gap-2">
         {group.items.map((item) => (
-          <LogRow key={item.id} item={item} onDelete={onDelete} />
+          <FeedRow key={`${item.kind}-${item.data.id}`} item={item} onDelete={onDelete} />
         ))}
       </div>
     </div>
@@ -77,34 +136,43 @@ function MonthSection({ group, onDelete }: { group: MonthGroup; onDelete: (id: s
 
 export function LogsScreen({ refreshKey }: { refreshKey: number }) {
   const [viewingAll, setViewingAll] = useState(false);
-  const [items, setItems] = useState<LogListItem[]>([]);
+  const [foodItems, setFoodItems] = useState<LogListItem[]>([]);
+  const [exerciseItems, setExerciseItems] = useState<ExerciseLogItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const now = Math.floor(Date.now() / 1000);
     const rangeStart = now - (viewingAll ? HISTORY_SECONDS : WEEK_SECONDS);
     setLoading(true);
-    getLogs(rangeStart, now)
-      .then(setItems)
-      .catch(() => setItems([]))
+    Promise.all([getLogs(rangeStart, now).catch(() => []), getExerciseLogs(rangeStart, now).catch(() => [])])
+      .then(([food, exercise]) => {
+        setFoodItems(food);
+        setExerciseItems(exercise);
+      })
       .finally(() => setLoading(false));
   }, [refreshKey, viewingAll]);
 
-  async function handleDelete(logId: string) {
-    setItems((prev) => prev.filter((i) => i.id !== logId)); // optimistic
+  async function handleDelete(item: FeedItem) {
+    // optimistic
+    if (item.kind === 'food') setFoodItems((prev) => prev.filter((i) => i.id !== item.data.id));
+    else setExerciseItems((prev) => prev.filter((i) => i.id !== item.data.id));
+
     try {
-      await deleteLog(logId);
+      if (item.kind === 'food') await deleteLog(item.data.id);
+      else await deleteExerciseLog(item.data.id);
       showToast('Deleted');
     } catch {
       showToast('Failed to delete — try again', 'error');
       // Re-fetch on failure to correct any optimistic-update drift.
       const now = Math.floor(Date.now() / 1000);
-      getLogs(now - (viewingAll ? HISTORY_SECONDS : WEEK_SECONDS), now).then(setItems);
+      const rangeStart = now - (viewingAll ? HISTORY_SECONDS : WEEK_SECONDS);
+      getLogs(rangeStart, now).then(setFoodItems);
+      getExerciseLogs(rangeStart, now).then(setExerciseItems);
     }
   }
 
   function handleExport() {
-    const csv = logsToCsv(items);
+    const csv = logsToCsv(foodItems);
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -114,8 +182,10 @@ export function LogsScreen({ refreshKey }: { refreshKey: number }) {
     URL.revokeObjectURL(url);
   }
 
-  const dayGroups = viewingAll ? [] : groupByDay(items);
-  const monthGroups = viewingAll ? groupByMonth(items) : [];
+  const feed = mergeFeed(foodItems, exerciseItems);
+  const kcalOf = (item: FeedItem) => (item.kind === 'food' ? item.data.kcal : 0);
+  const dayGroups = viewingAll ? [] : groupByDay(feed, kcalOf);
+  const monthGroups = viewingAll ? groupByMonth(feed) : [];
 
   return (
     <div className="flex flex-1 flex-col overflow-y-auto px-5 pt-8 pb-24">
@@ -139,7 +209,7 @@ export function LogsScreen({ refreshKey }: { refreshKey: number }) {
 
       {loading ? (
         <div className="text-ink-400 py-12 text-center text-sm">Loading…</div>
-      ) : items.length === 0 ? (
+      ) : feed.length === 0 ? (
         <div className="text-ink-400 py-12 text-center text-sm">Nothing logged yet — tap the + button to add your first meal.</div>
       ) : viewingAll ? (
         monthGroups.map((group) => <MonthSection key={group.monthKey} group={group} onDelete={handleDelete} />)

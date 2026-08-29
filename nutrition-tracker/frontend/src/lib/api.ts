@@ -123,6 +123,49 @@ export interface Totals {
   fiber_g: number;
   sugar_g: number;
   sodium_mg: number;
+  exercise_kcal: number;
+}
+
+// ---- Exercise logging -- separate from food, no AI call involved ----
+
+export type ActivityType = 'walk' | 'run' | 'cycling' | 'gym' | 'sports' | 'yoga' | 'housework';
+
+export const ACTIVITY_LABELS: Record<ActivityType, string> = {
+  walk: 'Walking',
+  run: 'Running / jogging',
+  cycling: 'Cycling',
+  gym: 'Gym / weights',
+  sports: 'Sports',
+  yoga: 'Yoga / stretching',
+  housework: 'Housework / chores',
+};
+
+export interface ExerciseLogResult {
+  logId: string;
+  activityType: ActivityType;
+  durationMinutes: number;
+  caloriesBurned: number;
+}
+
+export async function logExercise(activityType: ActivityType, durationMinutes: number): Promise<ExerciseLogResult> {
+  return postJson('/log/exercise', { activityType, durationMinutes });
+}
+
+export interface ExerciseLogItem {
+  id: string;
+  activity_type: string;
+  duration_minutes: number;
+  calories_burned: number;
+  logged_at: number;
+}
+
+export async function getExerciseLogs(startUnix: number, endUnix: number): Promise<ExerciseLogItem[]> {
+  const data = await getJson<{ logs: ExerciseLogItem[] }>(`/logs/exercise?start=${startUnix}&end=${endUnix}`);
+  return data.logs ?? [];
+}
+
+export async function deleteExerciseLog(logId: string): Promise<void> {
+  await postJson('/logs/exercise/delete', { logId });
 }
 
 function startOfTodayUnix(): number {
