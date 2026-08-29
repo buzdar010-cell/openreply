@@ -5,6 +5,16 @@ import { showToast } from '../lib/toast';
 const EXAMPLES = ['chicken karahi and two rotis', 'one plate biryani', 'a bowl of daal chawal', '3 samosas'];
 const ACTIVITY_OPTIONS = Object.entries(ACTIVITY_LABELS) as [ActivityType, string][];
 
+/** datetime-local inputs work in the browser's local time, not UTC -- format/parse accordingly. */
+function toDatetimeLocalValue(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function datetimeLocalValueToUnix(value: string): number {
+  return Math.floor(new Date(value).getTime() / 1000);
+}
+
 function fileToBase64(file: File): Promise<{ base64: string; mimeType: 'image/jpeg' | 'image/png' | 'image/webp' }> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -17,6 +27,20 @@ function fileToBase64(file: File): Promise<{ base64: string; mimeType: 'image/jp
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
+}
+
+function WhenField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  return (
+    <label className="border-cream-200 mb-3 flex items-center justify-between gap-2 rounded-xl border bg-surface px-3 py-2">
+      <span className="text-ink-600 text-xs font-semibold">🕐 When</span>
+      <input
+        type="datetime-local"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="text-ink-900 bg-transparent text-xs outline-none"
+      />
+    </label>
+  );
 }
 
 function ResultCard({ r }: { r: LogResultEntry }) {
@@ -61,14 +85,19 @@ export function AddLogSheet({ onClose, onLogged }: { onClose: () => void; onLogg
   const [durationMinutes, setDurationMinutes] = useState('');
   const [exerciseResult, setExerciseResult] = useState<ExerciseLogResult | null>(null);
 
+  // Defaults to right now -- only touched when backdating a forgotten meal/workout.
+  const [loggedAtInput, setLoggedAtInput] = useState(() => toDatetimeLocalValue(new Date()));
+  const loggedAtUnix = datetimeLocalValueToUnix(loggedAtInput);
+
   async function submitText() {
     if (!text.trim()) return;
     setLoading(true);
     setError(null);
     try {
-      const res = await logText(text.trim());
+      const res = await logText(text.trim(), loggedAtUnix);
       setResults(res);
       setText('');
+      setLoggedAtInput(toDatetimeLocalValue(new Date())); // don't let a backdated time silently carry over to the next entry
       onLogged();
       if (res.some((r) => r.matched)) showToast('Logged!');
     } catch (err) {
@@ -83,11 +112,12 @@ export function AddLogSheet({ onClose, onLogged }: { onClose: () => void; onLogg
     setLoading(true);
     setError(null);
     try {
-      const res = await logPhoto(photoFile.base64, photoFile.mimeType, text.trim() || undefined);
+      const res = await logPhoto(photoFile.base64, photoFile.mimeType, text.trim() || undefined, loggedAtUnix);
       setResults(res);
       setPhotoFile(null);
       setPhotoPreview(null);
       setText('');
+      setLoggedAtInput(toDatetimeLocalValue(new Date()));
       onLogged();
       if (res.some((r) => r.matched)) showToast('Logged!');
     } catch (err) {
@@ -103,10 +133,11 @@ export function AddLogSheet({ onClose, onLogged }: { onClose: () => void; onLogg
     setLoading(true);
     setError(null);
     try {
-      const res = await logExercise(activityType, minutes);
+      const res = await logExercise(activityType, minutes, loggedAtUnix);
       setExerciseResult(res);
       setActivityType(null);
       setDurationMinutes('');
+      setLoggedAtInput(toDatetimeLocalValue(new Date()));
       onLogged();
       showToast('Logged!');
     } catch (err) {
@@ -193,6 +224,8 @@ export function AddLogSheet({ onClose, onLogged }: { onClose: () => void; onLogg
               />
             )}
 
+            <WhenField value={loggedAtInput} onChange={setLoggedAtInput} />
+
             <button
               onClick={photoFile ? submitPhoto : submitText}
               disabled={loading || (!text.trim() && !photoFile)}
@@ -244,8 +277,10 @@ export function AddLogSheet({ onClose, onLogged }: { onClose: () => void; onLogg
               value={durationMinutes}
               onChange={(e) => setDurationMinutes(e.target.value)}
               placeholder="Duration in minutes, e.g. 30"
-              className="border-primary-100 focus:border-primary-500 text-ink-900 mb-4 w-full rounded-xl border-2 bg-surface px-3 py-2.5 text-base outline-none"
+              className="border-primary-100 focus:border-primary-500 text-ink-900 mb-3 w-full rounded-xl border-2 bg-surface px-3 py-2.5 text-base outline-none"
             />
+
+            <WhenField value={loggedAtInput} onChange={setLoggedAtInput} />
 
             <button
               onClick={submitExercise}

@@ -101,8 +101,8 @@ export interface LogResultEntry {
   fat_g?: number;
 }
 
-export async function logText(text: string): Promise<LogResultEntry[]> {
-  const data = await postJson<{ results: LogResultEntry[] }>('/log/text', { text });
+export async function logText(text: string, loggedAt?: number): Promise<LogResultEntry[]> {
+  const data = await postJson<{ results: LogResultEntry[] }>('/log/text', { text, loggedAt });
   return data.results ?? [];
 }
 
@@ -110,8 +110,9 @@ export async function logPhoto(
   imageBase64: string,
   mimeType: 'image/jpeg' | 'image/png' | 'image/webp',
   caption?: string,
+  loggedAt?: number,
 ): Promise<LogResultEntry[]> {
-  const data = await postJson<{ results: LogResultEntry[] }>('/log/photo', { imageBase64, mimeType, caption });
+  const data = await postJson<{ results: LogResultEntry[] }>('/log/photo', { imageBase64, mimeType, caption, loggedAt });
   return data.results ?? [];
 }
 
@@ -147,8 +148,8 @@ export interface ExerciseLogResult {
   caloriesBurned: number;
 }
 
-export async function logExercise(activityType: ActivityType, durationMinutes: number): Promise<ExerciseLogResult> {
-  return postJson('/log/exercise', { activityType, durationMinutes });
+export async function logExercise(activityType: ActivityType, durationMinutes: number, loggedAt?: number): Promise<ExerciseLogResult> {
+  return postJson('/log/exercise', { activityType, durationMinutes, loggedAt });
 }
 
 export interface ExerciseLogItem {
