@@ -288,3 +288,45 @@ export async function getArticle(id: string): Promise<Article> {
   const data = await getJson<{ article: Article }>(`/article?id=${encodeURIComponent(id)}`);
   return data.article;
 }
+
+// ---- Weight logging + trend ----
+
+export async function logWeight(weightKg: number, loggedAt?: number): Promise<{ logId: string; weightKg: number; loggedAt: number }> {
+  return postJson('/log/weight', { weightKg, loggedAt });
+}
+
+export interface WeightLogItem {
+  id: string;
+  weight_kg: number;
+  logged_at: number;
+}
+
+export async function getWeightLogs(startUnix: number, endUnix: number): Promise<WeightLogItem[]> {
+  const data = await getJson<{ logs: WeightLogItem[] }>(`/logs/weight?start=${startUnix}&end=${endUnix}`);
+  return data.logs ?? [];
+}
+
+export async function deleteWeightLog(logId: string): Promise<void> {
+  await postJson('/logs/weight/delete', { logId });
+}
+
+export type WeightTrendStatus = 'no_data' | 'on_track' | 'mismatch';
+
+export interface WeightTrendPoint {
+  weightKg: number;
+  loggedAt: number;
+}
+
+export interface WeightTrend {
+  status: WeightTrendStatus;
+  latestWeightKg: number | null;
+  recentAvgKg: number | null;
+  priorAvgKg: number | null;
+  weeklyRateKg: number | null;
+  expectedWeeklyRateKg: number | null;
+  points: WeightTrendPoint[];
+}
+
+export async function getWeightTrend(): Promise<WeightTrend> {
+  return getJson('/weight-trend');
+}

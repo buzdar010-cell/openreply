@@ -1,8 +1,106 @@
 import { useEffect, useState } from 'react';
-import { getTodayTotals, getProfile, getHomeContent, type Totals, type Profile, type TipItem, type ArticleSummary } from '../lib/api';
+import {
+  getTodayTotals,
+  getProfile,
+  getHomeContent,
+  getWeightTrend,
+  type Totals,
+  type Profile,
+  type TipItem,
+  type ArticleSummary,
+  type WeightTrend,
+} from '../lib/api';
 import { ArticleReader } from './ArticleReader';
 
 const DEFAULT_TARGET_KCAL = 2000; // fallback when no profile/goal has been set yet
+const MISSED_LOG_HOURS = 24; // matches the "after 1 missed day" reminder cadence
+
+function Sparkline({ points }: { points: { weightKg: number; loggedAt: number }[] }) {
+  const width = 280;
+  const height = 48;
+  const kgs = points.map((p) => p.weightKg);
+  const min = Math.min(...kgs);
+  const max = Math.max(...kgs);
+  const range = max - min || 1; // avoid divide-by-zero when weight hasn't moved at all
+  const coords = points.map((p, i) => {
+    const x = points.length > 1 ? (i / (points.length - 1)) * width : width / 2;
+    const y = height - ((p.weightKg - min) / range) * height;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+  return (
+    <svg viewBox={`0 0 ${width} ${height}`} className="h-12 w-full" preserveAspectRatio="none">
+      <polyline points={coords.join(' ')} fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function WeightTrendCard({
+  trend,
+  onLogWeight,
+  onGoToSettings,
+}: {
+  trend: WeightTrend;
+  onLogWeight: () => void;
+  onGoToSettings: () => void;
+}) {
+  if (trend.status === 'no_data') {
+    return (
+      <div className="border-cream-200 mb-6 rounded-2xl border bg-surface p-4">
+        <div className="text-ink-900 text-sm font-bold">⚖️ Track your weight</div>
+        <p className="text-ink-600 mt-1 text-xs leading-relaxed">
+          Log your weight regularly to see your trend and get a nudge if it stops matching your goal.
+        </p>
+        <button onClick={onLogWeight} className="bg-primary-500 hover:bg-primary-600 mt-3 rounded-xl px-4 py-2 text-xs font-bold text-white">
+          Log your weight
+        </button>
+      </div>
+    );
+  }
+
+  const rate = trend.weeklyRateKg ?? 0;
+  const rateLabel = `${rate > 0 ? '+' : ''}${rate.toFixed(1)} kg/week`;
+
+  return (
+    <div className="border-cream-200 mb-6 rounded-2xl border bg-surface p-4">
+      <div className="flex items-baseline justify-between">
+        <div>
+          <span className="text-ink-900 text-2xl font-extrabold">{trend.latestWeightKg?.toFixed(1)}</span>
+          <span className="text-ink-400 ml-1 text-xs font-semibold">kg</span>
+        </div>
+        <span className="text-ink-600 text-xs font-medium">{rateLabel}</span>
+      </div>
+      {trend.points.length > 1 && (
+        <div className="text-primary-500 mt-2">
+          <Sparkline points={trend.points} />
+        </div>
+      )}
+      {trend.status === 'mismatch' && (
+        <div className="bg-accent-50 mt-3 rounded-xl p-3">
+          <p className="text-ink-700 text-xs leading-relaxed">
+            Your trend doesn't quite match your goal's pace lately — might be worth rechecking your profile.
+          </p>
+          <button onClick={onGoToSettings} className="text-primary-600 mt-1 text-xs font-bold underline">
+            Recheck goal in Settings
+          </button>
+        </div>
+      )}
+      <button onClick={onLogWeight} className="border-primary-100 text-primary-600 mt-3 rounded-xl border-2 px-4 py-2 text-xs font-bold">
+        Log today's weight
+      </button>
+    </div>
+  );
+}
+
+function ReminderBanner({ onLogWeight }: { onLogWeight: () => void }) {
+  return (
+    <div className="bg-accent-500 mb-4 flex items-center justify-between gap-3 rounded-2xl p-4 text-white">
+      <div className="text-sm font-bold leading-snug">Haven't logged your weight in a while — worth a quick update?</div>
+      <button onClick={onLogWeight} className="shrink-0 rounded-xl bg-white/20 px-3 py-1.5 text-xs font-bold whitespace-nowrap">
+        Log it
+      </button>
+    </div>
+  );
+}
 
 function MacroCard({
   label,
@@ -46,13 +144,23 @@ function levelFromXp(xp: number): number {
   return Math.floor(xp / 100) + 1;
 }
 
-export function Home({ refreshKey }: { refreshKey: number }) {
+export function Home({
+  refreshKey,
+  onGoToSettings,
+  onLogWeight,
+}: {
+  refreshKey: number;
+  onGoToSettings: () => void;
+  onLogWeight: () => void;
+}) {
   const [totals, setTotals] = useState<Totals | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [tips, setTips] = useState<TipItem[]>([]);
   const [articles, setArticles] = useState<ArticleSummary[]>([]);
   const [openArticleId, setOpenArticleId] = useState<string | null>(null);
+  const [weightTrend, setWeightTrend] = useState<WeightTrend | null>(null);
+  const [showReminderBanner, setShowReminderBanner] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -69,6 +177,14 @@ export function Home({ refreshKey }: { refreshKey: number }) {
         setArticles(fetchedArticles);
       })
       .catch(() => {});
+    getWeightTrend()
+      .then((trend) => {
+        setWeightTrend(trend);
+        const lastWeightLogAt = trend.points.at(-1)?.loggedAt ?? null;
+        const hoursSinceLastWeightLog = lastWeightLogAt != null ? (Date.now() / 1000 - lastWeightLogAt) / 3600 : null;
+        setShowReminderBanner(trend.status !== 'no_data' && (hoursSinceLastWeightLog ?? Infinity) >= MISSED_LOG_HOURS);
+      })
+      .catch(() => setWeightTrend(null));
   }, [refreshKey]);
 
   const baseTarget = profile?.daily_calorie_target ?? DEFAULT_TARGET_KCAL;
@@ -94,6 +210,8 @@ export function Home({ refreshKey }: { refreshKey: number }) {
           </div>
         </div>
       )}
+
+      {showReminderBanner && <ReminderBanner onLogWeight={onLogWeight} />}
 
       <h1 className="text-ink-900 mb-1 text-2xl font-extrabold">Today</h1>
       <p className="text-ink-600 mb-4 text-sm">
@@ -126,6 +244,8 @@ export function Home({ refreshKey }: { refreshKey: number }) {
           </div>
         </>
       )}
+
+      {weightTrend && <WeightTrendCard trend={weightTrend} onLogWeight={onLogWeight} onGoToSettings={onGoToSettings} />}
 
       {tips.length > 0 && (
         <>
