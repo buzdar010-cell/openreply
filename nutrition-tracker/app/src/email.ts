@@ -32,6 +32,18 @@ export async function sendOtpEmail(
         ? "We noticed a sign-in from a new device or location. Use this code to confirm it's you:"
         : "Use this code to reset your password:";
 
+  // Plain-text-only emails reflow inconsistently across clients (the code
+  // ends up above or below the intro depending on how each client wraps
+  // it) -- an HTML body with the code in its own fixed block renders the
+  // same everywhere. `text` stays as a fallback for clients that prefer it.
+  const html = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 24px; color: #1a1a1a;">
+      <p style="font-size: 16px; line-height: 1.5; margin: 0 0 24px;">${intro}</p>
+      <div style="font-size: 32px; font-weight: 700; letter-spacing: 8px; text-align: center; background: #f5f5f5; border-radius: 8px; padding: 20px 8px; margin: 0 0 24px;">${code}</div>
+      <p style="font-size: 14px; line-height: 1.5; color: #666; margin: 0;">This code expires in 10 minutes. If you didn't request this, you can safely ignore this email.</p>
+    </div>
+  `.trim();
+
   const res = await fetch(RESEND_API_URL, {
     method: "POST",
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
@@ -39,6 +51,7 @@ export async function sendOtpEmail(
       from: FROM_ADDRESS,
       to: [toEmail],
       subject,
+      html,
       text: `${intro}\n\n${code}\n\nThis code expires in 10 minutes. If you didn't request this, you can safely ignore this email.`,
     }),
   });

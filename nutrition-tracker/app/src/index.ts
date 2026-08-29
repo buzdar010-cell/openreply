@@ -58,6 +58,15 @@ export interface Env {
 const SESSION_TTL_SECONDS = 90 * 86400; // 90 days -- casual habit tracker, not a banking app
 const OTP_TTL_SECONDS = 10 * 60;
 
+// Resend's shared sending address can currently only deliver to the Resend
+// account owner's own inbox (no verified domain yet), so a real signup or
+// new-device login can't receive its code and would get stuck. Off until a
+// domain is verified in Resend -- flip back to true at that point to
+// restore email verification on signup and step-up verification on login.
+// Forgot/reset-password is NOT gated by this: skipping it would let anyone
+// reset any account just by knowing the email address.
+const REQUIRE_EMAIL_VERIFICATION = false;
+
 // The frontend (Cloudflare Pages, a different origin from this Worker's
 // own workers.dev domain) needs CORS to call this API from a browser at
 // all -- without these headers every fetch() from the deployed app would
@@ -102,6 +111,7 @@ async function handleSignup(request: Request, env: Env): Promise<Response> {
   const existing = await getUserByEmail(env.DB, email);
   const { hash, salt } = await hashPassword(body.password);
 
+  let userId: string;
   if (existing) {
     if (existing.email_verified) {
       return jsonResponse({ error: "an account with this email already exists -- try logging in instead" }, 409);
@@ -110,8 +120,20 @@ async function handleSignup(request: Request, env: Env): Promise<Response> {
     // case of a typo the first time) and send a fresh code rather than
     // erroring on an account nobody ever actually finished creating.
     await updatePassword(env.DB, existing.id, hash, salt);
+    userId = existing.id;
   } else {
-    await createUser(env.DB, { id: crypto.randomUUID(), email, password_hash: hash, password_salt: salt });
+    userId = crypto.randomUUID();
+    await createUser(env.DB, { id: userId, email, password_hash: hash, password_salt: salt });
+  }
+
+  if (!REQUIRE_EMAIL_VERIFICATION) {
+    await markEmailVerified(env.DB, userId);
+    const sessionToken = generateSessionToken();
+    await createSession(env.DB, sessionToken, userId, SESSION_TTL_SECONDS);
+    const deviceToken = generateDeviceToken();
+    const country = (request as unknown as { cf?: { country?: string } }).cf?.country ?? null;
+    await upsertTrustedDevice(env.DB, deviceToken, userId, country);
+    return jsonResponse({ sessionToken, deviceToken });
   }
 
   const code = generateOtpCode();
@@ -164,13 +186,15 @@ async function handleLogin(request: Request, env: Env): Promise<Response> {
 
   const country = (request as unknown as { cf?: { country?: string } }).cf?.country ?? null;
   const trusted =
-    typeof body.deviceToken === "string" && (await isTrustedDevice(env.DB, body.deviceToken, user.id, country));
+    !REQUIRE_EMAIL_VERIFICATION ||
+    (typeof body.deviceToken === "string" && (await isTrustedDevice(env.DB, body.deviceToken, user.id, country)));
 
   if (trusted) {
-    await upsertTrustedDevice(env.DB, body.deviceToken as string, user.id, country);
+    const deviceToken = typeof body.deviceToken === "string" ? body.deviceToken : generateDeviceToken();
+    await upsertTrustedDevice(env.DB, deviceToken, user.id, country);
     const sessionToken = generateSessionToken();
     await createSession(env.DB, sessionToken, user.id, SESSION_TTL_SECONDS);
-    return jsonResponse({ status: "logged_in", sessionToken, deviceToken: body.deviceToken });
+    return jsonResponse({ status: "logged_in", sessionToken, deviceToken });
   }
 
   // New device or a location change from what we've seen for this user --
