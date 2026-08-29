@@ -1,10 +1,11 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { getProfile, saveProfile, setGamification as setGamificationApi, submitFeedback, logout, type Gender, type ActivityLevel } from '../lib/api';
+import { getProfile, saveProfile, setGamification as setGamificationApi, submitFeedback, logout, getLogs, type Gender, type ActivityLevel } from '../lib/api';
 import { GoalsStep, isGoalsDataValid, GOAL_OPTIONS, type GoalsData } from './onboarding/GoalsStep';
 import { ThemePicker } from './ThemePicker';
 import { ToggleSwitch } from './ToggleSwitch';
 import { SettingsSubScreen } from './SettingsSubScreen';
 import { showToast } from '../lib/toast';
+import { buildFullDataExportJson } from '../lib/dataExport';
 
 const ONBOARDED_KEY = 'nutrition-tracker-onboarded';
 
@@ -64,6 +65,7 @@ export function SettingsScreen() {
   const [feedback, setFeedback] = useState('');
   const [sendingFeedback, setSendingFeedback] = useState(false);
   const [confirmingReset, setConfirmingReset] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     getProfile()
@@ -152,6 +154,31 @@ export function SettingsScreen() {
     // this account's history.
     localStorage.removeItem(ONBOARDED_KEY);
     window.location.reload();
+  }
+
+  async function handleExportData() {
+    setExporting(true);
+    try {
+      // Real accounts already make cross-device recovery a non-issue --
+      // this is for taking your own data out of the app entirely, so it
+      // needs everything: profile/goals/streak state, not just logs (the
+      // Logs screen's CSV export deliberately stays food-log-only, for
+      // opening in a spreadsheet).
+      const now = Math.floor(Date.now() / 1000);
+      const [profileData, logs] = await Promise.all([getProfile(), getLogs(0, now)]);
+      const json = buildFullDataExportJson(profileData, logs);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'nutrition-tracker-data-export.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      showToast('Failed to export — try again', 'error');
+    } finally {
+      setExporting(false);
+    }
   }
 
   if (loading) {
@@ -253,6 +280,15 @@ export function SettingsScreen() {
 
       <SettingsCard>
         <SettingsRow icon="💬" label="Send feedback" onClick={() => setView('feedback')} />
+      </SettingsCard>
+
+      <SettingsCard>
+        <SettingsRow
+          icon="📦"
+          label={exporting ? 'Preparing export…' : 'Export my data'}
+          value="Profile, goals, streaks, and every log"
+          onClick={exporting ? undefined : handleExportData}
+        />
       </SettingsCard>
 
       <SettingsCard>
