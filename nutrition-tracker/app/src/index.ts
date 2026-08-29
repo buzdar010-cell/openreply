@@ -42,9 +42,15 @@ import {
   deleteExerciseLogOwnedByDevice,
   getTopLoggedDishIds,
   getLastExerciseLogTime,
+  insertWeightLog,
+  getWeightLogsForRange,
+  getAverageWeightForRange,
+  getLastWeightLogTime,
+  deleteWeightLogOwnedByDevice,
 } from "./db.ts";
 import { computeSignals, selectTips, selectArticles } from "./content/selectContent.ts";
 import { ARTICLES } from "./content/articles.ts";
+import { computeWeightTrend } from "./weightTrend.ts";
 import { resolvePortion } from "./resolvePortion.ts";
 import { storePhoto, getPhoto } from "./r2.ts";
 import { GeminiRateLimiterDO, KeyedRateLimiterDO } from "./rateLimiterDO.ts";
@@ -680,6 +686,74 @@ async function handleDeleteExerciseLog(request: Request, env: Env): Promise<Resp
   return jsonResponse({ ok: true });
 }
 
+// ---- Weight logging + trend ----
+
+async function handleLogWeight(request: Request, env: Env): Promise<Response> {
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+
+  const body = (await request.json()) as { weightKg?: number; loggedAt?: number };
+  if (typeof body.weightKg !== "number" || body.weightKg <= 20 || body.weightKg >= 400) {
+    return jsonResponse({ error: "weightKg must be a number between 20 and 400" }, 400);
+  }
+
+  const logId = crypto.randomUUID();
+  const loggedAt = body.loggedAt ?? Math.floor(Date.now() / 1000);
+  await insertWeightLog(env.DB, { id: logId, device_id: userId, weight_kg: body.weightKg, logged_at: loggedAt });
+  return jsonResponse({ logId, weightKg: body.weightKg, loggedAt });
+}
+
+async function handleGetWeightLogs(request: Request, env: Env): Promise<Response> {
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+  const url = new URL(request.url);
+  const startUnix = url.searchParams.get("start");
+  const endUnix = url.searchParams.get("end");
+  if (!startUnix || !endUnix) {
+    return jsonResponse({ error: "start and end (unix seconds) are required" }, 400);
+  }
+  const logs = await getWeightLogsForRange(env.DB, userId, Number(startUnix), Number(endUnix));
+  return jsonResponse({ logs });
+}
+
+async function handleDeleteWeightLog(request: Request, env: Env): Promise<Response> {
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+  const body = (await request.json()) as { logId?: string };
+  if (typeof body.logId !== "string" || !body.logId) {
+    return jsonResponse({ error: "logId is required" }, 400);
+  }
+  const deleted = await deleteWeightLogOwnedByDevice(env.DB, userId, body.logId);
+  if (!deleted) return jsonResponse({ error: "log not found" }, 404);
+  return jsonResponse({ ok: true });
+}
+
+const WEIGHT_TREND_WINDOW_SECONDS = 7 * 86400;
+
+/** The trend + goal-mismatch verdict shown on Home -- see weightTrend.ts for the math and why it's never an automatic target change. */
+async function handleGetWeightTrend(request: Request, env: Env): Promise<Response> {
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+
+  const now = Math.floor(Date.now() / 1000);
+  const [profile, recentLogs, recentAvgKg, priorAvgKg] = await Promise.all([
+    getProfile(env.DB, userId),
+    getWeightLogsForRange(env.DB, userId, now - WEIGHT_TREND_WINDOW_SECONDS, now),
+    getAverageWeightForRange(env.DB, userId, now - WEIGHT_TREND_WINDOW_SECONDS, now),
+    getAverageWeightForRange(env.DB, userId, now - 2 * WEIGHT_TREND_WINDOW_SECONDS, now - WEIGHT_TREND_WINDOW_SECONDS),
+  ]);
+
+  const latestWeightKg = recentLogs[0]?.weight_kg ?? null; // recentLogs is DESC-ordered, so [0] is the most recent
+  const trend = computeWeightTrend({ goal: profile?.goal ?? null, latestWeightKg, recentAvgKg, priorAvgKg });
+
+  // Sparkline points -- oldest first, last 14 days, whatever's actually logged.
+  const sparkline = await getWeightLogsForRange(env.DB, userId, now - 2 * WEIGHT_TREND_WINDOW_SECONDS, now);
+  return jsonResponse({
+    ...trend,
+    points: sparkline.slice().reverse().map((l) => ({ weightKg: l.weight_kg, loggedAt: l.logged_at })),
+  });
+}
+
 async function handleGetProfile(request: Request, env: Env): Promise<Response> {
   const userId = await requireAuth(request, env);
   if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
@@ -962,6 +1036,18 @@ export default {
       }
       if (request.method === "POST" && url.pathname === "/logs/exercise/delete") {
         return await handleDeleteExerciseLog(request, env);
+      }
+      if (request.method === "POST" && url.pathname === "/log/weight") {
+        return await handleLogWeight(request, env);
+      }
+      if (request.method === "GET" && url.pathname === "/logs/weight") {
+        return await handleGetWeightLogs(request, env);
+      }
+      if (request.method === "POST" && url.pathname === "/logs/weight/delete") {
+        return await handleDeleteWeightLog(request, env);
+      }
+      if (request.method === "GET" && url.pathname === "/weight-trend") {
+        return await handleGetWeightTrend(request, env);
       }
       if (request.method === "GET" && url.pathname === "/profile") {
         return await handleGetProfile(request, env);

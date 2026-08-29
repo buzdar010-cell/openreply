@@ -691,3 +691,48 @@ export async function getLastExerciseLogTime(db: D1Database, deviceId: string): 
     .first<{ last: number | null }>();
   return row?.last ?? null;
 }
+
+// ---- Weight logs ----
+
+export interface WeightLogRow {
+  id: string;
+  weight_kg: number;
+  logged_at: number;
+}
+
+export async function insertWeightLog(
+  db: D1Database,
+  log: { id: string; device_id: string; weight_kg: number; logged_at: number },
+): Promise<void> {
+  await db
+    .prepare(`INSERT INTO weight_logs (id, device_id, weight_kg, logged_at, created_at) VALUES (?, ?, ?, ?, ?)`)
+    .bind(log.id, log.device_id, log.weight_kg, log.logged_at, Math.floor(Date.now() / 1000))
+    .run();
+}
+
+export async function getWeightLogsForRange(db: D1Database, deviceId: string, startUnix: number, endUnix: number): Promise<WeightLogRow[]> {
+  const { results } = await db
+    .prepare(`SELECT id, weight_kg, logged_at FROM weight_logs WHERE device_id = ? AND logged_at >= ? AND logged_at < ? ORDER BY logged_at DESC`)
+    .bind(deviceId, startUnix, endUnix)
+    .all<WeightLogRow>();
+  return results;
+}
+
+/** Average weight over a range -- null (not 0) when there are no entries, so callers can tell "no data" apart from "weighs 0kg". */
+export async function getAverageWeightForRange(db: D1Database, deviceId: string, startUnix: number, endUnix: number): Promise<number | null> {
+  const row = await db
+    .prepare(`SELECT AVG(weight_kg) as avg FROM weight_logs WHERE device_id = ? AND logged_at >= ? AND logged_at < ?`)
+    .bind(deviceId, startUnix, endUnix)
+    .first<{ avg: number | null }>();
+  return row?.avg ?? null;
+}
+
+export async function getLastWeightLogTime(db: D1Database, deviceId: string): Promise<number | null> {
+  const row = await db.prepare(`SELECT MAX(logged_at) as last FROM weight_logs WHERE device_id = ?`).bind(deviceId).first<{ last: number | null }>();
+  return row?.last ?? null;
+}
+
+export async function deleteWeightLogOwnedByDevice(db: D1Database, deviceId: string, logId: string): Promise<boolean> {
+  const result = await db.prepare(`DELETE FROM weight_logs WHERE id = ? AND device_id = ?`).bind(logId, deviceId).run();
+  return (result.meta.changes ?? 0) > 0;
+}
