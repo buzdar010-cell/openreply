@@ -1,6 +1,6 @@
 import { buildSearchIndex, shortlist } from "./candidateSearch.ts";
 import { parseTextLog, parsePhotoLog } from "./parseLog.ts";
-import { acquireViaDurableObject } from "./rateLimiter.ts";
+import { acquireViaDurableObject, checkRateLimit } from "./rateLimiter.ts";
 import {
   loadAllDishRecords,
   getDishById,
@@ -39,17 +39,18 @@ import {
 } from "./db.ts";
 import { resolvePortion } from "./resolvePortion.ts";
 import { storePhoto, getPhoto } from "./r2.ts";
-import { GeminiRateLimiterDO } from "./rateLimiterDO.ts";
+import { GeminiRateLimiterDO, KeyedRateLimiterDO } from "./rateLimiterDO.ts";
 import { calculateDailyCalorieTarget, isValidProfileInput } from "./goalCalc.ts";
 import { hashPassword, verifyPassword, generateSessionToken, generateDeviceToken, generateOtpCode, hashOtpCode } from "./auth.ts";
 import { sendOtpEmail } from "./email.ts";
 
-export { GeminiRateLimiterDO };
+export { GeminiRateLimiterDO, KeyedRateLimiterDO };
 
 export interface Env {
   DB: D1Database;
   PHOTOS: R2Bucket;
   RATE_LIMITER: DurableObjectNamespace;
+  KEYED_LIMITER: DurableObjectNamespace;
   GEMINI_API_KEY: string;
   ADMIN_TOKEN: string;
   RESEND_API_KEY: string;
@@ -66,6 +67,36 @@ const OTP_TTL_SECONDS = 10 * 60;
 // Forgot/reset-password is NOT gated by this: skipping it would let anyone
 // reset any account just by knowing the email address.
 const REQUIRE_EMAIL_VERIFICATION = false;
+
+// Per-account/per-email abuse limits -- separate from the global Gemini
+// budget above. Keyed per email (not IP): the threat here is one target
+// getting brute-forced or one account looping, not raw traffic volume, and
+// email-keying can't be dodged by switching networks the way IP-keying can.
+const AUTH_ATTEMPT_WINDOW_MS = 15 * 60 * 1000;
+const LOGIN_ATTEMPT_CAP = 5; // password guesses per email per window
+const SIGNUP_ATTEMPT_CAP = 5; // guards against one email spamming repeated signup/resend calls
+const FORGOT_PASSWORD_CAP = 5; // guards against email-bombing someone via repeated reset requests
+// Shared across verify-signup, verify-login, and reset-password -- all three
+// are "guess a 6-digit code for this email," so splitting attempts across
+// them must not multiply the effective attempts allowed.
+const CODE_ATTEMPT_CAP = 8;
+
+const LOG_BURST_WINDOW_MS = 60 * 1000;
+const LOG_BURST_CAP = 5; // stops a runaway loop/bug instantly, not just at the daily boundary
+const LOG_DAILY_WINDOW_MS = 24 * 60 * 60 * 1000;
+const LOG_DAILY_CAP = 40; // generous vs. real usage; caps how much of the shared 500/day Gemini budget one account can take
+
+async function rateLimitOrNull(
+  namespace: DurableObjectNamespace,
+  key: string,
+  capacity: number,
+  windowMs: number,
+): Promise<Response | null> {
+  const { allowed, waitMs } = await checkRateLimit(namespace, key, capacity, windowMs);
+  if (allowed) return null;
+  const minutes = Math.max(1, Math.ceil(waitMs / 60_000));
+  return jsonResponse({ error: `Too many attempts -- try again in ${minutes} minute${minutes === 1 ? "" : "s"}.` }, 429);
+}
 
 // The frontend (Cloudflare Pages, a different origin from this Worker's
 // own workers.dev domain) needs CORS to call this API from a browser at
@@ -108,6 +139,9 @@ async function handleSignup(request: Request, env: Env): Promise<Response> {
     return jsonResponse({ error: "a valid email and a password of at least 8 characters are required" }, 400);
   }
   const email = body.email.toLowerCase();
+  const limited = await rateLimitOrNull(env.KEYED_LIMITER, `signup:${email}`, SIGNUP_ATTEMPT_CAP, AUTH_ATTEMPT_WINDOW_MS);
+  if (limited) return limited;
+
   const existing = await getUserByEmail(env.DB, email);
   const { hash, salt } = await hashPassword(body.password);
 
@@ -154,6 +188,9 @@ async function handleVerifySignup(request: Request, env: Env): Promise<Response>
     return jsonResponse({ error: "email and code are required" }, 400);
   }
   const email = body.email.toLowerCase();
+  const limited = await rateLimitOrNull(env.KEYED_LIMITER, `code:${email}`, CODE_ATTEMPT_CAP, AUTH_ATTEMPT_WINDOW_MS);
+  if (limited) return limited;
+
   const valid = await consumeOtpCode(env.DB, email, await hashOtpCode(body.code), "signup");
   if (!valid) return jsonResponse({ error: "that code is invalid or has expired" }, 400);
 
@@ -176,6 +213,9 @@ async function handleLogin(request: Request, env: Env): Promise<Response> {
     return jsonResponse({ error: "email and password are required" }, 400);
   }
   const email = body.email.toLowerCase();
+  const limited = await rateLimitOrNull(env.KEYED_LIMITER, `login:${email}`, LOGIN_ATTEMPT_CAP, AUTH_ATTEMPT_WINDOW_MS);
+  if (limited) return limited;
+
   const user = await getUserByEmail(env.DB, email);
   // Same generic error whether the email doesn't exist or the password is
   // wrong -- never reveal which one it was.
@@ -217,6 +257,9 @@ async function handleVerifyLogin(request: Request, env: Env): Promise<Response> 
     return jsonResponse({ error: "email and code are required" }, 400);
   }
   const email = body.email.toLowerCase();
+  const limited = await rateLimitOrNull(env.KEYED_LIMITER, `code:${email}`, CODE_ATTEMPT_CAP, AUTH_ATTEMPT_WINDOW_MS);
+  if (limited) return limited;
+
   const valid = await consumeOtpCode(env.DB, email, await hashOtpCode(body.code), "login");
   if (!valid) return jsonResponse({ error: "that code is invalid or has expired" }, 400);
 
@@ -236,6 +279,9 @@ async function handleForgotPassword(request: Request, env: Env): Promise<Respons
   const body = (await request.json()) as { email?: string };
   if (!isValidEmail(body.email)) return jsonResponse({ error: "a valid email is required" }, 400);
   const email = body.email.toLowerCase();
+  const limited = await rateLimitOrNull(env.KEYED_LIMITER, `forgot:${email}`, FORGOT_PASSWORD_CAP, AUTH_ATTEMPT_WINDOW_MS);
+  if (limited) return limited;
+
   const user = await getUserByEmail(env.DB, email);
   // Always return ok, whether or not the account exists -- never let this
   // endpoint be used to check which emails are registered.
@@ -259,6 +305,9 @@ async function handleResetPassword(request: Request, env: Env): Promise<Response
     return jsonResponse({ error: "email, code, and a new password of at least 8 characters are required" }, 400);
   }
   const email = body.email.toLowerCase();
+  const limited = await rateLimitOrNull(env.KEYED_LIMITER, `code:${email}`, CODE_ATTEMPT_CAP, AUTH_ATTEMPT_WINDOW_MS);
+  if (limited) return limited;
+
   const valid = await consumeOtpCode(env.DB, email, await hashOtpCode(body.code), "reset");
   if (!valid) return jsonResponse({ error: "that code is invalid or has expired" }, 400);
 
@@ -283,9 +332,23 @@ async function handleLogout(request: Request, env: Env): Promise<Response> {
 
 // ---- Food logging and the rest of the app, now identity-checked via requireAuth ----
 
+/**
+ * Caps how much of the shared Gemini budget one account can take -- a
+ * burst check (stops a runaway loop/bug immediately) and a daily check
+ * (bounds the total). Checked before the Gemini call itself, so a denied
+ * request never spends any quota.
+ */
+async function logRateLimitOrNull(env: Env, userId: string): Promise<Response | null> {
+  const burst = await rateLimitOrNull(env.KEYED_LIMITER, `log-burst:${userId}`, LOG_BURST_CAP, LOG_BURST_WINDOW_MS);
+  if (burst) return burst;
+  return rateLimitOrNull(env.KEYED_LIMITER, `log-day:${userId}`, LOG_DAILY_CAP, LOG_DAILY_WINDOW_MS);
+}
+
 async function handleTextLog(request: Request, env: Env): Promise<Response> {
   const userId = await requireAuth(request, env);
   if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+  const limited = await logRateLimitOrNull(env, userId);
+  if (limited) return limited;
 
   const body = (await request.json()) as { text?: string; loggedAt?: number };
   if (typeof body.text !== "string" || !body.text) {
@@ -364,6 +427,8 @@ async function handleTextLog(request: Request, env: Env): Promise<Response> {
 async function handlePhotoLog(request: Request, env: Env): Promise<Response> {
   const userId = await requireAuth(request, env);
   if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+  const limited = await logRateLimitOrNull(env, userId);
+  if (limited) return limited;
 
   const body = (await request.json()) as {
     imageBase64?: string;

@@ -120,3 +120,22 @@ export async function acquireViaDurableObject(namespace: DurableObjectNamespace)
     await new Promise((resolve) => setTimeout(resolve, waitMs));
   }
 }
+
+/**
+ * Checks (and, if allowed, consumes) one attempt against a named limit --
+ * e.g. `login:${email}` capped at 5 per 15 minutes. Unlike
+ * acquireViaDurableObject this never waits/retries: a denied request should
+ * fail fast with a clear message, not silently stall until a slot frees up.
+ * `namespace` is the Worker's KEYED_LIMITER Durable Object binding.
+ */
+export async function checkRateLimit(
+  namespace: DurableObjectNamespace,
+  key: string,
+  capacity: number,
+  windowMs: number,
+): Promise<{ allowed: boolean; waitMs: number }> {
+  const id = namespace.idFromName(key);
+  const stub = namespace.get(id);
+  const response = await stub.fetch(`https://do/check?capacity=${capacity}&windowMs=${windowMs}`);
+  return (await response.json()) as { allowed: boolean; waitMs: number };
+}

@@ -26,6 +26,10 @@
       {
         "name": "RATE_LIMITER",
         "class_name": "GeminiRateLimiterDO"
+      },
+      {
+        "name": "KEYED_LIMITER",
+        "class_name": "KeyedRateLimiterDO"
       }
     ]
   },
@@ -34,6 +38,10 @@
     {
       "tag": "v1",
       "new_sqlite_classes": ["GeminiRateLimiterDO"]
+    },
+    {
+      "tag": "v2",
+      "new_sqlite_classes": ["KeyedRateLimiterDO"]
     }
   ]
 }

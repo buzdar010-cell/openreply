@@ -94,3 +94,62 @@ export class GeminiRateLimiterDO {
     return Response.json({ waitMs });
   }
 }
+
+/**
+ * Generic per-key token bucket, used for everything the Gemini limiter
+ * above doesn't cover: per-user food-log throttling (so one account can't
+ * burn the whole shared Gemini budget alone) and per-email attempt limits
+ * on login/signup/OTP-code endpoints (which have no abuse protection
+ * otherwise -- unlike the Gemini limiter, brute-forcing a password or a
+ * 6-digit code costs nothing to attempt).
+ *
+ * Unlike GeminiRateLimiterDO, capacity and window aren't fixed per class --
+ * every caller names its own Durable Object instance (e.g. `login:<email>`,
+ * `log-burst:<userId>`) via idFromName, so the same class safely serves many
+ * independent buckets with different limits, each isolated by its own
+ * instance storage. No MIN_DISPATCH_SPACING here -- that was specifically
+ * to smooth bursts past Gemini's own transient rate protection, not
+ * something an attempt-cap needs.
+ */
+interface KeyedBucketState {
+  tokens: number;
+  lastRefill: number;
+}
+
+export class KeyedRateLimiterDO {
+  private state: DurableObjectState;
+
+  constructor(state: DurableObjectState) {
+    this.state = state;
+  }
+
+  async fetch(request: Request): Promise<Response> {
+    const url = new URL(request.url);
+    const capacity = Number(url.searchParams.get("capacity"));
+    const windowMs = Number(url.searchParams.get("windowMs"));
+    const refillIntervalMs = windowMs / capacity;
+    const now = Date.now();
+
+    const stored = await this.state.storage.get<KeyedBucketState>("bucket");
+    let bucket = stored ?? { tokens: capacity, lastRefill: now };
+
+    const elapsed = now - bucket.lastRefill;
+    const tokensToAdd = Math.floor(elapsed / refillIntervalMs);
+    if (tokensToAdd > 0) {
+      bucket = {
+        tokens: Math.min(capacity, bucket.tokens + tokensToAdd),
+        lastRefill: bucket.lastRefill + tokensToAdd * refillIntervalMs,
+      };
+    }
+
+    if (bucket.tokens > 0) {
+      bucket = { ...bucket, tokens: bucket.tokens - 1 };
+      await this.state.storage.put("bucket", bucket);
+      return Response.json({ allowed: true });
+    }
+
+    await this.state.storage.put("bucket", bucket); // persist refill progress even when denying
+    const waitMs = Math.max(0, refillIntervalMs - (now - bucket.lastRefill));
+    return Response.json({ allowed: false, waitMs });
+  }
+}
