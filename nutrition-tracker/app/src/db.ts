@@ -668,3 +668,26 @@ export async function deleteExerciseLogOwnedByDevice(db: D1Database, deviceId: s
   const result = await db.prepare(`DELETE FROM exercise_logs WHERE id = ? AND device_id = ?`).bind(logId, deviceId).run();
   return (result.meta.changes ?? 0) > 0;
 }
+
+// ---- Signals for personalized Home content (tips/articles) ----
+
+/** Which dishes this device has logged most in the range -- feeds dish-specific tips. */
+export async function getTopLoggedDishIds(db: D1Database, deviceId: string, startUnix: number, endUnix: number, limit: number): Promise<string[]> {
+  const { results } = await db
+    .prepare(
+      `SELECT dish_id FROM logs WHERE device_id = ? AND logged_at >= ? AND logged_at < ?
+       GROUP BY dish_id ORDER BY COUNT(*) DESC LIMIT ?`,
+    )
+    .bind(deviceId, startUnix, endUnix, limit)
+    .all<{ dish_id: string }>();
+  return results.map((r) => r.dish_id);
+}
+
+/** Most recent exercise log's timestamp, if any -- feeds the "no recent exercise" signal. */
+export async function getLastExerciseLogTime(db: D1Database, deviceId: string): Promise<number | null> {
+  const row = await db
+    .prepare(`SELECT MAX(logged_at) as last FROM exercise_logs WHERE device_id = ?`)
+    .bind(deviceId)
+    .first<{ last: number | null }>();
+  return row?.last ?? null;
+}

@@ -40,7 +40,11 @@ import {
   getExerciseLogsForRange,
   getExerciseCaloriesForRange,
   deleteExerciseLogOwnedByDevice,
+  getTopLoggedDishIds,
+  getLastExerciseLogTime,
 } from "./db.ts";
+import { computeSignals, selectTips, selectArticles } from "./content/selectContent.ts";
+import { ARTICLES } from "./content/articles.ts";
 import { resolvePortion } from "./resolvePortion.ts";
 import { storePhoto, getPhoto } from "./r2.ts";
 import { GeminiRateLimiterDO, KeyedRateLimiterDO } from "./rateLimiterDO.ts";
@@ -683,6 +687,60 @@ async function handleGetProfile(request: Request, env: Env): Promise<Response> {
   return jsonResponse({ profile });
 }
 
+const SIGNALS_WINDOW_SECONDS = 7 * 86400;
+
+/**
+ * Personalized "Tips for you" + a short rotating articles list for Home.
+ * Selection is a deterministic rules match against real signals from this
+ * account's own recent logs/profile (see content/selectContent.ts) -- no
+ * AI call, so it costs nothing and never drifts into made-up advice.
+ * Seeded by (userId, today's date) so picks are stable within a day and
+ * rotate day to day, without needing to persist "what was shown" anywhere.
+ */
+async function handleHomeContent(request: Request, env: Env): Promise<Response> {
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+
+  const now = Math.floor(Date.now() / 1000);
+  const weekAgo = now - SIGNALS_WINDOW_SECONDS;
+  const [profile, weeklyTotals, topDishIds, lastExerciseLogAt] = await Promise.all([
+    getProfile(env.DB, userId),
+    getTotalsForRange(env.DB, userId, weekAgo, now),
+    getTopLoggedDishIds(env.DB, userId, weekAgo, now, 5),
+    getLastExerciseLogTime(env.DB, userId),
+  ]);
+
+  const signals = computeSignals({
+    goal: profile?.goal ?? null,
+    avgSodiumMg: weeklyTotals.sodium_mg / 7,
+    avgProteinG: weeklyTotals.protein_g / 7,
+    proteinTargetG: profile?.protein_target_g ?? null,
+    topDishIds,
+    lastExerciseLogAt,
+    nowUnix: now,
+  });
+
+  const today = new Date(now * 1000).toISOString().slice(0, 10);
+  const seed = `${userId}:${today}`;
+  const tips = selectTips(signals, seed);
+  const articles = selectArticles(seed);
+
+  return jsonResponse({
+    tips: tips.map((t) => ({ id: t.id, emoji: t.emoji, title: t.title, body: t.body })),
+    articles: articles.map((a) => ({ id: a.id, emoji: a.emoji, title: a.title, summary: a.summary })),
+  });
+}
+
+async function handleGetArticle(request: Request, env: Env): Promise<Response> {
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+  const url = new URL(request.url);
+  const id = url.searchParams.get("id");
+  const article = ARTICLES.find((a) => a.id === id);
+  if (!article) return jsonResponse({ error: "article not found" }, 404);
+  return jsonResponse({ article });
+}
+
 /**
  * Standalone endpoint so toggling gamification never requires a complete
  * profile to exist -- it previously shared a save action with the full
@@ -907,6 +965,12 @@ export default {
       }
       if (request.method === "GET" && url.pathname === "/profile") {
         return await handleGetProfile(request, env);
+      }
+      if (request.method === "GET" && url.pathname === "/home-content") {
+        return await handleHomeContent(request, env);
+      }
+      if (request.method === "GET" && url.pathname === "/article") {
+        return await handleGetArticle(request, env);
       }
       if (request.method === "POST" && url.pathname === "/profile") {
         return await handlePostProfile(request, env);

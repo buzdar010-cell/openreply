@@ -8,8 +8,9 @@
     "typecheck": "tsc --noEmit",
     "test:search": "node --experimental-strip-types test/search_quality.ts",
     "test:goal": "node --experimental-strip-types test/goal_calc.ts",
+    "test:content": "node --experimental-strip-types test/select_content.ts",
     "test:e2e": "node --experimental-strip-types test/test_e2e.ts",
-    "test": "npm run typecheck && npm run test:search && npm run test:goal",
+    "test": "npm run typecheck && npm run test:search && npm run test:goal && npm run test:content",
     "seed:generate": "python3 scripts/generate_seed.py",
     "dev": "wrangler dev --local"
   },
