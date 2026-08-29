@@ -1,6 +1,6 @@
 # Roadmap
 
-Last updated: 2026-08-29. Reflects the full-app audit (rated 6.5/10 as a
+Last updated: 2026-08-29 (exercise logging). Reflects the full-app audit (rated 6.5/10 as a
 working beta, not yet public-launch-ready) plus a competitive review against
 MyFitnessPal, Cronometer, Lose It, and HealthifyMe.
 
@@ -77,9 +77,15 @@ Fix before anyone outside trusted testers uses the app.
 
 ## P2 — Product completeness
 
-6. **Exercise/activity logging** *(elevated to must-have)* — completes the
-   calorie-target feature already shipped; without it, targets are
-   silently wrong for anyone who exercises regularly.
+6. ✅ **Exercise/activity logging** — DONE. `daily_calorie_target` used to
+   come from a fixed `activity_level` baked into the profile and never
+   adjusted for what someone actually did that day. Now: a simple
+   activity picker (walk/run/cycling/gym/sports/yoga/housework) +
+   duration, calories burned via the standard MET formula server-side
+   (no AI call, doesn't touch the Gemini budget). Home's ring shows
+   target + exercise burned as the real budget; Logs shows food and
+   exercise merged into one time-sorted feed, each independently
+   deletable.
 7. **Macro targets on Home** — calories get a real target + progress bar;
    protein/carbs/fat just show raw totals with nothing to compare against.
 8. **Backdating a log** — the backend already supports a custom
