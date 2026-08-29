@@ -61,7 +61,19 @@ Fix before anyone outside trusted testers uses the app.
    flag (currently off because Resend's shared sender can only reach the
    account owner's own inbox) and makes the Google/Facebook OAuth consent
    screens look like a real product instead of a raw `workers.dev` URL.
-   Blocked on picking a name.
+
+   **Decided:** name is **Nourly**, domain is **nourly.app**, to be
+   bought at Spaceship ($4.98 first year, $14.69/yr renewal). Blocked on
+   funds to buy it -- pick this back up once that's sorted.
+
+   **How it'll get wired up once bought:** the user registers the domain
+   at Spaceship (only step that needs their login) and switches its
+   nameservers to Cloudflare's. Everything after that -- adding the zone
+   to the Cloudflare account, DNS records, pointing `app.nourly.app` (or
+   similar) at the Pages frontend and an API subdomain at the Worker,
+   SSL, and eventually a Resend sending domain on it -- Claude can do
+   directly with the same Cloudflare API access already used all
+   session for Workers/D1/R2/Pages.
 
 ## P2 — Product completeness
 
