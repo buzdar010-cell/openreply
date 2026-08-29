@@ -27,10 +27,16 @@ Fix before anyone outside trusted testers uses the app.
      creating a Google Cloud OAuth client and a Meta developer app and
      sharing the client ID/secret pairs — nothing on the code side is
      blocked.
-2. **Per-device rate limiting** — nothing currently stops one device from
-   burning through the whole app's shared Gemini quota (15 RPM / 500 RPD).
-   Designed earlier (Cloudflare edge IP rules + per-device cooldown) but
-   never actually implemented.
+2. ✅ **Per-account rate limiting** — DONE. Two caps, both keyed per
+   account/email via a generic Durable Object token bucket
+   (`KeyedRateLimiterDO`), not per-IP: food logging is capped at
+   5/minute and 40/day per account (bounds one account's share of the
+   shared 500/day Gemini budget, checked before the Gemini call so a
+   denied request never spends quota); login, signup, forgot-password,
+   and code verification are each capped at 5 attempts per 15 minutes
+   per email (verify-signup/verify-login/reset-password share one
+   bucket, since all three are the same "guess a 6-digit code" attack).
+   Denied requests get a friendly "try again in N minutes" message.
 
 ## P1 — Real risk gaps (at or shortly after launch)
 
