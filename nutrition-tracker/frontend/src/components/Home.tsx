@@ -1,13 +1,8 @@
 import { useEffect, useState } from 'react';
-import { getTodayTotals, getProfile, type Totals, type Profile } from '../lib/api';
+import { getTodayTotals, getProfile, getHomeContent, type Totals, type Profile, type TipItem, type ArticleSummary } from '../lib/api';
+import { ArticleReader } from './ArticleReader';
 
 const DEFAULT_TARGET_KCAL = 2000; // fallback when no profile/goal has been set yet
-
-const TIPS = [
-  { emoji: '🧂', title: 'Watch the salt', body: 'Nihari and biryani both run high in sodium — pair with plain daal or salad to balance the day out.' },
-  { emoji: '🍗', title: 'Protein swap', body: 'Swapping chicken thigh for breast in karahi cuts fat while keeping protein about the same.' },
-  { emoji: '🫓', title: 'Roti vs naan', body: 'A plain roti has roughly a third of the calories of a butter naan — an easy swap that adds up over a week.' },
-];
 
 function MacroCard({
   label,
@@ -55,6 +50,9 @@ export function Home({ refreshKey }: { refreshKey: number }) {
   const [totals, setTotals] = useState<Totals | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [tips, setTips] = useState<TipItem[]>([]);
+  const [articles, setArticles] = useState<ArticleSummary[]>([]);
+  const [openArticleId, setOpenArticleId] = useState<string | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -63,6 +61,14 @@ export function Home({ refreshKey }: { refreshKey: number }) {
       setProfile(p);
       setLoading(false);
     });
+    // Personalized, so it's refetched on the same triggers as totals/profile
+    // (a fresh log can shift signals like "no recent exercise").
+    getHomeContent()
+      .then(({ tips: fetchedTips, articles: fetchedArticles }) => {
+        setTips(fetchedTips);
+        setArticles(fetchedArticles);
+      })
+      .catch(() => {});
   }, [refreshKey]);
 
   const baseTarget = profile?.daily_calorie_target ?? DEFAULT_TARGET_KCAL;
@@ -121,18 +127,46 @@ export function Home({ refreshKey }: { refreshKey: number }) {
         </>
       )}
 
-      <h2 className="text-ink-900 mb-3 text-lg font-bold">Tips for you</h2>
-      <div className="flex flex-col gap-3">
-        {TIPS.map((tip) => (
-          <div key={tip.title} className="border-cream-200 flex gap-3 rounded-2xl border bg-surface p-4">
-            <span className="text-2xl">{tip.emoji}</span>
-            <div>
-              <div className="text-ink-900 text-sm font-bold">{tip.title}</div>
-              <div className="text-ink-600 mt-0.5 text-xs leading-relaxed">{tip.body}</div>
-            </div>
+      {tips.length > 0 && (
+        <>
+          <h2 className="text-ink-900 mb-3 text-lg font-bold">Tips for you</h2>
+          <div className="mb-6 flex flex-col gap-3">
+            {tips.map((tip) => (
+              <div key={tip.id} className="border-cream-200 flex gap-3 rounded-2xl border bg-surface p-4">
+                <span className="text-2xl">{tip.emoji}</span>
+                <div>
+                  <div className="text-ink-900 text-sm font-bold">{tip.title}</div>
+                  <div className="text-ink-600 mt-0.5 text-xs leading-relaxed">{tip.body}</div>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      )}
+
+      {articles.length > 0 && (
+        <>
+          <h2 className="text-ink-900 mb-3 text-lg font-bold">Worth a read</h2>
+          <div className="flex flex-col gap-3">
+            {articles.map((article) => (
+              <button
+                key={article.id}
+                onClick={() => setOpenArticleId(article.id)}
+                className="border-cream-200 flex items-center gap-3 rounded-2xl border bg-surface p-4 text-left"
+              >
+                <span className="text-2xl">{article.emoji}</span>
+                <div className="min-w-0 flex-1">
+                  <div className="text-ink-900 text-sm font-bold leading-snug">{article.title}</div>
+                  <div className="text-ink-600 mt-0.5 text-xs leading-relaxed">{article.summary}</div>
+                </div>
+                <span className="text-ink-400 shrink-0 text-lg">›</span>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+
+      {openArticleId && <ArticleReader articleId={openArticleId} onClose={() => setOpenArticleId(null)} />}
     </div>
   );
 }

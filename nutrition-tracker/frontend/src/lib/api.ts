@@ -259,3 +259,32 @@ export async function setGamification(enabled: boolean): Promise<void> {
 export async function submitFeedback(message: string, context?: string): Promise<void> {
   await postJson('/feedback', { message, context });
 }
+
+// ---- Personalized Home content: tips + articles ----
+
+export interface TipItem {
+  id: string;
+  emoji: string;
+  title: string;
+  body: string;
+}
+
+export interface ArticleSummary {
+  id: string;
+  emoji: string;
+  title: string;
+  summary: string;
+}
+
+export interface Article extends ArticleSummary {
+  body: string;
+}
+
+export async function getHomeContent(): Promise<{ tips: TipItem[]; articles: ArticleSummary[] }> {
+  return getJson('/home-content');
+}
+
+export async function getArticle(id: string): Promise<Article> {
+  const data = await getJson<{ article: Article }>(`/article?id=${encodeURIComponent(id)}`);
+  return data.article;
+}
