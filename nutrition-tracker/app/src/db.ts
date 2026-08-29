@@ -596,3 +596,64 @@ export async function consumeOtpCode(
   await db.prepare(`UPDATE otp_codes SET used = 1 WHERE id = ?`).bind(row.id).run();
   return true;
 }
+
+// ---- Exercise logs ----
+
+export interface ExerciseLogRow {
+  id: string;
+  activity_type: string;
+  duration_minutes: number;
+  calories_burned: number;
+  logged_at: number;
+}
+
+export async function insertExerciseLog(
+  db: D1Database,
+  log: {
+    id: string;
+    device_id: string;
+    activity_type: string;
+    duration_minutes: number;
+    calories_burned: number;
+    logged_at: number;
+  },
+): Promise<void> {
+  await db
+    .prepare(
+      `INSERT INTO exercise_logs (id, device_id, activity_type, duration_minutes, calories_burned, logged_at, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    )
+    .bind(log.id, log.device_id, log.activity_type, log.duration_minutes, log.calories_burned, log.logged_at, Math.floor(Date.now() / 1000))
+    .run();
+}
+
+export async function getExerciseLogsForRange(
+  db: D1Database,
+  deviceId: string,
+  startUnix: number,
+  endUnix: number,
+): Promise<ExerciseLogRow[]> {
+  const { results } = await db
+    .prepare(
+      `SELECT id, activity_type, duration_minutes, calories_burned, logged_at
+       FROM exercise_logs WHERE device_id = ? AND logged_at >= ? AND logged_at < ? ORDER BY logged_at DESC`,
+    )
+    .bind(deviceId, startUnix, endUnix)
+    .all<ExerciseLogRow>();
+  return results;
+}
+
+/** Sums calories burned in a range -- used to adjust the day's calorie budget alongside food totals. */
+export async function getExerciseCaloriesForRange(db: D1Database, deviceId: string, startUnix: number, endUnix: number): Promise<number> {
+  const row = await db
+    .prepare(`SELECT COALESCE(SUM(calories_burned), 0) as total FROM exercise_logs WHERE device_id = ? AND logged_at >= ? AND logged_at < ?`)
+    .bind(deviceId, startUnix, endUnix)
+    .first<{ total: number }>();
+  return row!.total;
+}
+
+/** Ownership-checked delete, same pattern as userDeleteLog for food logs. Returns whether a row was actually deleted. */
+export async function deleteExerciseLogOwnedByDevice(db: D1Database, deviceId: string, logId: string): Promise<boolean> {
+  const result = await db.prepare(`DELETE FROM exercise_logs WHERE id = ? AND device_id = ?`).bind(logId, deviceId).run();
+  return (result.meta.changes ?? 0) > 0;
+}

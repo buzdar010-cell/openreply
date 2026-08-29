@@ -36,11 +36,16 @@ import {
   upsertTrustedDevice,
   createOtpCode,
   consumeOtpCode,
+  insertExerciseLog,
+  getExerciseLogsForRange,
+  getExerciseCaloriesForRange,
+  deleteExerciseLogOwnedByDevice,
 } from "./db.ts";
 import { resolvePortion } from "./resolvePortion.ts";
 import { storePhoto, getPhoto } from "./r2.ts";
 import { GeminiRateLimiterDO, KeyedRateLimiterDO } from "./rateLimiterDO.ts";
 import { calculateDailyCalorieTarget, isValidProfileInput } from "./goalCalc.ts";
+import { calculateCaloriesBurned, isValidActivityType } from "./exerciseCalc.ts";
 import { hashPassword, verifyPassword, generateSessionToken, generateDeviceToken, generateOtpCode, hashOtpCode } from "./auth.ts";
 import { sendOtpEmail } from "./email.ts";
 
@@ -544,7 +549,8 @@ async function handleTotals(request: Request, env: Env): Promise<Response> {
     return jsonResponse({ error: "start and end (unix seconds) are required" }, 400);
   }
   const totals = await getTotalsForRange(env.DB, userId, Number(startUnix), Number(endUnix));
-  return jsonResponse(totals);
+  const exercise_kcal = await getExerciseCaloriesForRange(env.DB, userId, Number(startUnix), Number(endUnix));
+  return jsonResponse({ ...totals, exercise_kcal });
 }
 
 /** Individual logged items in a range, e.g. for a day-grouped history feed -- /totals only gives the sum. */
@@ -607,6 +613,66 @@ async function handleUserDeleteLog(request: Request, env: Env): Promise<Response
   const log = await getLogOwnedByDevice(env.DB, userId, body.logId);
   if (!log) return jsonResponse({ error: "log not found" }, 404);
   await userDeleteLog(env.DB, log.id);
+  return jsonResponse({ ok: true });
+}
+
+// ---- Exercise logging -- separate from food logs, no Gemini call involved ----
+
+async function handleExerciseLog(request: Request, env: Env): Promise<Response> {
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+
+  const body = (await request.json()) as { activityType?: string; durationMinutes?: number; loggedAt?: number };
+  if (!isValidActivityType(body.activityType)) {
+    return jsonResponse({ error: "a valid activityType is required" }, 400);
+  }
+  if (typeof body.durationMinutes !== "number" || body.durationMinutes <= 0 || body.durationMinutes > 600) {
+    return jsonResponse({ error: "durationMinutes must be a number between 1 and 600" }, 400);
+  }
+
+  // Calories burned scale with body weight -- can't compute this without it.
+  const profile = await getProfile(env.DB, userId);
+  if (!profile?.weight_kg) {
+    return jsonResponse({ error: "add your weight in Profile & Goals before logging exercise" }, 400);
+  }
+
+  const caloriesBurned = calculateCaloriesBurned(body.activityType, profile.weight_kg, body.durationMinutes);
+  const logId = crypto.randomUUID();
+  const loggedAt = body.loggedAt ?? Math.floor(Date.now() / 1000);
+  await insertExerciseLog(env.DB, {
+    id: logId,
+    device_id: userId,
+    activity_type: body.activityType,
+    duration_minutes: body.durationMinutes,
+    calories_burned: caloriesBurned,
+    logged_at: loggedAt,
+  });
+
+  return jsonResponse({ logId, activityType: body.activityType, durationMinutes: body.durationMinutes, caloriesBurned });
+}
+
+async function handleGetExerciseLogs(request: Request, env: Env): Promise<Response> {
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+  const url = new URL(request.url);
+  const startUnix = url.searchParams.get("start");
+  const endUnix = url.searchParams.get("end");
+  if (!startUnix || !endUnix) {
+    return jsonResponse({ error: "start and end (unix seconds) are required" }, 400);
+  }
+  const logs = await getExerciseLogsForRange(env.DB, userId, Number(startUnix), Number(endUnix));
+  return jsonResponse({ logs });
+}
+
+async function handleDeleteExerciseLog(request: Request, env: Env): Promise<Response> {
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+  const body = (await request.json()) as { logId?: string };
+  if (typeof body.logId !== "string" || !body.logId) {
+    return jsonResponse({ error: "logId is required" }, 400);
+  }
+  const deleted = await deleteExerciseLogOwnedByDevice(env.DB, userId, body.logId);
+  if (!deleted) return jsonResponse({ error: "log not found" }, 404);
   return jsonResponse({ ok: true });
 }
 
@@ -819,6 +885,15 @@ export default {
       }
       if (request.method === "POST" && url.pathname === "/logs/delete") {
         return await handleUserDeleteLog(request, env);
+      }
+      if (request.method === "POST" && url.pathname === "/log/exercise") {
+        return await handleExerciseLog(request, env);
+      }
+      if (request.method === "GET" && url.pathname === "/logs/exercise") {
+        return await handleGetExerciseLogs(request, env);
+      }
+      if (request.method === "POST" && url.pathname === "/logs/exercise/delete") {
+        return await handleDeleteExerciseLog(request, env);
       }
       if (request.method === "GET" && url.pathname === "/profile") {
         return await handleGetProfile(request, env);
