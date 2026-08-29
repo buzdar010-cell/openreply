@@ -1,6 +1,6 @@
 # Roadmap
 
-Last updated: 2026-08-28. Reflects the full-app audit (rated 6.5/10 as a
+Last updated: 2026-08-29. Reflects the full-app audit (rated 6.5/10 as a
 working beta, not yet public-launch-ready) plus a competitive review against
 MyFitnessPal, Cronometer, Lose It, and HealthifyMe.
 
@@ -8,9 +8,25 @@ MyFitnessPal, Cronometer, Lose It, and HealthifyMe.
 
 Fix before anyone outside trusted testers uses the app.
 
-1. **Real authentication** — every endpoint currently trusts a client-sent
-   `device_id` string with zero verification. Anyone who obtains one has
-   permanent full read/write access to that account with no way to revoke it.
+1. ✅ **Real authentication** — DONE. Every endpoint used to trust a
+   client-sent `device_id` string with zero verification; now every account
+   is a real email+password login, resolved server-side from a session
+   token. Step-up email code only on a new device or location change
+   (Cloudflare's free `request.cf.country` signal), not every login.
+   Forgot/reset password included. Currently signup and step-up are both
+   set to skip the emailed code (`REQUIRE_EMAIL_VERIFICATION = false` in
+   `index.ts`) until a real domain is verified in Resend — right now
+   Resend's shared sender can only deliver to the account owner's own
+   inbox, so a real user's code would never arrive. Flip that flag back on
+   once a domain is verified.
+   - **1a. Google / Facebook login** — not started. Plan: OAuth
+     "Continue with Google/Facebook" buttons, backend exchanges the
+     provider's code for the user's verified email server-side, links to
+     an existing account by email or creates a new one, then issues a
+     session the same way password login does. Blocked on the user
+     creating a Google Cloud OAuth client and a Meta developer app and
+     sharing the client ID/secret pairs — nothing on the code side is
+     blocked.
 2. **Per-device rate limiting** — nothing currently stops one device from
    burning through the whole app's shared Gemini quota (15 RPM / 500 RPD).
    Designed earlier (Cloudflare edge IP rules + per-device cooldown) but
