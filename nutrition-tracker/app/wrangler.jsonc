@@ -43,5 +43,15 @@
       "tag": "v2",
       "new_sqlite_classes": ["KeyedRateLimiterDO"]
     }
-  ]
+  ],
+
+  "triggers": {
+    // Once a day -- checked against each subscription's own last-reminded time, not just
+    // this schedule, so it's fine if the actual run time drifts a little.
+    "crons": ["0 12 * * *"]
+  },
+
+  "vars": {
+    "VAPID_PUBLIC_KEY": "BMoUaDb4XHQh4sNmh9d7AmxrNbnT8XVR5V4y7TLJxlsWFuFhOUU8y5De6dhkvJJQrmfaKWak1BIa2doE5rPuliM"
+  }
 }

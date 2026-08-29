@@ -47,10 +47,16 @@ import {
   getAverageWeightForRange,
   getLastWeightLogTime,
   deleteWeightLogOwnedByDevice,
+  upsertPushSubscription,
+  deletePushSubscription,
+  deletePushSubscriptionByEndpoint,
+  getPushSubscriptionsOverdueForWeightLog,
+  markPushSubscriptionSent,
 } from "./db.ts";
 import { computeSignals, selectTips, selectArticles } from "./content/selectContent.ts";
 import { ARTICLES } from "./content/articles.ts";
 import { computeWeightTrend } from "./weightTrend.ts";
+import { sendWebPush, importVapidPrivateKey, base64UrlDecode, type VapidKeyPair } from "./webPush.ts";
 import { resolvePortion } from "./resolvePortion.ts";
 import { storePhoto, getPhoto } from "./r2.ts";
 import { GeminiRateLimiterDO, KeyedRateLimiterDO } from "./rateLimiterDO.ts";
@@ -69,7 +75,14 @@ export interface Env {
   GEMINI_API_KEY: string;
   ADMIN_TOKEN: string;
   RESEND_API_KEY: string;
+  VAPID_PRIVATE_JWK: string; // secret -- see scripts/generate_vapid.mjs
+  VAPID_PUBLIC_KEY: string; // not secret -- also embedded in the frontend build to request a push subscription
 }
+
+// How long since the last weight log before someone is "overdue" for a reminder --
+// matches the in-app banner's cadence and the "after 1 missed day" choice.
+const WEIGHT_REMINDER_STALE_SECONDS = 24 * 3600;
+const VAPID_SUBJECT = "mailto:buzdar0003@gmail.com";
 
 const SESSION_TTL_SECONDS = 90 * 86400; // 90 days -- casual habit tracker, not a banking app
 const OTP_TTL_SECONDS = 10 * 60;
@@ -754,6 +767,34 @@ async function handleGetWeightTrend(request: Request, env: Env): Promise<Respons
   });
 }
 
+// ---- Push notifications ----
+
+async function handlePushSubscribe(request: Request, env: Env): Promise<Response> {
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+
+  const body = (await request.json()) as { endpoint?: string; keys?: { p256dh?: string; auth?: string } };
+  if (typeof body.endpoint !== "string" || !body.endpoint || typeof body.keys?.p256dh !== "string" || typeof body.keys?.auth !== "string") {
+    return jsonResponse({ error: "endpoint and keys.p256dh/keys.auth are required" }, 400);
+  }
+
+  await upsertPushSubscription(env.DB, { userId, endpoint: body.endpoint, p256dh: body.keys.p256dh, auth: body.keys.auth });
+  return jsonResponse({ ok: true });
+}
+
+async function handlePushUnsubscribe(request: Request, env: Env): Promise<Response> {
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+
+  const body = (await request.json()) as { endpoint?: string };
+  if (typeof body.endpoint !== "string" || !body.endpoint) {
+    return jsonResponse({ error: "endpoint is required" }, 400);
+  }
+
+  await deletePushSubscription(env.DB, userId, body.endpoint);
+  return jsonResponse({ ok: true });
+}
+
 async function handleGetProfile(request: Request, env: Env): Promise<Response> {
   const userId = await requireAuth(request, env);
   if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
@@ -982,7 +1023,36 @@ async function handleAdminPhoto(request: Request, env: Env): Promise<Response> {
   });
 }
 
+/** Daily cron: nudge anyone overdue for a weight log who has an active push subscription. See db.ts's query for the exact "overdue" + "not already reminded" logic. */
+async function sendWeightReminders(env: Env): Promise<void> {
+  const subs = await getPushSubscriptionsOverdueForWeightLog(env.DB, WEIGHT_REMINDER_STALE_SECONDS);
+  if (subs.length === 0) return;
+
+  const vapid: VapidKeyPair = {
+    privateKey: await importVapidPrivateKey(env.VAPID_PRIVATE_JWK),
+    publicKeyRaw: base64UrlDecode(env.VAPID_PUBLIC_KEY),
+  };
+  const payload = { title: "Time for a check-in", body: "Haven't logged your weight in a while -- worth a quick update?" };
+
+  await Promise.all(
+    subs.map(async (sub) => {
+      const result = await sendWebPush({ endpoint: sub.endpoint, p256dh: sub.p256dh, auth: sub.auth }, payload, vapid, VAPID_SUBJECT);
+      if (result.ok) {
+        await markPushSubscriptionSent(env.DB, sub.id);
+      } else if (result.expired) {
+        await deletePushSubscriptionByEndpoint(env.DB, sub.endpoint);
+      }
+      // A non-expired failure (e.g. a transient 5xx from the push service) is left alone --
+      // it'll just get retried on tomorrow's run rather than needing its own retry logic here.
+    }),
+  );
+}
+
 export default {
+  async scheduled(_controller: ScheduledController, env: Env): Promise<void> {
+    await sendWeightReminders(env);
+  },
+
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
     if (request.method === "OPTIONS") {
@@ -1048,6 +1118,12 @@ export default {
       }
       if (request.method === "GET" && url.pathname === "/weight-trend") {
         return await handleGetWeightTrend(request, env);
+      }
+      if (request.method === "POST" && url.pathname === "/push/subscribe") {
+        return await handlePushSubscribe(request, env);
+      }
+      if (request.method === "POST" && url.pathname === "/push/unsubscribe") {
+        return await handlePushUnsubscribe(request, env);
       }
       if (request.method === "GET" && url.pathname === "/profile") {
         return await handleGetProfile(request, env);

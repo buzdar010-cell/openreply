@@ -736,3 +736,63 @@ export async function deleteWeightLogOwnedByDevice(db: D1Database, deviceId: str
   const result = await db.prepare(`DELETE FROM weight_logs WHERE id = ? AND device_id = ?`).bind(logId, deviceId).run();
   return (result.meta.changes ?? 0) > 0;
 }
+
+// ---- Push subscriptions ----
+
+/** Keyed by endpoint (unique) so re-subscribing the same browser/device just refreshes its keys instead of creating a duplicate row. */
+export async function upsertPushSubscription(
+  db: D1Database,
+  sub: { userId: string; endpoint: string; p256dh: string; auth: string },
+): Promise<void> {
+  await db
+    .prepare(
+      `INSERT INTO push_subscriptions (id, user_id, endpoint, p256dh, auth, created_at)
+       VALUES (?, ?, ?, ?, ?, ?)
+       ON CONFLICT(endpoint) DO UPDATE SET user_id = excluded.user_id, p256dh = excluded.p256dh, auth = excluded.auth`,
+    )
+    .bind(crypto.randomUUID(), sub.userId, sub.endpoint, sub.p256dh, sub.auth, Math.floor(Date.now() / 1000))
+    .run();
+}
+
+export async function deletePushSubscription(db: D1Database, userId: string, endpoint: string): Promise<void> {
+  await db.prepare(`DELETE FROM push_subscriptions WHERE user_id = ? AND endpoint = ?`).bind(userId, endpoint).run();
+}
+
+export async function deletePushSubscriptionByEndpoint(db: D1Database, endpoint: string): Promise<void> {
+  await db.prepare(`DELETE FROM push_subscriptions WHERE endpoint = ?`).bind(endpoint).run();
+}
+
+export interface PushSubscriptionRow {
+  id: string;
+  user_id: string;
+  endpoint: string;
+  p256dh: string;
+  auth: string;
+}
+
+/**
+ * Subscriptions belonging to users who haven't logged their weight in
+ * `staleSeconds` (or ever) and haven't already been sent a reminder inside
+ * that same window -- the daily-cadence, "remind after one missed day"
+ * behavior, with the last_sent_at guard preventing a double-send if the
+ * cron fires more than once in a window.
+ */
+export async function getPushSubscriptionsOverdueForWeightLog(db: D1Database, staleSeconds: number): Promise<PushSubscriptionRow[]> {
+  const cutoff = Math.floor(Date.now() / 1000) - staleSeconds;
+  const { results } = await db
+    .prepare(
+      `SELECT ps.id, ps.user_id, ps.endpoint, ps.p256dh, ps.auth
+       FROM push_subscriptions ps
+       LEFT JOIN (SELECT device_id, MAX(logged_at) as last_logged FROM weight_logs GROUP BY device_id) wl
+         ON wl.device_id = ps.user_id
+       WHERE (wl.last_logged IS NULL OR wl.last_logged < ?)
+         AND (ps.last_sent_at IS NULL OR ps.last_sent_at < ?)`,
+    )
+    .bind(cutoff, cutoff)
+    .all<PushSubscriptionRow>();
+  return results;
+}
+
+export async function markPushSubscriptionSent(db: D1Database, id: string): Promise<void> {
+  await db.prepare(`UPDATE push_subscriptions SET last_sent_at = ? WHERE id = ?`).bind(Math.floor(Date.now() / 1000), id).run();
+}
