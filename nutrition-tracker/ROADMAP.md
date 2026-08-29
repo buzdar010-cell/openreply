@@ -97,8 +97,13 @@ Fix before anyone outside trusted testers uses the app.
    a small "When" field (defaults to now, only touched to backdate) that
    actually sends the backend's already-existing `loggedAt` support,
    which nothing in the frontend was using before this.
-9. **Real personalized content** — "Tips for you" on Home is 3 hardcoded
-   static tips for everyone, not actually personalized or rotating.
+9. ✅ **Real personalized content** — DONE. "Tips for you" was 3 hardcoded
+   static tips for everyone. Now a hand-written library (78 tips, 9 short
+   articles -- not AI-generated, so it costs nothing and can't drift into
+   made-up advice) matched against real signals from someone's own logs
+   (sodium/protein trends, most-logged dishes, days since exercise, goal),
+   seeded by day so picks rotate without needing to persist state. Home
+   gained a "Worth a read" articles section with a full-screen reader.
 10. **Weight-trend tracking + adaptive coaching** — let people log their
     weight daily, smooth it (e.g. 7-day moving average, not reactive to
     single-day swings), and compare the trend against their goal — keep
