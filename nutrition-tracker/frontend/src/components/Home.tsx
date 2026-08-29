@@ -9,7 +9,20 @@ const TIPS = [
   { emoji: '🫓', title: 'Roti vs naan', body: 'A plain roti has roughly a third of the calories of a butter naan — an easy swap that adds up over a week.' },
 ];
 
-function StatCard({ label, value, unit }: { label: string; value: number; unit: string }) {
+function MacroCard({
+  label,
+  value,
+  target,
+  unit,
+  barColor,
+}: {
+  label: string;
+  value: number;
+  target: number | null;
+  unit: string;
+  barColor: string;
+}) {
+  const pct = target ? Math.min(100, Math.round((value / target) * 100)) : 0;
   return (
     <div className="border-cream-200 rounded-2xl border bg-surface p-4 text-center">
       <div className="text-primary-600 text-xl font-extrabold">
@@ -17,6 +30,19 @@ function StatCard({ label, value, unit }: { label: string; value: number; unit: 
         <span className="text-ink-400 ml-1 text-xs font-semibold">{unit}</span>
       </div>
       <div className="text-ink-600 mt-1 text-xs font-medium">{label}</div>
+      {target != null ? (
+        <>
+          <div className="bg-cream-200 mt-2 h-1.5 w-full overflow-hidden rounded-full">
+            <div className={`h-full rounded-full transition-all ${barColor}`} style={{ width: `${pct}%` }} />
+          </div>
+          <div className="text-ink-400 mt-1 text-[10px]">
+            of {target}
+            {unit}
+          </div>
+        </>
+      ) : (
+        <div className="text-ink-400 mt-2 text-[10px]">set a goal for a target</div>
+      )}
     </div>
   );
 }
@@ -88,9 +114,9 @@ export function Home({ refreshKey }: { refreshKey: number }) {
           </div>
 
           <div className="mb-6 grid grid-cols-3 gap-3">
-            <StatCard label="Protein" value={totals?.protein_g ?? 0} unit="g" />
-            <StatCard label="Carbs" value={totals?.carbs_g ?? 0} unit="g" />
-            <StatCard label="Fat" value={totals?.fat_g ?? 0} unit="g" />
+            <MacroCard label="Protein" value={totals?.protein_g ?? 0} target={profile?.protein_target_g ?? null} unit="g" barColor="bg-accent-500" />
+            <MacroCard label="Carbs" value={totals?.carbs_g ?? 0} target={profile?.carbs_target_g ?? null} unit="g" barColor="bg-primary-500" />
+            <MacroCard label="Fat" value={totals?.fat_g ?? 0} target={profile?.fat_target_g ?? null} unit="g" barColor="bg-accent-300" />
           </div>
         </>
       )}

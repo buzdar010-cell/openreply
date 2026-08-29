@@ -219,6 +219,9 @@ export interface Profile {
   activity_level: ActivityLevel | null;
   goal: Goal | null;
   daily_calorie_target: number | null;
+  protein_target_g: number | null;
+  carbs_target_g: number | null;
+  fat_target_g: number | null;
   gamification_enabled: 0 | 1;
   current_streak: number;
   longest_streak: number;
@@ -241,7 +244,9 @@ export interface ProfileInput {
   gamification_enabled: boolean;
 }
 
-export async function saveProfile(input: ProfileInput): Promise<{ daily_calorie_target: number }> {
+export async function saveProfile(
+  input: ProfileInput,
+): Promise<{ daily_calorie_target: number; protein_target_g: number; carbs_target_g: number; fat_target_g: number }> {
   return postJson('/profile', input);
 }
 
