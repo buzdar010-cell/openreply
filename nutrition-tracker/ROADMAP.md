@@ -40,45 +40,60 @@ Fix before anyone outside trusted testers uses the app.
 
 ## P1 — Real risk gaps (at or shortly after launch)
 
-3. **Account backup/recovery** — device ID lives only in browser
-   localStorage. Clearing site data or switching phones loses everything
-   (profile, streaks, log history) forever, no login, no restore. CSV
-   export only covers food logs, not profile/goal/streak state, and
-   there's no import path at all.
+3. ✅ **Account backup/recovery** — DONE. Real accounts (item 1) already
+   solved actual recovery: data lives in D1 now, not localStorage, so
+   switching phones or clearing site data just means logging back in. The
+   remaining gap -- CSV export only covering food logs, not profile/goal/
+   streak state -- is closed with a separate "Export my data" action in
+   Settings that downloads everything as one JSON file. No import path,
+   deliberately: an account already IS the restore mechanism now, nothing
+   to import back into.
 4. **Legal basics** — no privacy policy, no "these are estimates, not
-   medical advice" disclaimer anywhere.
+   medical advice" disclaimer anywhere. Deferred for now, will come back
+   to it.
+5. **Custom domain + branding** — everything is currently on Cloudflare's
+   own subdomains (`*.workers.dev`, `*.pages.dev`) under the placeholder
+   name "Nutrition Tracker," which is a description, not a brand. Needs:
+   an actual product name, a purchased domain, the Worker (API) and Pages
+   (frontend) pointed at branded subdomains of it (straightforward, both
+   already run on Cloudflare), and email sent from an address on that
+   domain. That last part also unblocks item 1a's `REQUIRE_EMAIL_VERIFICATION`
+   flag (currently off because Resend's shared sender can only reach the
+   account owner's own inbox) and makes the Google/Facebook OAuth consent
+   screens look like a real product instead of a raw `workers.dev` URL.
+   Blocked on picking a name.
 
 ## P2 — Product completeness
 
-5. **Exercise/activity logging** *(elevated to must-have)* — completes the
+6. **Exercise/activity logging** *(elevated to must-have)* — completes the
    calorie-target feature already shipped; without it, targets are
    silently wrong for anyone who exercises regularly.
-6. **Macro targets on Home** — calories get a real target + progress bar;
+7. **Macro targets on Home** — calories get a real target + progress bar;
    protein/carbs/fat just show raw totals with nothing to compare against.
-7. **Backdating a log** — the backend already supports a custom
+8. **Backdating a log** — the backend already supports a custom
    `loggedAt`, but the UI never exposes it. Can't record a forgotten meal
    against the right time (e.g. logging breakfast at dinner time).
-8. **Real personalized content** — "Tips for you" on Home is 3 hardcoded
+9. **Real personalized content** — "Tips for you" on Home is 3 hardcoded
    static tips for everyone, not actually personalized or rotating.
-9. **Weight-trend tracking + adaptive coaching** — let people log their
-   weight daily, smooth it (e.g. 7-day moving average, not reactive to
-   single-day swings), and compare the trend against their goal — keep
-   the calorie target if it's working, surface a tip/suggest a
-   recalculation if it isn't.
+10. **Weight-trend tracking + adaptive coaching** — let people log their
+    weight daily, smooth it (e.g. 7-day moving average, not reactive to
+    single-day swings), and compare the trend against their goal — keep
+    the calorie target if it's working, surface a tip/suggest a
+    recalculation if it isn't.
 
 ## P3 — Nice-to-have (pull from as capacity allows)
 
-10. **Water tracking** — cheap, expected, low effort, no real downside.
-11. **Barcode scanning** — real gap for packaged/branded foods, but not
+11. **Water tracking** — cheap, expected, low effort, no real downside.
+12. **Barcode scanning** — real gap for packaged/branded foods, but not
     core to the differentiator (home-cooked Pakistani dishes). Needs
     either building a barcode/UPC database or integrating a third party
     (e.g. Open Food Facts — free, but weak Pakistani-brand coverage).
-12. **Conversational AI coach** — natural extension of the Gemini
+13. **Conversational AI coach** — natural extension of the Gemini
     integration already in place (ask it questions, get suggestions, not
     just one-way logging). Real cost risk: the whole rate-limiting setup
     was built around the 500/day free-tier ceiling for logging alone —
     open-ended chat would eat into that fast. Prototype small first.
-13. **Urdu / multi-language support** — matters more for this market than
+14. **Urdu / multi-language support** — matters more for this market than
     it would for a generic competitor. Worth testing whether Roman Urdu
     text input already works today (Gemini just parses whatever text
     arrives) before committing to a full UI translation effort.
