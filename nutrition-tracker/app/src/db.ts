@@ -343,6 +343,9 @@ export interface ProfileRow {
   activity_level: ActivityLevel | null;
   goal: Goal | null;
   daily_calorie_target: number | null;
+  protein_target_g: number | null;
+  carbs_target_g: number | null;
+  fat_target_g: number | null;
   gamification_enabled: number;
   current_streak: number;
   longest_streak: number;
@@ -364,6 +367,9 @@ export interface ProfileUpsert {
   activity_level: ActivityLevel;
   goal: Goal;
   daily_calorie_target: number;
+  protein_target_g: number;
+  carbs_target_g: number;
+  fat_target_g: number;
   gamification_enabled: boolean;
 }
 
@@ -376,12 +382,14 @@ export async function upsertProfile(db: D1Database, p: ProfileUpsert): Promise<v
   const now = Math.floor(Date.now() / 1000);
   await db
     .prepare(
-      `INSERT INTO user_profiles (device_id, weight_kg, height_cm, age, gender, activity_level, goal, daily_calorie_target, gamification_enabled, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `INSERT INTO user_profiles (device_id, weight_kg, height_cm, age, gender, activity_level, goal, daily_calorie_target, protein_target_g, carbs_target_g, fat_target_g, gamification_enabled, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT(device_id) DO UPDATE SET
          weight_kg = excluded.weight_kg, height_cm = excluded.height_cm, age = excluded.age,
          gender = excluded.gender, activity_level = excluded.activity_level, goal = excluded.goal,
-         daily_calorie_target = excluded.daily_calorie_target, gamification_enabled = excluded.gamification_enabled,
+         daily_calorie_target = excluded.daily_calorie_target, protein_target_g = excluded.protein_target_g,
+         carbs_target_g = excluded.carbs_target_g, fat_target_g = excluded.fat_target_g,
+         gamification_enabled = excluded.gamification_enabled,
          updated_at = excluded.updated_at`,
     )
     .bind(
@@ -393,6 +401,9 @@ export async function upsertProfile(db: D1Database, p: ProfileUpsert): Promise<v
       p.activity_level,
       p.goal,
       p.daily_calorie_target,
+      p.protein_target_g,
+      p.carbs_target_g,
+      p.fat_target_g,
       p.gamification_enabled ? 1 : 0,
       now,
       now,

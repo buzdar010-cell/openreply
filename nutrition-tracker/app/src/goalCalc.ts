@@ -49,6 +49,33 @@ export function calculateDailyCalorieTarget(p: ProfileInput): number {
   return Math.round(Math.max(1200, target));
 }
 
+export interface MacroTargets {
+  protein_g: number;
+  carbs_g: number;
+  fat_g: number;
+}
+
+/**
+ * Protein by bodyweight (1.6 g/kg -- a standard general-purpose target,
+ * not just an athlete's number) rather than a fixed % of calories, since
+ * protein need tracks body mass more than it tracks total energy intake.
+ * Fat at 30% of calories (within the commonly-recommended 20-35% range).
+ * Carbs get whatever's left -- the same "remainder" approach used by
+ * every mainstream macro calculator, not something invented here.
+ */
+export function calculateMacroTargets(dailyCalorieTarget: number, weightKg: number): MacroTargets {
+  const protein_g = Math.round(1.6 * weightKg);
+  const proteinKcal = protein_g * 4;
+
+  const fatKcal = 0.3 * dailyCalorieTarget;
+  const fat_g = Math.round(fatKcal / 9);
+
+  const carbsKcal = Math.max(0, dailyCalorieTarget - proteinKcal - fatKcal);
+  const carbs_g = Math.round(carbsKcal / 4);
+
+  return { protein_g, carbs_g, fat_g };
+}
+
 export function isValidProfileInput(body: unknown): body is ProfileInput {
   if (typeof body !== "object" || body === null) return false;
   const p = body as Record<string, unknown>;

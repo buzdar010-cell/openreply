@@ -44,7 +44,7 @@ import {
 import { resolvePortion } from "./resolvePortion.ts";
 import { storePhoto, getPhoto } from "./r2.ts";
 import { GeminiRateLimiterDO, KeyedRateLimiterDO } from "./rateLimiterDO.ts";
-import { calculateDailyCalorieTarget, isValidProfileInput } from "./goalCalc.ts";
+import { calculateDailyCalorieTarget, calculateMacroTargets, isValidProfileInput } from "./goalCalc.ts";
 import { calculateCaloriesBurned, isValidActivityType } from "./exerciseCalc.ts";
 import { hashPassword, verifyPassword, generateSessionToken, generateDeviceToken, generateOtpCode, hashOtpCode } from "./auth.ts";
 import { sendOtpEmail } from "./email.ts";
@@ -710,6 +710,7 @@ async function handlePostProfile(request: Request, env: Env): Promise<Response> 
     return jsonResponse({ error: "weight_kg, height_cm, age, gender, activity_level, and goal are required and must be valid" }, 400);
   }
   const daily_calorie_target = calculateDailyCalorieTarget(body);
+  const { protein_g, carbs_g, fat_g } = calculateMacroTargets(daily_calorie_target, body.weight_kg);
   await upsertProfile(env.DB, {
     device_id: userId,
     weight_kg: body.weight_kg,
@@ -719,9 +720,18 @@ async function handlePostProfile(request: Request, env: Env): Promise<Response> 
     activity_level: body.activity_level,
     goal: body.goal,
     daily_calorie_target,
+    protein_target_g: protein_g,
+    carbs_target_g: carbs_g,
+    fat_target_g: fat_g,
     gamification_enabled: body.gamification_enabled === true,
   });
-  return jsonResponse({ ok: true, daily_calorie_target });
+  return jsonResponse({
+    ok: true,
+    daily_calorie_target,
+    protein_target_g: protein_g,
+    carbs_target_g: carbs_g,
+    fat_target_g: fat_g,
+  });
 }
 
 async function handlePostFeedback(request: Request, env: Env): Promise<Response> {
