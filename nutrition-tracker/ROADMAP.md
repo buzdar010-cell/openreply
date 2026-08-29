@@ -93,9 +93,10 @@ Fix before anyone outside trusted testers uses the app.
    calculators use) and stored alongside daily_calorie_target. Each
    macro card on Home shows its own progress bar now, with a clean
    "set a goal for a target" fallback before a profile exists.
-8. **Backdating a log** — the backend already supports a custom
-   `loggedAt`, but the UI never exposes it. Can't record a forgotten meal
-   against the right time (e.g. logging breakfast at dinner time).
+8. ✅ **Backdating a log** — DONE. Both food and exercise logging gained
+   a small "When" field (defaults to now, only touched to backdate) that
+   actually sends the backend's already-existing `loggedAt` support,
+   which nothing in the frontend was using before this.
 9. **Real personalized content** — "Tips for you" on Home is 3 hardcoded
    static tips for everyone, not actually personalized or rotating.
 10. **Weight-trend tracking + adaptive coaching** — let people log their
