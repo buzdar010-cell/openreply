@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import { getArticle, type Article } from '../lib/api';
+import { useDismissOnBack } from '../lib/useDismissOnBack';
 
 export function ArticleReader({ articleId, onClose }: { articleId: string; onClose: () => void }) {
+  useDismissOnBack(onClose);
+
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
 

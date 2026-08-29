@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { logText, logPhoto, logExercise, ACTIVITY_LABELS, type LogResultEntry, type ActivityType, type ExerciseLogResult } from '../lib/api';
 import { showToast } from '../lib/toast';
+import { useDismissOnBack } from '../lib/useDismissOnBack';
 
 const EXAMPLES = ['chicken karahi and two rotis', 'one plate biryani', 'a bowl of daal chawal', '3 samosas'];
 const ACTIVITY_OPTIONS = Object.entries(ACTIVITY_LABELS) as [ActivityType, string][];
@@ -72,6 +73,8 @@ function ResultCard({ r }: { r: LogResultEntry }) {
 }
 
 export function AddLogSheet({ onClose, onLogged }: { onClose: () => void; onLogged: () => void }) {
+  useDismissOnBack(onClose);
+
   const [mode, setMode] = useState<'food' | 'exercise'>('food');
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
