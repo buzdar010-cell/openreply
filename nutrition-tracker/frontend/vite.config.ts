@@ -10,6 +10,15 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.ts',
+      injectManifest: {
+        // Reminder payloads are a couple hundred bytes -- nowhere near workbox's default 2MiB
+        // cutoff -- but the default free plan's asset bundle (fonts/icons) is comfortably under
+        // this too, so this is just headroom, not a real constraint being hit.
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+      },
       manifest: {
         name: 'Nutrition Tracker',
         short_name: 'Nutrition',

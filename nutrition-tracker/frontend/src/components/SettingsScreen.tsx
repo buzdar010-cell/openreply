@@ -6,6 +6,7 @@ import { ToggleSwitch } from './ToggleSwitch';
 import { SettingsSubScreen } from './SettingsSubScreen';
 import { showToast } from '../lib/toast';
 import { buildFullDataExportJson } from '../lib/dataExport';
+import { isPushSupported, getCurrentSubscription, enableWeightReminders, disableWeightReminders } from '../lib/push';
 
 const ONBOARDED_KEY = 'nutrition-tracker-onboarded';
 
@@ -116,6 +117,15 @@ export function SettingsScreen({ resetSignal }: { resetSignal: number }) {
   const [confirmingReset, setConfirmingReset] = useState(false);
   const [exporting, setExporting] = useState(false);
 
+  const [remindersEnabled, setRemindersEnabled] = useState(false);
+  const [remindersBusy, setRemindersBusy] = useState(false);
+
+  useEffect(() => {
+    getCurrentSubscription()
+      .then((sub) => setRemindersEnabled(sub !== null))
+      .catch(() => {});
+  }, []);
+
   useEffect(() => {
     getProfile()
       .then((p) => {
@@ -172,6 +182,24 @@ export function SettingsScreen({ resetSignal }: { resetSignal: number }) {
     } catch {
       setGamificationState(!enabled); // revert on failure
       showToast('Failed to update — try again', 'error');
+    }
+  }
+
+  async function handleRemindersToggle(enabled: boolean) {
+    setRemindersBusy(true);
+    try {
+      if (enabled) {
+        const granted = await enableWeightReminders();
+        setRemindersEnabled(granted);
+        if (!granted) showToast('Notifications permission is needed for reminders', 'error');
+      } else {
+        await disableWeightReminders();
+        setRemindersEnabled(false);
+      }
+    } catch {
+      showToast('Failed to update — try again', 'error');
+    } finally {
+      setRemindersBusy(false);
     }
   }
 
@@ -326,6 +354,17 @@ export function SettingsScreen({ resetSignal }: { resetSignal: number }) {
           trailing={<ToggleSwitch enabled={gamification} onChange={handleGamificationToggle} />}
         />
       </SettingsCard>
+
+      {isPushSupported() && (
+        <SettingsCard>
+          <SettingsRow
+            icon="🔔"
+            label="Weight log reminders"
+            value={remindersEnabled ? 'On' : 'Off'}
+            trailing={<ToggleSwitch enabled={remindersEnabled} onChange={remindersBusy ? () => {} : handleRemindersToggle} />}
+          />
+        </SettingsCard>
+      )}
 
       <SettingsCard>
         <SettingsRow icon="💬" label="Send feedback" onClick={() => navigateToView('feedback')} />

@@ -330,3 +330,13 @@ export interface WeightTrend {
 export async function getWeightTrend(): Promise<WeightTrend> {
   return getJson('/weight-trend');
 }
+
+// ---- Push notifications ----
+
+export async function subscribePush(subscription: { endpoint: string; keys: { p256dh: string; auth: string } }): Promise<void> {
+  await postJson('/push/subscribe', subscription);
+}
+
+export async function unsubscribePush(endpoint: string): Promise<void> {
+  await postJson('/push/unsubscribe', { endpoint });
+}
