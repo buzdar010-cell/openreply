@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { getDeviceId } from '../lib/device';
 import { getTodayTotals, getProfile, type Totals, type Profile } from '../lib/api';
 
 const DEFAULT_TARGET_KCAL = 2000; // fallback when no profile/goal has been set yet
@@ -32,9 +31,8 @@ export function Home({ refreshKey }: { refreshKey: number }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const deviceId = getDeviceId();
     setLoading(true);
-    Promise.all([getTodayTotals(deviceId).catch(() => null), getProfile(deviceId).catch(() => null)]).then(([t, p]) => {
+    Promise.all([getTodayTotals().catch(() => null), getProfile().catch(() => null)]).then(([t, p]) => {
       setTotals(t);
       setProfile(p);
       setLoading(false);

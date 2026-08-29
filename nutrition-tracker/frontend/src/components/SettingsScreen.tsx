@@ -1,6 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { getDeviceId } from '../lib/device';
-import { getProfile, saveProfile, setGamification as setGamificationApi, submitFeedback, type Gender, type ActivityLevel } from '../lib/api';
+import { getProfile, saveProfile, setGamification as setGamificationApi, submitFeedback, logout, type Gender, type ActivityLevel } from '../lib/api';
 import { GoalsStep, isGoalsDataValid, GOAL_OPTIONS, type GoalsData } from './onboarding/GoalsStep';
 import { ThemePicker } from './ThemePicker';
 import { ToggleSwitch } from './ToggleSwitch';
@@ -8,7 +7,6 @@ import { SettingsSubScreen } from './SettingsSubScreen';
 import { showToast } from '../lib/toast';
 
 const ONBOARDED_KEY = 'nutrition-tracker-onboarded';
-const DEVICE_KEY = 'nutrition-tracker-device-id';
 
 const EMPTY_GOALS: GoalsData = {
   weight_kg: '',
@@ -68,7 +66,7 @@ export function SettingsScreen() {
   const [confirmingReset, setConfirmingReset] = useState(false);
 
   useEffect(() => {
-    getProfile(getDeviceId())
+    getProfile()
       .then((p) => {
         if (p) {
           const loaded: GoalsData = {
@@ -95,7 +93,7 @@ export function SettingsScreen() {
     if (!isGoalsDataValid(goals) || !isDirty) return;
     setSaving(true);
     try {
-      const result = await saveProfile(getDeviceId(), {
+      const result = await saveProfile({
         weight_kg: Number(goals.weight_kg),
         height_cm: Number(goals.height_cm),
         age: Number(goals.age),
@@ -118,7 +116,7 @@ export function SettingsScreen() {
   async function handleGamificationToggle(enabled: boolean) {
     setGamificationState(enabled); // optimistic
     try {
-      await setGamificationApi(getDeviceId(), enabled);
+      await setGamificationApi(enabled);
       showToast(enabled ? 'Gamification turned on' : 'Gamification turned off');
     } catch {
       setGamificationState(!enabled); // revert on failure
@@ -130,7 +128,7 @@ export function SettingsScreen() {
     if (!feedback.trim()) return;
     setSendingFeedback(true);
     try {
-      await submitFeedback(getDeviceId(), feedback.trim(), 'settings');
+      await submitFeedback(feedback.trim(), 'settings');
       setFeedback('');
       showToast('Feedback sent — thank you!');
       setView('main');
@@ -144,8 +142,16 @@ export function SettingsScreen() {
   function handleResetApp() {
     showToast('App reset');
     localStorage.removeItem(ONBOARDED_KEY);
-    localStorage.removeItem(DEVICE_KEY);
     setTimeout(() => window.location.reload(), 500);
+  }
+
+  async function handleLogout() {
+    await logout();
+    // Clear the onboarding cache too -- otherwise a different account
+    // logging in on this same device would skip onboarding based on
+    // this account's history.
+    localStorage.removeItem(ONBOARDED_KEY);
+    window.location.reload();
   }
 
   if (loading) {
@@ -247,6 +253,10 @@ export function SettingsScreen() {
 
       <SettingsCard>
         <SettingsRow icon="💬" label="Send feedback" onClick={() => setView('feedback')} />
+      </SettingsCard>
+
+      <SettingsCard>
+        <SettingsRow icon="🚪" label="Log out" onClick={handleLogout} />
       </SettingsCard>
 
       <SettingsCard>

@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { getDeviceId } from '../lib/device';
 import { deleteLog, getLogs, type LogListItem } from '../lib/api';
 import { groupByDay, groupByMonth, logsToCsv, type DayGroup, type MonthGroup } from '../lib/dateGroups';
 import { showToast } from '../lib/toast';
@@ -82,11 +81,10 @@ export function LogsScreen({ refreshKey }: { refreshKey: number }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const deviceId = getDeviceId();
     const now = Math.floor(Date.now() / 1000);
     const rangeStart = now - (viewingAll ? HISTORY_SECONDS : WEEK_SECONDS);
     setLoading(true);
-    getLogs(deviceId, rangeStart, now)
+    getLogs(rangeStart, now)
       .then(setItems)
       .catch(() => setItems([]))
       .finally(() => setLoading(false));
@@ -95,14 +93,13 @@ export function LogsScreen({ refreshKey }: { refreshKey: number }) {
   async function handleDelete(logId: string) {
     setItems((prev) => prev.filter((i) => i.id !== logId)); // optimistic
     try {
-      await deleteLog(getDeviceId(), logId);
+      await deleteLog(logId);
       showToast('Deleted');
     } catch {
       showToast('Failed to delete — try again', 'error');
       // Re-fetch on failure to correct any optimistic-update drift.
-      const deviceId = getDeviceId();
       const now = Math.floor(Date.now() / 1000);
-      getLogs(deviceId, now - (viewingAll ? HISTORY_SECONDS : WEEK_SECONDS), now).then(setItems);
+      getLogs(now - (viewingAll ? HISTORY_SECONDS : WEEK_SECONDS), now).then(setItems);
     }
   }
 

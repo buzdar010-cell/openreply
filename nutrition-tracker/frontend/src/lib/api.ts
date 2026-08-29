@@ -1,24 +1,92 @@
+import { getSessionToken, clearSession, UNAUTHORIZED_EVENT } from './session';
+
 // Overridable via VITE_API_BASE at build time so this doesn't need a code
 // change once the backend moves to a custom domain.
 const API_BASE = import.meta.env.VITE_API_BASE ?? 'https://nutrition-tracker.buzdar0003.workers.dev';
 
+function authHeaders(): Record<string, string> {
+  const token = getSessionToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+function handleUnauthorized(res: Response) {
+  if (res.status === 401) {
+    clearSession();
+    window.dispatchEvent(new Event(UNAUTHORIZED_EVENT));
+  }
+}
+
 async function postJson<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
     body: JSON.stringify(body),
   });
   const data = (await res.json()) as T & { error?: string };
-  if (!res.ok) throw new Error(data.error ?? `request failed (${res.status})`);
+  if (!res.ok) {
+    handleUnauthorized(res);
+    throw new Error(data.error ?? `request failed (${res.status})`);
+  }
   return data;
 }
 
 async function getJson<T>(path: string): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`);
+  const res = await fetch(`${API_BASE}${path}`, { headers: authHeaders() });
   const data = (await res.json()) as T & { error?: string };
-  if (!res.ok) throw new Error(data.error ?? `request failed (${res.status})`);
+  if (!res.ok) {
+    handleUnauthorized(res);
+    throw new Error(data.error ?? `request failed (${res.status})`);
+  }
   return data;
 }
+
+// ---- Auth ----
+
+export interface AuthTokens {
+  sessionToken: string;
+  deviceToken: string;
+}
+
+/** null means the account needs email verification before it can log in (an OTP was sent). */
+export async function signup(email: string, password: string): Promise<AuthTokens | null> {
+  const data = await postJson<Partial<AuthTokens> & { ok?: boolean }>('/auth/signup', { email, password });
+  return data.sessionToken && data.deviceToken ? { sessionToken: data.sessionToken, deviceToken: data.deviceToken } : null;
+}
+
+export async function verifySignup(email: string, code: string): Promise<AuthTokens> {
+  return postJson('/auth/verify-signup', { email, code });
+}
+
+export type LoginResult = ({ status: 'logged_in' } & AuthTokens) | { status: 'verification_required' };
+
+export async function login(email: string, password: string, deviceToken: string | null): Promise<LoginResult> {
+  return postJson('/auth/login', { email, password, deviceToken: deviceToken ?? undefined });
+}
+
+export async function verifyLogin(email: string, code: string): Promise<AuthTokens> {
+  return postJson('/auth/verify-login', { email, code });
+}
+
+export async function forgotPassword(email: string): Promise<void> {
+  await postJson('/auth/forgot-password', { email });
+}
+
+export async function resetPassword(email: string, code: string, newPassword: string): Promise<void> {
+  await postJson('/auth/reset-password', { email, code, newPassword });
+}
+
+export async function logout(): Promise<void> {
+  try {
+    await postJson('/auth/logout', {});
+  } catch {
+    // Clearing the local session is what actually matters for logout to feel instant -- an unreachable
+    // server just means this token dies naturally at its TTL instead of being revoked immediately.
+  } finally {
+    clearSession();
+  }
+}
+
+// ---- Food logging ----
 
 export interface LogResultEntry {
   matched: boolean;
@@ -33,18 +101,17 @@ export interface LogResultEntry {
   fat_g?: number;
 }
 
-export async function logText(deviceId: string, text: string): Promise<LogResultEntry[]> {
-  const data = await postJson<{ results: LogResultEntry[] }>('/log/text', { deviceId, text });
+export async function logText(text: string): Promise<LogResultEntry[]> {
+  const data = await postJson<{ results: LogResultEntry[] }>('/log/text', { text });
   return data.results ?? [];
 }
 
 export async function logPhoto(
-  deviceId: string,
   imageBase64: string,
   mimeType: 'image/jpeg' | 'image/png' | 'image/webp',
   caption?: string,
 ): Promise<LogResultEntry[]> {
-  const data = await postJson<{ results: LogResultEntry[] }>('/log/photo', { deviceId, imageBase64, mimeType, caption });
+  const data = await postJson<{ results: LogResultEntry[] }>('/log/photo', { imageBase64, mimeType, caption });
   return data.results ?? [];
 }
 
@@ -63,9 +130,9 @@ function startOfTodayUnix(): number {
   return now - (now % 86400); // UTC midnight -- fine for a first pass, revisit with real timezone handling later
 }
 
-export async function getTodayTotals(deviceId: string): Promise<Totals> {
+export async function getTodayTotals(): Promise<Totals> {
   const now = Math.floor(Date.now() / 1000);
-  return getJson<Totals>(`/totals?deviceId=${encodeURIComponent(deviceId)}&start=${startOfTodayUnix()}&end=${now}`);
+  return getJson<Totals>(`/totals?start=${startOfTodayUnix()}&end=${now}`);
 }
 
 export interface LogListItem {
@@ -83,19 +150,17 @@ export interface LogListItem {
   logged_at: number;
 }
 
-export async function getLogs(deviceId: string, startUnix: number, endUnix: number): Promise<LogListItem[]> {
-  const data = await getJson<{ logs: LogListItem[] }>(
-    `/logs?deviceId=${encodeURIComponent(deviceId)}&start=${startUnix}&end=${endUnix}`,
-  );
+export async function getLogs(startUnix: number, endUnix: number): Promise<LogListItem[]> {
+  const data = await getJson<{ logs: LogListItem[] }>(`/logs?start=${startUnix}&end=${endUnix}`);
   return data.logs ?? [];
 }
 
-export async function editLog(deviceId: string, logId: string, correctDishId: string): Promise<void> {
-  await postJson('/logs/edit', { deviceId, logId, correctDishId });
+export async function editLog(logId: string, correctDishId: string): Promise<void> {
+  await postJson('/logs/edit', { logId, correctDishId });
 }
 
-export async function deleteLog(deviceId: string, logId: string): Promise<void> {
-  await postJson('/logs/delete', { deviceId, logId });
+export async function deleteLog(logId: string): Promise<void> {
+  await postJson('/logs/delete', { logId });
 }
 
 export type Gender = 'male' | 'female';
@@ -118,8 +183,8 @@ export interface Profile {
   xp: number;
 }
 
-export async function getProfile(deviceId: string): Promise<Profile | null> {
-  const data = await getJson<{ profile: Profile | null }>(`/profile?deviceId=${encodeURIComponent(deviceId)}`);
+export async function getProfile(): Promise<Profile | null> {
+  const data = await getJson<{ profile: Profile | null }>('/profile');
   return data.profile;
 }
 
@@ -133,15 +198,15 @@ export interface ProfileInput {
   gamification_enabled: boolean;
 }
 
-export async function saveProfile(deviceId: string, input: ProfileInput): Promise<{ daily_calorie_target: number }> {
-  return postJson('/profile', { deviceId, ...input });
+export async function saveProfile(input: ProfileInput): Promise<{ daily_calorie_target: number }> {
+  return postJson('/profile', input);
 }
 
 /** Standalone -- never requires the rest of the profile to be filled in, unlike saveProfile. */
-export async function setGamification(deviceId: string, enabled: boolean): Promise<void> {
-  await postJson('/profile/gamification', { deviceId, enabled });
+export async function setGamification(enabled: boolean): Promise<void> {
+  await postJson('/profile/gamification', { enabled });
 }
 
-export async function submitFeedback(deviceId: string, message: string, context?: string): Promise<void> {
-  await postJson('/feedback', { deviceId, message, context });
+export async function submitFeedback(message: string, context?: string): Promise<void> {
+  await postJson('/feedback', { message, context });
 }

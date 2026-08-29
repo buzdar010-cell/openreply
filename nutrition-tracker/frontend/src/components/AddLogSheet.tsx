@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react';
-import { getDeviceId } from '../lib/device';
 import { logText, logPhoto, type LogResultEntry } from '../lib/api';
 import { showToast } from '../lib/toast';
 
@@ -61,7 +60,7 @@ export function AddLogSheet({ onClose, onLogged }: { onClose: () => void; onLogg
     setLoading(true);
     setError(null);
     try {
-      const res = await logText(getDeviceId(), text.trim());
+      const res = await logText(text.trim());
       setResults(res);
       setText('');
       onLogged();
@@ -78,7 +77,7 @@ export function AddLogSheet({ onClose, onLogged }: { onClose: () => void; onLogg
     setLoading(true);
     setError(null);
     try {
-      const res = await logPhoto(getDeviceId(), photoFile.base64, photoFile.mimeType, text.trim() || undefined);
+      const res = await logPhoto(photoFile.base64, photoFile.mimeType, text.trim() || undefined);
       setResults(res);
       setPhotoFile(null);
       setPhotoPreview(null);

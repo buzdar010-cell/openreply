@@ -5,7 +5,6 @@ import { GoalsStep, isGoalsDataValid, type GoalsData } from './onboarding/GoalsS
 import { GamificationStep } from './onboarding/GamificationStep';
 import { InstallStep } from './onboarding/InstallStep';
 import { saveProfile, setGamification, type Gender, type ActivityLevel } from '../lib/api';
-import { getDeviceId } from '../lib/device';
 
 type Phase = 'intro' | 'goals' | 'gamification' | 'install';
 const PHASE_ORDER: Phase[] = ['intro', 'goals', 'gamification', 'install'];
@@ -43,7 +42,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
     // onboarding via "Skip this" on goals, and it used to silently never
     // persist). Fire-and-forget, no toast here -- this is mid-flow, not a
     // standalone user action, so a banner would just be noise.
-    setGamification(getDeviceId(), enabled).catch(() => {});
+    setGamification(enabled).catch(() => {});
   }
 
   async function finish() {
@@ -54,7 +53,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
       // (Gamification itself is already saved independently above, so
       // skipping this never loses that choice.)
       if (isGoalsDataValid(goals)) {
-        await saveProfile(getDeviceId(), {
+        await saveProfile({
           weight_kg: Number(goals.weight_kg),
           height_cm: Number(goals.height_cm),
           age: Number(goals.age),
