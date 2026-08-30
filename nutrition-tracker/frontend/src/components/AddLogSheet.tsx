@@ -1,21 +1,16 @@
-import { useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { logText, logPhoto, logExercise, logWeight, logWater, ACTIVITY_LABELS, type LogResultEntry, type ActivityType, type ExerciseLogResult } from '../lib/api';
 import { showToast } from '../lib/toast';
-import { useDismissOnBack } from '../lib/useDismissOnBack';
+import { WhenField, toDatetimeLocalValue, datetimeLocalValueToUnix } from './WhenField';
+
+// The barcode scanning library is ~200KB gzipped on its own -- code-split so
+// that weight only loads for someone who actually taps "Scan a barcode",
+// not on every visit to the app.
+const BarcodeLogFlow = lazy(() => import('./BarcodeLogFlow').then((m) => ({ default: m.BarcodeLogFlow })));
 
 const EXAMPLES = ['chicken karahi and two rotis', 'one plate biryani', 'a bowl of daal chawal', '3 samosas'];
 const ACTIVITY_OPTIONS = Object.entries(ACTIVITY_LABELS) as [ActivityType, string][];
 const WATER_QUICK_AMOUNTS_ML = [250, 500, 750, 1000];
-
-/** datetime-local inputs work in the browser's local time, not UTC -- format/parse accordingly. */
-function toDatetimeLocalValue(date: Date): string {
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-}
-
-function datetimeLocalValueToUnix(value: string): number {
-  return Math.floor(new Date(value).getTime() / 1000);
-}
 
 function fileToBase64(file: File): Promise<{ base64: string; mimeType: 'image/jpeg' | 'image/png' | 'image/webp' }> {
   return new Promise((resolve, reject) => {
@@ -29,20 +24,6 @@ function fileToBase64(file: File): Promise<{ base64: string; mimeType: 'image/jp
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
-}
-
-function WhenField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  return (
-    <label className="border-cream-200 mb-3 flex items-center justify-between gap-2 rounded-xl border bg-surface px-3 py-2">
-      <span className="text-ink-600 text-xs font-semibold">🕐 When</span>
-      <input
-        type="datetime-local"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="text-ink-900 bg-transparent text-xs outline-none"
-      />
-    </label>
-  );
 }
 
 function ResultCard({ r }: { r: LogResultEntry }) {
@@ -82,8 +63,6 @@ export function AddLogSheet({
   onLogged: () => void;
   initialMode?: 'food' | 'exercise' | 'weight' | 'water';
 }) {
-  useDismissOnBack(onClose);
-
   const [mode, setMode] = useState<'food' | 'exercise' | 'weight' | 'water'>(initialMode);
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
@@ -92,6 +71,56 @@ export function AddLogSheet({
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [photoFile, setPhotoFile] = useState<{ base64: string; mimeType: 'image/jpeg' | 'image/png' | 'image/webp' } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showBarcodeFlow, setShowBarcodeFlow] = useState(false);
+
+  // Two-level history handling, same pattern as SettingsScreen's sub-screens: this sheet pushes
+  // one entry for itself on mount, and the barcode flow (a sub-view *within* this already-open
+  // sheet) pushes one more on top when opened. A single popstate listener is the only thing that
+  // ever changes showBarcodeFlow/closes the sheet -- both the barcode flow's own close button and
+  // a real back gesture route through history.back() into this same listener, so history and UI
+  // state can never drift apart. Two independent useDismissOnBack hooks here (one per component)
+  // would each try to pop their own entry on close, and closing the inner one would cascade a
+  // history.back() into the outer listener too, closing both at once -- that bug shipped once
+  // before this comment was added; see BarcodeScanner.tsx for the other half of the fix.
+  const showBarcodeFlowRef = useRef(showBarcodeFlow);
+  useEffect(() => {
+    showBarcodeFlowRef.current = showBarcodeFlow;
+  }, [showBarcodeFlow]);
+  // Tracks whether the sheet's own entry was already consumed by a real popstate (browser/swipe
+  // back) -- if so, the cleanup below must NOT pop again, or a close-via-back would remove two
+  // history entries for what was only one physical back-navigation (verified: without this guard,
+  // going back once from the barcode flow, then back again, skipped past the app's own base state
+  // entirely). Same guard the original useDismissOnBack hook uses, for the same reason.
+  const closedByPopStateRef = useRef(false);
+
+  useEffect(() => {
+    closedByPopStateRef.current = false;
+    window.history.pushState({ addLogSheet: true }, '');
+    function handlePopState() {
+      if (showBarcodeFlowRef.current) {
+        setShowBarcodeFlow(false);
+      } else {
+        closedByPopStateRef.current = true;
+        onClose();
+      }
+    }
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      if (showBarcodeFlowRef.current) window.history.back();
+      if (!closedByPopStateRef.current) window.history.back();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function openBarcodeFlow() {
+    window.history.pushState({ addLogSheet: true, barcode: true }, '');
+    setShowBarcodeFlow(true);
+  }
+
+  function closeBarcodeFlow() {
+    window.history.back(); // routes through handlePopState above, which sets showBarcodeFlow(false)
+  }
 
   const [activityType, setActivityType] = useState<ActivityType | null>(null);
   const [durationMinutes, setDurationMinutes] = useState('');
@@ -312,7 +341,15 @@ export function AddLogSheet({
             >
               📷 {photoPreview ? 'Retake photo' : 'Log from a photo instead'}
             </button>
-            <p className="text-ink-400 mt-2 text-center text-xs">Snap what's on your plate — no need to type anything.</p>
+            <p className="text-ink-400 mt-2 mb-4 text-center text-xs">Snap what's on your plate — no need to type anything.</p>
+
+            <button
+              onClick={openBarcodeFlow}
+              className="border-primary-100 text-primary-600 rounded-2xl border-2 py-3 text-sm font-bold"
+            >
+              🔍 Scan a barcode
+            </button>
+            <p className="text-ink-400 mt-2 text-center text-xs">For packaged/branded foods and drinks.</p>
 
             {error && <div className="bg-danger-500/10 text-danger-500 mt-4 rounded-xl px-4 py-3 text-sm font-medium">{error}</div>}
           </>
@@ -506,6 +543,12 @@ export function AddLogSheet({
           </>
         )}
       </div>
+
+      {showBarcodeFlow && (
+        <Suspense fallback={<div className="bg-cream-50 fixed inset-0 z-50 flex items-center justify-center text-sm text-ink-400">Loading…</div>}>
+          <BarcodeLogFlow onClose={closeBarcodeFlow} onLogged={onLogged} />
+        </Suspense>
+      )}
     </div>
   );
 }

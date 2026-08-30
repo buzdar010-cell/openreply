@@ -289,6 +289,46 @@ export async function getArticle(id: string): Promise<Article> {
   return data.article;
 }
 
+// ---- Barcode scanning ----
+
+export interface BarcodeFound {
+  found: true;
+  dishId: string;
+  name: string;
+  defaultServingG: number;
+  resolved_grams: number;
+  kcal: number;
+  protein_g: number;
+  carbs_g: number;
+  fat_g: number;
+  fiber_g: number;
+  sugar_g: number;
+  sodium_mg: number;
+}
+
+export interface BarcodeNotFound {
+  found: false;
+  code: string;
+}
+
+export type BarcodeLookupResult = BarcodeFound | BarcodeNotFound;
+
+export async function lookupBarcode(code: string): Promise<BarcodeLookupResult> {
+  return getJson(`/barcode/lookup?code=${encodeURIComponent(code)}`);
+}
+
+export async function extractBarcodeLabel(
+  code: string,
+  imageBase64: string,
+  mimeType: 'image/jpeg' | 'image/png' | 'image/webp',
+): Promise<BarcodeLookupResult> {
+  return postJson('/barcode/extract-label', { code, imageBase64, mimeType });
+}
+
+export async function logBarcodeDish(dishId: string, loggedAt?: number): Promise<LogResultEntry> {
+  return postJson('/log/barcode', { dishId, loggedAt });
+}
+
 // ---- Weight logging + trend ----
 
 export async function logWeight(weightKg: number, loggedAt?: number): Promise<{ logId: string; weightKg: number; loggedAt: number }> {
