@@ -117,34 +117,34 @@ Fix before anyone outside trusted testers uses the app.
     Crypto — VAPID + RFC 8291 payload encryption, checked against the
     spec's own test vectors — rather than a library), delivered by a
     daily Cron Trigger to anyone overdue who's opted in.
-11. **Daily todo checklist on Home** — a short "today" checklist above the
-    tips area (log your weight, hit your water, log a meal, get some
-    exercise in), each item computed from real state the same
-    no-AI/real-signals way tips/trend already are, checked off as it's
-    satisfied. Replaces the passive "Tips for you" framing with
-    something actionable. One item (water) depends on water tracking
-    (P3 below) actually existing first — either this waits for that, or
-    ships without it and picks it up once water tracking lands; decide
-    when we get here. Paired with relocating "Worth a read" off Home:
-    move the 9 articles + reader into a "Learn" row in Settings instead
-    of building a separate blog section (not worth the extra surface
-    area for 9 pieces of content) or deleting them (already-written,
-    real content) — Home stays focused on the actionable checklist,
-    articles become a tap-away reference instead of front-page real estate.
+11. ✅ **Daily todo checklist on Home** — DONE. A "Today's checklist" card
+    above Tips with four items (weight, water, a meal, exercise), each
+    computed server-side from real state via a new `/todo` endpoint —
+    same no-AI/real-signals approach as tips/trend. Water tracking got
+    pulled forward from P3 to support it: new water_logs table,
+    log/list/delete endpoints, and a "Water" mode in the log sheet
+    (quick +250/500/750/1000ml buttons + custom amount), with a daily
+    target at 35ml/kg bodyweight (2500ml default with no profile). Each
+    checklist row opens straight into the matching log-sheet mode.
+    Paired with relocating "Worth a read" off Home into a "Learn" row in
+    Settings (same article list + reader, just relocated) — Home stays
+    focused on the actionable checklist. Note: like weight logs, water
+    logs aren't currently merged into the Logs screen's food+exercise
+    feed — no way to review/delete past water entries there yet; worth
+    fixing alongside if/when weight logs get the same treatment.
 
 ## P3 — Nice-to-have (pull from as capacity allows)
 
-12. **Water tracking** — cheap, expected, low effort, no real downside.
-13. **Barcode scanning** — real gap for packaged/branded foods, but not
+12. **Barcode scanning** — real gap for packaged/branded foods, but not
     core to the differentiator (home-cooked Pakistani dishes). Needs
     either building a barcode/UPC database or integrating a third party
     (e.g. Open Food Facts — free, but weak Pakistani-brand coverage).
-14. **Conversational AI coach** — natural extension of the Gemini
+13. **Conversational AI coach** — natural extension of the Gemini
     integration already in place (ask it questions, get suggestions, not
     just one-way logging). Real cost risk: the whole rate-limiting setup
     was built around the 500/day free-tier ceiling for logging alone —
     open-ended chat would eat into that fast. Prototype small first.
-15. **Urdu / multi-language support** — matters more for this market than
+14. **Urdu / multi-language support** — matters more for this market than
     it would for a generic competitor. Worth testing whether Roman Urdu
     text input already works today (Gemini just parses whatever text
     arrives) before committing to a full UI translation effort.
