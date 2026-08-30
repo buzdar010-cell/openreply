@@ -128,10 +128,9 @@ Fix before anyone outside trusted testers uses the app.
     checklist row opens straight into the matching log-sheet mode.
     Paired with relocating "Worth a read" off Home into a "Learn" row in
     Settings (same article list + reader, just relocated) — Home stays
-    focused on the actionable checklist. Note: like weight logs, water
-    logs aren't currently merged into the Logs screen's food+exercise
-    feed — no way to review/delete past water entries there yet; worth
-    fixing alongside if/when weight logs get the same treatment.
+    focused on the actionable checklist. Weight and water logs are also
+    merged into the Logs screen's feed alongside food/exercise, each
+    reviewable and deletable the same way.
 
 ## P3 — Nice-to-have (pull from as capacity allows)
 
