@@ -796,3 +796,43 @@ export async function getPushSubscriptionsOverdueForWeightLog(db: D1Database, st
 export async function markPushSubscriptionSent(db: D1Database, id: string): Promise<void> {
   await db.prepare(`UPDATE push_subscriptions SET last_sent_at = ? WHERE id = ?`).bind(Math.floor(Date.now() / 1000), id).run();
 }
+
+// ---- Water logs ----
+
+export interface WaterLogRow {
+  id: string;
+  amount_ml: number;
+  logged_at: number;
+}
+
+export async function insertWaterLog(
+  db: D1Database,
+  log: { id: string; device_id: string; amount_ml: number; logged_at: number },
+): Promise<void> {
+  await db
+    .prepare(`INSERT INTO water_logs (id, device_id, amount_ml, logged_at, created_at) VALUES (?, ?, ?, ?, ?)`)
+    .bind(log.id, log.device_id, log.amount_ml, log.logged_at, Math.floor(Date.now() / 1000))
+    .run();
+}
+
+export async function getWaterLogsForRange(db: D1Database, deviceId: string, startUnix: number, endUnix: number): Promise<WaterLogRow[]> {
+  const { results } = await db
+    .prepare(`SELECT id, amount_ml, logged_at FROM water_logs WHERE device_id = ? AND logged_at >= ? AND logged_at < ? ORDER BY logged_at DESC`)
+    .bind(deviceId, startUnix, endUnix)
+    .all<WaterLogRow>();
+  return results;
+}
+
+/** Total ml over a range -- 0 (not null) when there are no entries, unlike getAverageWeightForRange: "drank 0ml" is a meaningful, correct answer for a sum, not a missing-data case. */
+export async function getWaterTotalForRange(db: D1Database, deviceId: string, startUnix: number, endUnix: number): Promise<number> {
+  const row = await db
+    .prepare(`SELECT COALESCE(SUM(amount_ml), 0) as total FROM water_logs WHERE device_id = ? AND logged_at >= ? AND logged_at < ?`)
+    .bind(deviceId, startUnix, endUnix)
+    .first<{ total: number }>();
+  return row?.total ?? 0;
+}
+
+export async function deleteWaterLogOwnedByDevice(db: D1Database, deviceId: string, logId: string): Promise<boolean> {
+  const result = await db.prepare(`DELETE FROM water_logs WHERE id = ? AND device_id = ?`).bind(logId, deviceId).run();
+  return (result.meta.changes ?? 0) > 0;
+}

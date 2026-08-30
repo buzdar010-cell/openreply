@@ -1,5 +1,5 @@
 /** Regression test for goalCalc.ts -- locks in the Mifflin-St Jeor math and the safety floor. */
-import { calculateDailyCalorieTarget, calculateMacroTargets } from "../src/goalCalc.ts";
+import { calculateDailyCalorieTarget, calculateMacroTargets, calculateWaterTargetMl } from "../src/goalCalc.ts";
 
 let failures = 0;
 function check(name: string, actual: number, expected: number, tolerance = 1) {
@@ -56,6 +56,12 @@ check("macro carbs_g", macros.carbs_g, 341, 0);
 // means it won't be exact, but it should never drift far.
 const reconstructedKcal = macros.protein_g * 4 + macros.carbs_g * 4 + macros.fat_g * 9;
 check("macro kcal reconstructs the target", reconstructedKcal, 2633, 10);
+
+// Water target: 35ml/kg, falling back to a flat default with no weight on record.
+check("water target at 75kg", calculateWaterTargetMl(75), 2625, 0);
+check("water target at 60kg", calculateWaterTargetMl(60), 2100, 0);
+check("water target falls back to default with no weight", calculateWaterTargetMl(null), 2500, 0);
+check("water target falls back to default with weight 0", calculateWaterTargetMl(0), 2500, 0);
 
 console.log(`\n${failures === 0 ? "All checks passed" : `${failures} check(s) failed`}`);
 if (failures > 0) process.exit(1);

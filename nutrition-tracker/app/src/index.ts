@@ -52,6 +52,10 @@ import {
   deletePushSubscriptionByEndpoint,
   getPushSubscriptionsOverdueForWeightLog,
   markPushSubscriptionSent,
+  insertWaterLog,
+  getWaterLogsForRange,
+  getWaterTotalForRange,
+  deleteWaterLogOwnedByDevice,
 } from "./db.ts";
 import { computeSignals, selectTips, selectArticles } from "./content/selectContent.ts";
 import { ARTICLES } from "./content/articles.ts";
@@ -60,7 +64,7 @@ import { sendWebPush, importVapidPrivateKey, base64UrlDecode, type VapidKeyPair 
 import { resolvePortion } from "./resolvePortion.ts";
 import { storePhoto, getPhoto } from "./r2.ts";
 import { GeminiRateLimiterDO, KeyedRateLimiterDO } from "./rateLimiterDO.ts";
-import { calculateDailyCalorieTarget, calculateMacroTargets, isValidProfileInput } from "./goalCalc.ts";
+import { calculateDailyCalorieTarget, calculateMacroTargets, calculateWaterTargetMl, isValidProfileInput } from "./goalCalc.ts";
 import { calculateCaloriesBurned, isValidActivityType } from "./exerciseCalc.ts";
 import { hashPassword, verifyPassword, generateSessionToken, generateDeviceToken, generateOtpCode, hashOtpCode } from "./auth.ts";
 import { sendOtpEmail } from "./email.ts";
@@ -767,6 +771,80 @@ async function handleGetWeightTrend(request: Request, env: Env): Promise<Respons
   });
 }
 
+// ---- Water logs ----
+
+async function handleLogWater(request: Request, env: Env): Promise<Response> {
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+
+  const body = (await request.json()) as { amountMl?: number; loggedAt?: number };
+  if (typeof body.amountMl !== "number" || body.amountMl <= 0 || body.amountMl > 5000) {
+    return jsonResponse({ error: "amountMl must be a number between 1 and 5000" }, 400);
+  }
+
+  const logId = crypto.randomUUID();
+  const loggedAt = body.loggedAt ?? Math.floor(Date.now() / 1000);
+  await insertWaterLog(env.DB, { id: logId, device_id: userId, amount_ml: body.amountMl, logged_at: loggedAt });
+  return jsonResponse({ logId, amountMl: body.amountMl, loggedAt });
+}
+
+async function handleGetWaterLogs(request: Request, env: Env): Promise<Response> {
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+  const url = new URL(request.url);
+  const startUnix = url.searchParams.get("start");
+  const endUnix = url.searchParams.get("end");
+  if (!startUnix || !endUnix) {
+    return jsonResponse({ error: "start and end (unix seconds) are required" }, 400);
+  }
+  const logs = await getWaterLogsForRange(env.DB, userId, Number(startUnix), Number(endUnix));
+  return jsonResponse({ logs });
+}
+
+async function handleDeleteWaterLog(request: Request, env: Env): Promise<Response> {
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+  const body = (await request.json()) as { logId?: string };
+  if (typeof body.logId !== "string" || !body.logId) {
+    return jsonResponse({ error: "logId is required" }, 400);
+  }
+  const deleted = await deleteWaterLogOwnedByDevice(env.DB, userId, body.logId);
+  if (!deleted) return jsonResponse({ error: "log not found" }, 404);
+  return jsonResponse({ ok: true });
+}
+
+// ---- Daily todo checklist ----
+
+/** Today's state for the Home checklist -- "today" is whatever [start, end) range the caller supplies, same convention as /totals. */
+async function handleGetTodo(request: Request, env: Env): Promise<Response> {
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+  const url = new URL(request.url);
+  const startUnix = url.searchParams.get("start");
+  const endUnix = url.searchParams.get("end");
+  if (!startUnix || !endUnix) {
+    return jsonResponse({ error: "start and end (unix seconds) are required" }, 400);
+  }
+  const start = Number(startUnix);
+  const end = Number(endUnix);
+
+  const [profile, weightLogs, waterMl, foodLogs, exerciseKcal] = await Promise.all([
+    getProfile(env.DB, userId),
+    getWeightLogsForRange(env.DB, userId, start, end),
+    getWaterTotalForRange(env.DB, userId, start, end),
+    getLogsForRange(env.DB, userId, start, end),
+    getExerciseCaloriesForRange(env.DB, userId, start, end),
+  ]);
+
+  return jsonResponse({
+    weightLoggedToday: weightLogs.length > 0,
+    waterMl,
+    waterTargetMl: calculateWaterTargetMl(profile?.weight_kg ?? null),
+    mealLoggedToday: foodLogs.length > 0,
+    exerciseLoggedToday: exerciseKcal > 0,
+  });
+}
+
 // ---- Push notifications ----
 
 async function handlePushSubscribe(request: Request, env: Env): Promise<Response> {
@@ -1118,6 +1196,18 @@ export default {
       }
       if (request.method === "GET" && url.pathname === "/weight-trend") {
         return await handleGetWeightTrend(request, env);
+      }
+      if (request.method === "POST" && url.pathname === "/log/water") {
+        return await handleLogWater(request, env);
+      }
+      if (request.method === "GET" && url.pathname === "/logs/water") {
+        return await handleGetWaterLogs(request, env);
+      }
+      if (request.method === "POST" && url.pathname === "/logs/water/delete") {
+        return await handleDeleteWaterLog(request, env);
+      }
+      if (request.method === "GET" && url.pathname === "/todo") {
+        return await handleGetTodo(request, env);
       }
       if (request.method === "POST" && url.pathname === "/push/subscribe") {
         return await handlePushSubscribe(request, env);

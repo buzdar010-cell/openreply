@@ -76,6 +76,19 @@ export function calculateMacroTargets(dailyCalorieTarget: number, weightKg: numb
   return { protein_g, carbs_g, fat_g };
 }
 
+// 35ml per kg of bodyweight -- a commonly-used general-purpose water intake
+// guideline (same "standard formula, not invented here" approach as the
+// calorie/macro math above). Falls back to a reasonable flat default when
+// no profile weight is on record yet, same as the calorie target's own
+// fallback elsewhere in the app.
+const DEFAULT_WATER_TARGET_ML = 2500;
+const WATER_ML_PER_KG = 35;
+
+export function calculateWaterTargetMl(weightKg: number | null): number {
+  if (!weightKg || weightKg <= 0) return DEFAULT_WATER_TARGET_ML;
+  return Math.round(weightKg * WATER_ML_PER_KG);
+}
+
 export function isValidProfileInput(body: unknown): body is ProfileInput {
   if (typeof body !== "object" || body === null) return false;
   const p = body as Record<string, unknown>;
