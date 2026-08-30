@@ -4,9 +4,15 @@ import {
   getLogs,
   deleteExerciseLog,
   getExerciseLogs,
+  deleteWeightLog,
+  getWeightLogs,
+  deleteWaterLog,
+  getWaterLogs,
   ACTIVITY_LABELS,
   type LogListItem,
   type ExerciseLogItem,
+  type WeightLogItem,
+  type WaterLogItem,
   type ActivityType,
 } from '../lib/api';
 import { groupByDay, groupByMonth, logsToCsv, type DayGroup, type MonthGroup } from '../lib/dateGroups';
@@ -17,12 +23,16 @@ const HISTORY_SECONDS = 180 * 86400; // ~6 months back for "view all"
 
 type FeedItem =
   | { kind: 'food'; logged_at: number; data: LogListItem }
-  | { kind: 'exercise'; logged_at: number; data: ExerciseLogItem };
+  | { kind: 'exercise'; logged_at: number; data: ExerciseLogItem }
+  | { kind: 'weight'; logged_at: number; data: WeightLogItem }
+  | { kind: 'water'; logged_at: number; data: WaterLogItem };
 
-function mergeFeed(foodItems: LogListItem[], exerciseItems: ExerciseLogItem[]): FeedItem[] {
+function mergeFeed(foodItems: LogListItem[], exerciseItems: ExerciseLogItem[], weightItems: WeightLogItem[], waterItems: WaterLogItem[]): FeedItem[] {
   const merged: FeedItem[] = [
     ...foodItems.map((data): FeedItem => ({ kind: 'food', logged_at: data.logged_at, data })),
     ...exerciseItems.map((data): FeedItem => ({ kind: 'exercise', logged_at: data.logged_at, data })),
+    ...weightItems.map((data): FeedItem => ({ kind: 'weight', logged_at: data.logged_at, data })),
+    ...waterItems.map((data): FeedItem => ({ kind: 'water', logged_at: data.logged_at, data })),
   ];
   return merged.sort((a, b) => b.logged_at - a.logged_at);
 }
@@ -97,12 +107,75 @@ function ExerciseRow({ item, onDelete }: { item: ExerciseLogItem; onDelete: () =
   );
 }
 
-function FeedRow({ item, onDelete }: { item: FeedItem; onDelete: (item: FeedItem) => void }) {
-  return item.kind === 'food' ? (
-    <FoodRow item={item.data} onDelete={() => onDelete(item)} />
-  ) : (
-    <ExerciseRow item={item.data} onDelete={() => onDelete(item)} />
+function WeightRow({ item, onDelete }: { item: WeightLogItem; onDelete: () => void }) {
+  const [confirming, setConfirming] = useState(false);
+
+  return (
+    <div className="border-cream-200 rounded-xl border bg-surface p-3">
+      <div className="flex items-center justify-between">
+        <div className="min-w-0 text-ink-900 truncate text-sm font-bold">⚖️ Weight</div>
+        <div className="flex shrink-0 items-center gap-3">
+          <span className="text-primary-600 text-sm font-bold">{item.weight_kg} kg</span>
+          {confirming ? (
+            <div className="flex gap-1">
+              <button onClick={onDelete} className="bg-danger-500 rounded-lg px-2 py-1 text-xs font-bold text-white">
+                Delete
+              </button>
+              <button onClick={() => setConfirming(false)} className="text-ink-400 px-2 py-1 text-xs font-semibold">
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <button onClick={() => setConfirming(true)} className="text-ink-400 text-lg leading-none">
+              ⋯
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
   );
+}
+
+function WaterRow({ item, onDelete }: { item: WaterLogItem; onDelete: () => void }) {
+  const [confirming, setConfirming] = useState(false);
+
+  return (
+    <div className="border-cream-200 rounded-xl border bg-surface p-3">
+      <div className="flex items-center justify-between">
+        <div className="min-w-0 text-ink-900 truncate text-sm font-bold">💧 Water</div>
+        <div className="flex shrink-0 items-center gap-3">
+          <span className="text-primary-600 text-sm font-bold">{Math.round(item.amount_ml)}ml</span>
+          {confirming ? (
+            <div className="flex gap-1">
+              <button onClick={onDelete} className="bg-danger-500 rounded-lg px-2 py-1 text-xs font-bold text-white">
+                Delete
+              </button>
+              <button onClick={() => setConfirming(false)} className="text-ink-400 px-2 py-1 text-xs font-semibold">
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <button onClick={() => setConfirming(true)} className="text-ink-400 text-lg leading-none">
+              ⋯
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FeedRow({ item, onDelete }: { item: FeedItem; onDelete: (item: FeedItem) => void }) {
+  switch (item.kind) {
+    case 'food':
+      return <FoodRow item={item.data} onDelete={() => onDelete(item)} />;
+    case 'exercise':
+      return <ExerciseRow item={item.data} onDelete={() => onDelete(item)} />;
+    case 'weight':
+      return <WeightRow item={item.data} onDelete={() => onDelete(item)} />;
+    case 'water':
+      return <WaterRow item={item.data} onDelete={() => onDelete(item)} />;
+  }
 }
 
 function DaySection({ group, onDelete }: { group: DayGroup<FeedItem>; onDelete: (item: FeedItem) => void }) {
@@ -138,16 +211,32 @@ export function LogsScreen({ refreshKey }: { refreshKey: number }) {
   const [viewingAll, setViewingAll] = useState(false);
   const [foodItems, setFoodItems] = useState<LogListItem[]>([]);
   const [exerciseItems, setExerciseItems] = useState<ExerciseLogItem[]>([]);
+  const [weightItems, setWeightItems] = useState<WeightLogItem[]>([]);
+  const [waterItems, setWaterItems] = useState<WaterLogItem[]>([]);
   const [loading, setLoading] = useState(true);
+
+  function refetch(rangeStart: number, now: number) {
+    getLogs(rangeStart, now).then(setFoodItems);
+    getExerciseLogs(rangeStart, now).then(setExerciseItems);
+    getWeightLogs(rangeStart, now).then(setWeightItems);
+    getWaterLogs(rangeStart, now).then(setWaterItems);
+  }
 
   useEffect(() => {
     const now = Math.floor(Date.now() / 1000);
     const rangeStart = now - (viewingAll ? HISTORY_SECONDS : WEEK_SECONDS);
     setLoading(true);
-    Promise.all([getLogs(rangeStart, now).catch(() => []), getExerciseLogs(rangeStart, now).catch(() => [])])
-      .then(([food, exercise]) => {
+    Promise.all([
+      getLogs(rangeStart, now).catch(() => []),
+      getExerciseLogs(rangeStart, now).catch(() => []),
+      getWeightLogs(rangeStart, now).catch(() => []),
+      getWaterLogs(rangeStart, now).catch(() => []),
+    ])
+      .then(([food, exercise, weight, water]) => {
         setFoodItems(food);
         setExerciseItems(exercise);
+        setWeightItems(weight);
+        setWaterItems(water);
       })
       .finally(() => setLoading(false));
   }, [refreshKey, viewingAll]);
@@ -155,19 +244,22 @@ export function LogsScreen({ refreshKey }: { refreshKey: number }) {
   async function handleDelete(item: FeedItem) {
     // optimistic
     if (item.kind === 'food') setFoodItems((prev) => prev.filter((i) => i.id !== item.data.id));
-    else setExerciseItems((prev) => prev.filter((i) => i.id !== item.data.id));
+    else if (item.kind === 'exercise') setExerciseItems((prev) => prev.filter((i) => i.id !== item.data.id));
+    else if (item.kind === 'weight') setWeightItems((prev) => prev.filter((i) => i.id !== item.data.id));
+    else setWaterItems((prev) => prev.filter((i) => i.id !== item.data.id));
 
     try {
       if (item.kind === 'food') await deleteLog(item.data.id);
-      else await deleteExerciseLog(item.data.id);
+      else if (item.kind === 'exercise') await deleteExerciseLog(item.data.id);
+      else if (item.kind === 'weight') await deleteWeightLog(item.data.id);
+      else await deleteWaterLog(item.data.id);
       showToast('Deleted');
     } catch {
       showToast('Failed to delete — try again', 'error');
       // Re-fetch on failure to correct any optimistic-update drift.
       const now = Math.floor(Date.now() / 1000);
       const rangeStart = now - (viewingAll ? HISTORY_SECONDS : WEEK_SECONDS);
-      getLogs(rangeStart, now).then(setFoodItems);
-      getExerciseLogs(rangeStart, now).then(setExerciseItems);
+      refetch(rangeStart, now);
     }
   }
 
@@ -182,7 +274,7 @@ export function LogsScreen({ refreshKey }: { refreshKey: number }) {
     URL.revokeObjectURL(url);
   }
 
-  const feed = mergeFeed(foodItems, exerciseItems);
+  const feed = mergeFeed(foodItems, exerciseItems, weightItems, waterItems);
   const kcalOf = (item: FeedItem) => (item.kind === 'food' ? item.data.kcal : 0);
   const dayGroups = viewingAll ? [] : groupByDay(feed, kcalOf);
   const monthGroups = viewingAll ? groupByMonth(feed) : [];
