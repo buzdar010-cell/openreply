@@ -56,11 +56,15 @@ import {
   getWaterLogsForRange,
   getWaterTotalForRange,
   deleteWaterLogOwnedByDevice,
+  insertDish,
+  insertUnmatchedBarcode,
 } from "./db.ts";
 import { computeSignals, selectTips, selectArticles } from "./content/selectContent.ts";
 import { ARTICLES } from "./content/articles.ts";
 import { computeWeightTrend } from "./weightTrend.ts";
 import { sendWebPush, importVapidPrivateKey, base64UrlDecode, type VapidKeyPair } from "./webPush.ts";
+import { lookupOpenFoodFacts } from "./openFoodFacts.ts";
+import { parseBarcodeLabel } from "./parseBarcodeLabel.ts";
 import { resolvePortion } from "./resolvePortion.ts";
 import { storePhoto, getPhoto } from "./r2.ts";
 import { GeminiRateLimiterDO, KeyedRateLimiterDO } from "./rateLimiterDO.ts";
@@ -564,6 +568,163 @@ async function handlePhotoLog(request: Request, env: Env): Promise<Response> {
   }
 
   return jsonResponse({ results });
+}
+
+// ---- Barcode scanning ----
+// Pipeline: our own dishes table (barcode-sourced ones are dish_id "upc_<code>")
+// -> Open Food Facts (free, no cost) -> if both miss, the frontend asks for a
+// photo of the nutrition label and hits handleBarcodeExtractLabel instead.
+// Either path that succeeds inserts a real dish row, so the same product is
+// an instant free lookup for everyone after the first person who finds it.
+
+const BARCODE_LOOKUP_WINDOW_MS = 60 * 1000;
+const BARCODE_LOOKUP_CAP = 20; // guards against a runaway scan loop hammering Open Food Facts
+
+function isValidBarcode(code: unknown): code is string {
+  return typeof code === "string" && /^[0-9]{6,14}$/.test(code);
+}
+
+async function handleBarcodeLookup(request: Request, env: Env): Promise<Response> {
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+  const limited = await rateLimitOrNull(env.KEYED_LIMITER, `barcode-lookup:${userId}`, BARCODE_LOOKUP_CAP, BARCODE_LOOKUP_WINDOW_MS);
+  if (limited) return limited;
+
+  const url = new URL(request.url);
+  const code = url.searchParams.get("code");
+  if (!isValidBarcode(code)) {
+    return jsonResponse({ error: "a valid numeric barcode (code) is required" }, 400);
+  }
+
+  const dishId = `upc_${code}`;
+  let dish = await getDishById(env.DB, dishId);
+
+  if (!dish) {
+    const off = await lookupOpenFoodFacts(code);
+    if (off) {
+      await insertDish(env.DB, {
+        dish_id: dishId,
+        category: "packaged",
+        serving_label: off.name,
+        default_serving_g: off.servingSizeG ?? 100,
+        per_100g_kcal: off.perG.kcal,
+        per_100g_protein_g: off.perG.protein_g,
+        per_100g_carbs_g: off.perG.carbs_g,
+        per_100g_fat_g: off.perG.fat_g,
+        per_100g_fiber_g: off.perG.fiber_g,
+        per_100g_sugar_g: off.perG.sugar_g,
+        per_100g_sodium_mg: off.perG.sodium_mg,
+        source: "barcode_off",
+      });
+      dish = await getDishById(env.DB, dishId);
+    }
+  }
+
+  if (!dish) return jsonResponse({ found: false, code });
+
+  const resolved = resolvePortion({ quantity: 1, custom_grams: null, portion_preset: null }, dish);
+  return jsonResponse({ found: true, dishId: dish.dish_id, name: dish.serving_label, defaultServingG: dish.default_serving_g, ...resolved });
+}
+
+async function handleBarcodeExtractLabel(request: Request, env: Env): Promise<Response> {
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+  const limited = await logRateLimitOrNull(env, userId); // same shared Gemini budget as food logging
+  if (limited) return limited;
+
+  const body = (await request.json()) as { code?: string; imageBase64?: string; mimeType?: "image/jpeg" | "image/png" | "image/webp" };
+  if (!isValidBarcode(body.code)) {
+    return jsonResponse({ error: "a valid numeric barcode (code) is required" }, 400);
+  }
+  const mimeType = body.mimeType;
+  if (
+    typeof body.imageBase64 !== "string" ||
+    !body.imageBase64 ||
+    (mimeType !== "image/jpeg" && mimeType !== "image/png" && mimeType !== "image/webp")
+  ) {
+    return jsonResponse(
+      { error: "imageBase64 must be a string; mimeType must be one of image/jpeg, image/png, image/webp" },
+      400,
+    );
+  }
+
+  const acquire = () => acquireViaDurableObject(env.RATE_LIMITER);
+  const extracted = await parseBarcodeLabel(body.imageBase64, mimeType, env.GEMINI_API_KEY, acquire);
+
+  // Kept for QA review, same reasoning as storing food photos -- lets a
+  // wrong extraction be checked against the actual label it read.
+  const imageBytes = Uint8Array.from(atob(body.imageBase64), (c) => c.charCodeAt(0)).buffer;
+  await storePhoto(env.PHOTOS, userId, crypto.randomUUID(), imageBytes, mimeType);
+
+  if (!extracted.readable || !extracted.product_name || extracted.kcal_per_100g == null) {
+    await insertUnmatchedBarcode(env.DB, {
+      id: crypto.randomUUID(),
+      device_id: userId,
+      barcode: body.code,
+      created_at: Math.floor(Date.now() / 1000),
+    });
+    return jsonResponse({ found: false, code: body.code });
+  }
+
+  const dishId = `upc_${body.code}`;
+  await insertDish(env.DB, {
+    dish_id: dishId,
+    category: "packaged",
+    serving_label: extracted.product_name,
+    default_serving_g: extracted.serving_size_g ?? 100,
+    per_100g_kcal: extracted.kcal_per_100g,
+    per_100g_protein_g: extracted.protein_per_100g ?? 0,
+    per_100g_carbs_g: extracted.carbs_per_100g ?? 0,
+    per_100g_fat_g: extracted.fat_per_100g ?? 0,
+    per_100g_fiber_g: extracted.fiber_per_100g ?? 0,
+    per_100g_sugar_g: extracted.sugar_per_100g ?? 0,
+    per_100g_sodium_mg: extracted.sodium_per_100g_mg ?? 0,
+    source: "barcode_ai",
+  });
+  const dish = await getDishById(env.DB, dishId);
+  if (!dish) return jsonResponse({ error: "failed to save extracted product" }, 500);
+
+  const resolved = resolvePortion({ quantity: 1, custom_grams: null, portion_preset: null }, dish);
+  return jsonResponse({ found: true, dishId: dish.dish_id, name: dish.serving_label, defaultServingG: dish.default_serving_g, ...resolved });
+}
+
+async function handleLogBarcode(request: Request, env: Env): Promise<Response> {
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+
+  const body = (await request.json()) as { dishId?: string; loggedAt?: number };
+  if (typeof body.dishId !== "string" || !body.dishId) {
+    return jsonResponse({ error: "dishId is required" }, 400);
+  }
+  const dish = await getDishById(env.DB, body.dishId);
+  if (!dish) return jsonResponse({ error: "dish not found" }, 404);
+
+  const resolved = resolvePortion({ quantity: 1, custom_grams: null, portion_preset: null }, dish);
+  const logId = crypto.randomUUID();
+  const loggedAt = body.loggedAt ?? Math.floor(Date.now() / 1000);
+  await insertLog(env.DB, {
+    id: logId,
+    device_id: userId,
+    dish_id: dish.dish_id,
+    free_text_description: null,
+    quantity: 1,
+    resolved_grams: resolved.resolved_grams,
+    swaps_json: null,
+    kcal: resolved.kcal,
+    protein_g: resolved.protein_g,
+    carbs_g: resolved.carbs_g,
+    fat_g: resolved.fat_g,
+    fiber_g: resolved.fiber_g,
+    sugar_g: resolved.sugar_g,
+    sodium_mg: resolved.sodium_mg,
+    logged_at: loggedAt,
+    confidence: "high", // an exact dish_id match, not an AI guess -- nothing to be unsure about
+    alt_candidates_json: null,
+    photo_key: null,
+  });
+  await recordLogForStreak(env.DB, userId);
+
+  return jsonResponse({ matched: true, logId, dishId: dish.dish_id, quantity: 1, confidence: "high", ...resolved });
 }
 
 async function handleTotals(request: Request, env: Env): Promise<Response> {
@@ -1163,6 +1324,15 @@ export default {
       }
       if (request.method === "POST" && url.pathname === "/log/photo") {
         return await handlePhotoLog(request, env);
+      }
+      if (request.method === "GET" && url.pathname === "/barcode/lookup") {
+        return await handleBarcodeLookup(request, env);
+      }
+      if (request.method === "POST" && url.pathname === "/barcode/extract-label") {
+        return await handleBarcodeExtractLabel(request, env);
+      }
+      if (request.method === "POST" && url.pathname === "/log/barcode") {
+        return await handleLogBarcode(request, env);
       }
       if (request.method === "GET" && url.pathname === "/totals") {
         return await handleTotals(request, env);

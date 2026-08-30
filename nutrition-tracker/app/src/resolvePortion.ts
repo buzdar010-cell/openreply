@@ -1,6 +1,9 @@
 import { type DishRow } from "./db.ts";
 import { type ParsedLogEntryResult } from "./parseLog.ts";
 
+/** Only what resolvePortion actually reads -- lets non-AI callers (barcode logging) pass a plain object instead of faking the full AI-parsed shape. */
+type PortionInput = Pick<ParsedLogEntryResult, "quantity" | "custom_grams" | "portion_preset">;
+
 export interface ResolvedPortion {
   resolved_grams: number;
   kcal: number;
@@ -21,7 +24,7 @@ export interface ResolvedPortion {
  * `quantity` (e.g. "two rotis") multiplies whichever base grams was chosen --
  * it's a count of that portion, not an alternative to it.
  */
-export function resolvePortion(entry: ParsedLogEntryResult, dish: DishRow): ResolvedPortion {
+export function resolvePortion(entry: PortionInput, dish: DishRow): ResolvedPortion {
   let baseGrams: number;
 
   if (entry.custom_grams != null) {

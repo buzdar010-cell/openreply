@@ -33,6 +33,53 @@ export async function getDishById(db: D1Database, dishId: string): Promise<DishR
   return row ?? null;
 }
 
+export interface DishInsert {
+  dish_id: string;
+  category: string;
+  serving_label: string;
+  default_serving_g: number;
+  per_100g_kcal: number;
+  per_100g_protein_g: number;
+  per_100g_carbs_g: number;
+  per_100g_fat_g: number;
+  per_100g_fiber_g: number;
+  per_100g_sugar_g: number;
+  per_100g_sodium_mg: number;
+  source: string; // 'barcode_off' | 'barcode_ai' -- distinguishes runtime-added products from the curated 228
+}
+
+/** First runtime dish inserts -- previously dishes only ever came from the seed script. Used by barcode lookups (openFoodFacts.ts / parseBarcodeLabel.ts) so a scanned product becomes a real dish: searchable, editable, loggable through every mechanism that already exists. */
+export async function insertDish(db: D1Database, dish: DishInsert): Promise<void> {
+  await db
+    .prepare(
+      `INSERT OR IGNORE INTO dishes (dish_id, category, serving_label, default_serving_g, per_100g_kcal, per_100g_protein_g,
+        per_100g_carbs_g, per_100g_fat_g, per_100g_fiber_g, per_100g_sugar_g, per_100g_sodium_mg, portion_presets_json, source)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?)`,
+    )
+    .bind(
+      dish.dish_id,
+      dish.category,
+      dish.serving_label,
+      dish.default_serving_g,
+      dish.per_100g_kcal,
+      dish.per_100g_protein_g,
+      dish.per_100g_carbs_g,
+      dish.per_100g_fat_g,
+      dish.per_100g_fiber_g,
+      dish.per_100g_sugar_g,
+      dish.per_100g_sodium_mg,
+      dish.source,
+    )
+    .run();
+}
+
+export async function insertUnmatchedBarcode(db: D1Database, row: { id: string; device_id: string; barcode: string; created_at: number }): Promise<void> {
+  await db
+    .prepare(`INSERT INTO unmatched_barcodes (id, device_id, barcode, created_at) VALUES (?, ?, ?, ?)`)
+    .bind(row.id, row.device_id, row.barcode, row.created_at)
+    .run();
+}
+
 export interface LogRowToInsert {
   id: string;
   device_id: string;
