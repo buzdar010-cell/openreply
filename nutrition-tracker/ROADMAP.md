@@ -134,10 +134,23 @@ Fix before anyone outside trusted testers uses the app.
 
 ## P3 — Nice-to-have (pull from as capacity allows)
 
-12. **Barcode scanning** — real gap for packaged/branded foods, but not
-    core to the differentiator (home-cooked Pakistani dishes). Needs
-    either building a barcode/UPC database or integrating a third party
-    (e.g. Open Food Facts — free, but weak Pakistani-brand coverage).
+12. ✅ **Barcode scanning** — DONE. Live camera scanning (`@zxing/browser`,
+    lazy-loaded so its ~200KB doesn't hit everyone's bundle) with manual
+    number entry always available alongside, not just as a fallback.
+    Pipeline: our own dishes table (barcode-sourced rows are dish_id
+    "upc_<code>", so a scanned product is instantly searchable/loggable
+    through every existing dish mechanism) -> Open Food Facts (free, no
+    cost -- decent for multinational brands sold in Pakistan, thin for
+    local-only ones) -> if both miss, the app asks for a photo of the
+    nutrition label and Gemini vision extracts it (reuses the same
+    model/call shape and shared rate-limit budget as photo food-logging).
+    A still-unreadable label gets queued for manual review, same pattern
+    as unmatched text logs. Caught and fixed a real navigation bug along
+    the way: nesting independent back-dismiss hooks three overlays deep
+    (sheet -> barcode flow -> scanner) cascaded a close of any one of
+    them into closing all three; fixed with a single two-level history
+    handler on the sheet, mirroring the pattern Settings' sub-screens
+    already used.
 13. **Conversational AI coach** — natural extension of the Gemini
     integration already in place (ask it questions, get suggestions, not
     just one-way logging). Real cost risk: the whole rate-limiting setup
