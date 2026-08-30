@@ -74,37 +74,64 @@ Fix before anyone outside trusted testers uses the app.
    SSL, and eventually a Resend sending domain on it -- Claude can do
    directly with the same Cloudflare API access already used all
    session for Workers/D1/R2/Pages.
+6. **Self-serve account deletion** — Export exists (Settings → "Export my
+   data"), but there's no way to actually delete an account and its data
+   without a direct database query. Real gap on its own, and something
+   app stores (item 16 below) require if this ever gets listed there.
+7. **CI (automated tests on every push)** — every test that exists today
+   (backend: typecheck + the goal-calc/search/content/weight-trend/
+   web-push regression tests; frontend: typecheck + lint) only runs
+   because it's run manually, in-session, before each deploy. A GitHub
+   Actions workflow running the same commands on every push would catch
+   a regression automatically regardless of who's making the change,
+   instead of depending on that discipline holding forever -- worth
+   doing now that there's real shared logic a change in one place could
+   quietly break elsewhere (e.g. resolvePortion.ts is now used by food,
+   photo, *and* barcode logging).
+8. **Monitoring & alerting** — `error_logs`, `unmatched_logs`, and
+   `unmatched_barcodes` already capture problems, but nothing looks at
+   them unless someone manually queries the database. Needs something
+   that actively watches those signals and proactively notifies
+   (push/email) when something's actually broken, plus basic uptime
+   checking (is the site even reachable -- a different failure mode
+   than an application error) and lightweight usage visibility
+   (signups, active users), none of which exists in any form today.
+9. **Security polish** — CORS is currently wildcard-open
+   (`Access-Control-Allow-Origin: "*"`); fine while everything's on
+   workers.dev/pages.dev, should tighten to the real domain once item 5
+   lands. Signup also has no bot/abuse protection beyond the existing
+   rate limits -- cheap to add, not urgent pre-launch.
 
 ## P2 — Product completeness
 
-6. ✅ **Exercise/activity logging** — DONE. `daily_calorie_target` used to
-   come from a fixed `activity_level` baked into the profile and never
-   adjusted for what someone actually did that day. Now: a simple
-   activity picker (walk/run/cycling/gym/sports/yoga/housework) +
-   duration, calories burned via the standard MET formula server-side
-   (no AI call, doesn't touch the Gemini budget). Home's ring shows
-   target + exercise burned as the real budget; Logs shows food and
-   exercise merged into one time-sorted feed, each independently
-   deletable.
-7. ✅ **Macro targets on Home** — DONE. Protein/carbs/fat used to show raw
-   totals with nothing to compare against. Targets now computed at profile
-   save (protein by bodyweight at 1.6 g/kg, fat at 30% of calories, carbs
-   get the remainder -- the standard approach mainstream macro
-   calculators use) and stored alongside daily_calorie_target. Each
-   macro card on Home shows its own progress bar now, with a clean
-   "set a goal for a target" fallback before a profile exists.
-8. ✅ **Backdating a log** — DONE. Both food and exercise logging gained
-   a small "When" field (defaults to now, only touched to backdate) that
-   actually sends the backend's already-existing `loggedAt` support,
-   which nothing in the frontend was using before this.
-9. ✅ **Real personalized content** — DONE. "Tips for you" was 3 hardcoded
-   static tips for everyone. Now a hand-written library (78 tips, 9 short
-   articles -- not AI-generated, so it costs nothing and can't drift into
-   made-up advice) matched against real signals from someone's own logs
-   (sodium/protein trends, most-logged dishes, days since exercise, goal),
-   seeded by day so picks rotate without needing to persist state. Home
-   gained a "Worth a read" articles section with a full-screen reader.
-10. ✅ **Weight-trend tracking + adaptive coaching** — DONE. New "Weight"
+10. ✅ **Exercise/activity logging** — DONE. `daily_calorie_target` used to
+    come from a fixed `activity_level` baked into the profile and never
+    adjusted for what someone actually did that day. Now: a simple
+    activity picker (walk/run/cycling/gym/sports/yoga/housework) +
+    duration, calories burned via the standard MET formula server-side
+    (no AI call, doesn't touch the Gemini budget). Home's ring shows
+    target + exercise burned as the real budget; Logs shows food and
+    exercise merged into one time-sorted feed, each independently
+    deletable.
+11. ✅ **Macro targets on Home** — DONE. Protein/carbs/fat used to show raw
+    totals with nothing to compare against. Targets now computed at profile
+    save (protein by bodyweight at 1.6 g/kg, fat at 30% of calories, carbs
+    get the remainder -- the standard approach mainstream macro
+    calculators use) and stored alongside daily_calorie_target. Each
+    macro card on Home shows its own progress bar now, with a clean
+    "set a goal for a target" fallback before a profile exists.
+12. ✅ **Backdating a log** — DONE. Both food and exercise logging gained
+    a small "When" field (defaults to now, only touched to backdate) that
+    actually sends the backend's already-existing `loggedAt` support,
+    which nothing in the frontend was using before this.
+13. ✅ **Real personalized content** — DONE. "Tips for you" was 3 hardcoded
+    static tips for everyone. Now a hand-written library (78 tips, 9 short
+    articles -- not AI-generated, so it costs nothing and can't drift into
+    made-up advice) matched against real signals from someone's own logs
+    (sodium/protein trends, most-logged dishes, days since exercise, goal),
+    seeded by day so picks rotate without needing to persist state. Home
+    gained a "Worth a read" articles section with a full-screen reader.
+14. ✅ **Weight-trend tracking + adaptive coaching** — DONE. New "Weight"
     mode in the log sheet; Home shows a trend card (7-day rolling average
     vs. the prior 7 days, hand-rolled SVG sparkline over the last 14
     days) comparing the actual weekly rate against what the goal implies
@@ -117,7 +144,7 @@ Fix before anyone outside trusted testers uses the app.
     Crypto — VAPID + RFC 8291 payload encryption, checked against the
     spec's own test vectors — rather than a library), delivered by a
     daily Cron Trigger to anyone overdue who's opted in.
-11. ✅ **Daily todo checklist on Home** — DONE. A "Today's checklist" card
+15. ✅ **Daily todo checklist on Home** — DONE. A "Today's checklist" card
     above Tips with four items (weight, water, a meal, exercise), each
     computed server-side from real state via a new `/todo` endpoint —
     same no-AI/real-signals approach as tips/trend. Water tracking got
@@ -131,10 +158,23 @@ Fix before anyone outside trusted testers uses the app.
     focused on the actionable checklist. Weight and water logs are also
     merged into the Logs screen's feed alongside food/exercise, each
     reviewable and deletable the same way.
+16. **App store presence (Play Store via TWA)** — right now this is
+    PWA-only (Add to Home Screen from a browser). A lot of the target
+    audience discovers and trusts apps through the Play Store
+    specifically, not by installing a web app from a browser menu --
+    probably the single biggest gap between "works well" and "feels
+    like a real app." Wrapping this PWA for the Play Store via a
+    Trusted Web Activity is realistic without a rebuild; the App Store
+    is harder since Apple is stricter about PWA wrappers and would need
+    more thought.
+17. **Admin dashboard** — reviewing unmatched foods/barcodes and
+    correcting mismatches happens through raw `/admin/*` JSON endpoints
+    today. Fine while Claude is the one maintaining it, not fine for
+    anyone else to operate.
 
 ## P3 — Nice-to-have (pull from as capacity allows)
 
-12. ✅ **Barcode scanning** — DONE. Live camera scanning (`@zxing/browser`,
+18. ✅ **Barcode scanning** — DONE. Live camera scanning (`@zxing/browser`,
     lazy-loaded so its ~200KB doesn't hit everyone's bundle) with manual
     number entry always available alongside, not just as a fallback.
     Pipeline: our own dishes table (barcode-sourced rows are dish_id
@@ -151,15 +191,25 @@ Fix before anyone outside trusted testers uses the app.
     them into closing all three; fixed with a single two-level history
     handler on the sheet, mirroring the pattern Settings' sub-screens
     already used.
-13. **Conversational AI coach** — natural extension of the Gemini
+19. **Conversational AI coach** — natural extension of the Gemini
     integration already in place (ask it questions, get suggestions, not
     just one-way logging). Real cost risk: the whole rate-limiting setup
     was built around the 500/day free-tier ceiling for logging alone —
     open-ended chat would eat into that fast. Prototype small first.
-14. **Urdu / multi-language support** — matters more for this market than
+20. **Urdu / multi-language support** — matters more for this market than
     it would for a generic competitor. Worth testing whether Roman Urdu
     text input already works today (Gemini just parses whatever text
     arrives) before committing to a full UI translation effort.
+21. **Offline support** — it's a PWA with asset caching (the service
+    worker precaches the app shell), but logging food/water/weight/
+    exercise still requires a live connection -- no offline
+    queue-and-sync. Worth deciding whether "works offline" is actually a
+    promise to make before building it; a real lift either way.
+22. **Monetization / business model** — free forever, or a plan (premium
+    tier, ads, local payment via JazzCash/Easypaisa)? Not decided,
+    nothing built either way -- worth settling since it shapes several
+    other decisions (account limits, what a "premium" account even
+    means here).
 
 ## Explicitly not planned right now
 
