@@ -1,10 +1,11 @@
 import { useRef, useState } from 'react';
-import { logText, logPhoto, logExercise, logWeight, ACTIVITY_LABELS, type LogResultEntry, type ActivityType, type ExerciseLogResult } from '../lib/api';
+import { logText, logPhoto, logExercise, logWeight, logWater, ACTIVITY_LABELS, type LogResultEntry, type ActivityType, type ExerciseLogResult } from '../lib/api';
 import { showToast } from '../lib/toast';
 import { useDismissOnBack } from '../lib/useDismissOnBack';
 
 const EXAMPLES = ['chicken karahi and two rotis', 'one plate biryani', 'a bowl of daal chawal', '3 samosas'];
 const ACTIVITY_OPTIONS = Object.entries(ACTIVITY_LABELS) as [ActivityType, string][];
+const WATER_QUICK_AMOUNTS_ML = [250, 500, 750, 1000];
 
 /** datetime-local inputs work in the browser's local time, not UTC -- format/parse accordingly. */
 function toDatetimeLocalValue(date: Date): string {
@@ -79,11 +80,11 @@ export function AddLogSheet({
 }: {
   onClose: () => void;
   onLogged: () => void;
-  initialMode?: 'food' | 'exercise' | 'weight';
+  initialMode?: 'food' | 'exercise' | 'weight' | 'water';
 }) {
   useDismissOnBack(onClose);
 
-  const [mode, setMode] = useState<'food' | 'exercise' | 'weight'>(initialMode);
+  const [mode, setMode] = useState<'food' | 'exercise' | 'weight' | 'water'>(initialMode);
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -98,6 +99,9 @@ export function AddLogSheet({
 
   const [weightKgInput, setWeightKgInput] = useState('');
   const [weightResult, setWeightResult] = useState<{ weightKg: number } | null>(null);
+
+  const [waterMlInput, setWaterMlInput] = useState('');
+  const [waterResult, setWaterResult] = useState<{ amountMl: number } | null>(null);
 
   // Defaults to right now -- only touched when backdating a forgotten meal/workout.
   const [loggedAtInput, setLoggedAtInput] = useState(() => toDatetimeLocalValue(new Date()));
@@ -180,6 +184,24 @@ export function AddLogSheet({
     }
   }
 
+  async function submitWater(amountMl: number) {
+    if (!amountMl || amountMl <= 0) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await logWater(amountMl, loggedAtUnix);
+      setWaterResult({ amountMl: res.amountMl });
+      setWaterMlInput('');
+      setLoggedAtInput(toDatetimeLocalValue(new Date()));
+      onLogged();
+      showToast('Logged!');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong. Try again.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function handlePhotoSelected(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -192,38 +214,38 @@ export function AddLogSheet({
     <div className="bg-cream-50 fixed inset-0 z-50 mx-auto flex max-w-[480px] flex-col overflow-y-auto">
       <div className="flex items-center justify-between px-5 pt-6 pb-2">
         <h1 className="text-ink-900 text-2xl font-extrabold">
-          {mode === 'food' ? 'Log food' : mode === 'exercise' ? 'Log exercise' : 'Log weight'}
+          {mode === 'food' ? 'Log food' : mode === 'exercise' ? 'Log exercise' : mode === 'weight' ? 'Log weight' : 'Log water'}
         </h1>
         <button onClick={onClose} className="text-ink-400 text-2xl leading-none">
           ×
         </button>
       </div>
 
-      {!results && !exerciseResult && !weightResult && (
-        <div className="border-cream-200 mx-5 mb-2 flex gap-1 rounded-xl border bg-surface p-1">
+      {!results && !exerciseResult && !weightResult && !waterResult && (
+        <div className="border-cream-200 mx-5 mb-2 grid grid-cols-4 gap-1 rounded-xl border bg-surface p-1">
           <button
             onClick={() => setMode('food')}
-            className={`flex-1 rounded-lg py-2 text-sm font-bold transition-colors ${
-              mode === 'food' ? 'bg-primary-500 text-white' : 'text-ink-600'
-            }`}
+            className={`rounded-lg py-2 text-xs font-bold transition-colors ${mode === 'food' ? 'bg-primary-500 text-white' : 'text-ink-600'}`}
           >
             🍛 Food
           </button>
           <button
             onClick={() => setMode('exercise')}
-            className={`flex-1 rounded-lg py-2 text-sm font-bold transition-colors ${
-              mode === 'exercise' ? 'bg-primary-500 text-white' : 'text-ink-600'
-            }`}
+            className={`rounded-lg py-2 text-xs font-bold transition-colors ${mode === 'exercise' ? 'bg-primary-500 text-white' : 'text-ink-600'}`}
           >
             🏃 Exercise
           </button>
           <button
             onClick={() => setMode('weight')}
-            className={`flex-1 rounded-lg py-2 text-sm font-bold transition-colors ${
-              mode === 'weight' ? 'bg-primary-500 text-white' : 'text-ink-600'
-            }`}
+            className={`rounded-lg py-2 text-xs font-bold transition-colors ${mode === 'weight' ? 'bg-primary-500 text-white' : 'text-ink-600'}`}
           >
             ⚖️ Weight
+          </button>
+          <button
+            onClick={() => setMode('water')}
+            className={`rounded-lg py-2 text-xs font-bold transition-colors ${mode === 'water' ? 'bg-primary-500 text-white' : 'text-ink-600'}`}
+          >
+            💧 Water
           </button>
         </div>
       )}
@@ -364,6 +386,46 @@ export function AddLogSheet({
           </>
         )}
 
+        {!waterResult && mode === 'water' && (
+          <>
+            <p className="text-ink-600 mb-3 text-sm">How much did you drink?</p>
+
+            <div className="mb-4 grid grid-cols-4 gap-2">
+              {WATER_QUICK_AMOUNTS_ML.map((ml) => (
+                <button
+                  key={ml}
+                  onClick={() => submitWater(ml)}
+                  disabled={loading}
+                  className="border-primary-100 text-primary-600 rounded-xl border-2 py-3 text-center text-sm font-bold disabled:opacity-40"
+                >
+                  {ml}ml
+                </button>
+              ))}
+            </div>
+
+            <input
+              type="number"
+              inputMode="numeric"
+              value={waterMlInput}
+              onChange={(e) => setWaterMlInput(e.target.value)}
+              placeholder="Custom amount in ml"
+              className="border-primary-100 focus:border-primary-500 text-ink-900 mb-3 w-full rounded-xl border-2 bg-surface px-3 py-2.5 text-base outline-none"
+            />
+
+            <WhenField value={loggedAtInput} onChange={setLoggedAtInput} />
+
+            <button
+              onClick={() => submitWater(Number(waterMlInput))}
+              disabled={loading || !Number(waterMlInput)}
+              className="bg-primary-500 hover:bg-primary-600 rounded-2xl py-4 text-lg font-bold text-white shadow-sm transition-colors disabled:opacity-40"
+            >
+              {loading ? 'Logging…' : 'Log custom amount'}
+            </button>
+
+            {error && <div className="bg-danger-500/10 text-danger-500 mt-4 rounded-xl px-4 py-3 text-sm font-medium">{error}</div>}
+          </>
+        )}
+
         {exerciseResult && (
           <>
             <div className="border-cream-200 rounded-2xl border bg-surface p-4">
@@ -395,6 +457,26 @@ export function AddLogSheet({
             </div>
             <button
               onClick={() => setWeightResult(null)}
+              className="border-primary-100 text-primary-600 mt-4 rounded-2xl border-2 py-3 text-sm font-bold"
+            >
+              Log something else
+            </button>
+            <button onClick={onClose} className="bg-primary-500 hover:bg-primary-600 mt-3 rounded-2xl py-4 font-bold text-white">
+              Done
+            </button>
+          </>
+        )}
+
+        {waterResult && (
+          <>
+            <div className="border-cream-200 rounded-2xl border bg-surface p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-ink-900 font-bold">Water logged</span>
+                <span className="text-primary-600 font-bold">{waterResult.amountMl}ml</span>
+              </div>
+            </div>
+            <button
+              onClick={() => setWaterResult(null)}
               className="border-primary-100 text-primary-600 mt-4 rounded-2xl border-2 py-3 text-sm font-bold"
             >
               Log something else

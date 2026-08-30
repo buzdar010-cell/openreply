@@ -331,6 +331,42 @@ export async function getWeightTrend(): Promise<WeightTrend> {
   return getJson('/weight-trend');
 }
 
+// ---- Water logging ----
+
+export async function logWater(amountMl: number, loggedAt?: number): Promise<{ logId: string; amountMl: number; loggedAt: number }> {
+  return postJson('/log/water', { amountMl, loggedAt });
+}
+
+export interface WaterLogItem {
+  id: string;
+  amount_ml: number;
+  logged_at: number;
+}
+
+export async function getWaterLogs(startUnix: number, endUnix: number): Promise<WaterLogItem[]> {
+  const data = await getJson<{ logs: WaterLogItem[] }>(`/logs/water?start=${startUnix}&end=${endUnix}`);
+  return data.logs ?? [];
+}
+
+export async function deleteWaterLog(logId: string): Promise<void> {
+  await postJson('/logs/water/delete', { logId });
+}
+
+// ---- Daily todo checklist ----
+
+export interface TodoState {
+  weightLoggedToday: boolean;
+  waterMl: number;
+  waterTargetMl: number;
+  mealLoggedToday: boolean;
+  exerciseLoggedToday: boolean;
+}
+
+export async function getTodo(): Promise<TodoState> {
+  const now = Math.floor(Date.now() / 1000);
+  return getJson<TodoState>(`/todo?start=${startOfTodayUnix()}&end=${now}`);
+}
+
 // ---- Push notifications ----
 
 export async function subscribePush(subscription: { endpoint: string; keys: { p256dh: string; auth: string } }): Promise<void> {

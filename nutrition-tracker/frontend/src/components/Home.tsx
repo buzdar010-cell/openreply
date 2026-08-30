@@ -4,13 +4,15 @@ import {
   getProfile,
   getHomeContent,
   getWeightTrend,
+  getTodo,
   type Totals,
   type Profile,
   type TipItem,
-  type ArticleSummary,
   type WeightTrend,
+  type TodoState,
 } from '../lib/api';
-import { ArticleReader } from './ArticleReader';
+
+type AddSheetMode = 'food' | 'exercise' | 'weight' | 'water';
 
 const DEFAULT_TARGET_KCAL = 2000; // fallback when no profile/goal has been set yet
 const MISSED_LOG_HOURS = 24; // matches the "after 1 missed day" reminder cadence
@@ -102,6 +104,44 @@ function ReminderBanner({ onLogWeight }: { onLogWeight: () => void }) {
   );
 }
 
+function TodoRow({ done, label, subtext, onClick }: { done: boolean; label: string; subtext?: string; onClick: () => void }) {
+  return (
+    <button onClick={onClick} className="flex w-full items-center gap-3 px-4 py-3 text-left">
+      <span
+        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs ${
+          done ? 'bg-primary-500 text-white' : 'border-cream-200 border-2'
+        }`}
+      >
+        {done && '✓'}
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className={`text-sm font-semibold ${done ? 'text-ink-400 line-through' : 'text-ink-900'}`}>{label}</div>
+        {subtext && <div className="text-ink-400 text-xs">{subtext}</div>}
+      </div>
+    </button>
+  );
+}
+
+function TodoChecklist({ todo, onOpenAddSheet }: { todo: TodoState; onOpenAddSheet: (mode: AddSheetMode) => void }) {
+  const waterDone = todo.waterMl >= todo.waterTargetMl;
+  return (
+    <>
+      <h2 className="text-ink-900 mb-3 text-lg font-bold">Today's checklist</h2>
+      <div className="border-cream-200 divide-cream-200 mb-6 divide-y overflow-hidden rounded-2xl border bg-surface">
+        <TodoRow done={todo.weightLoggedToday} label="Log your weight" onClick={() => onOpenAddSheet('weight')} />
+        <TodoRow
+          done={waterDone}
+          label="Drink your water"
+          subtext={`${Math.round(todo.waterMl)} / ${todo.waterTargetMl}ml`}
+          onClick={() => onOpenAddSheet('water')}
+        />
+        <TodoRow done={todo.mealLoggedToday} label="Log a meal" onClick={() => onOpenAddSheet('food')} />
+        <TodoRow done={todo.exerciseLoggedToday} label="Get some exercise in" onClick={() => onOpenAddSheet('exercise')} />
+      </div>
+    </>
+  );
+}
+
 function MacroCard({
   label,
   value,
@@ -147,20 +187,19 @@ function levelFromXp(xp: number): number {
 export function Home({
   refreshKey,
   onGoToSettings,
-  onLogWeight,
+  onOpenAddSheet,
 }: {
   refreshKey: number;
   onGoToSettings: () => void;
-  onLogWeight: () => void;
+  onOpenAddSheet: (mode: AddSheetMode) => void;
 }) {
   const [totals, setTotals] = useState<Totals | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [tips, setTips] = useState<TipItem[]>([]);
-  const [articles, setArticles] = useState<ArticleSummary[]>([]);
-  const [openArticleId, setOpenArticleId] = useState<string | null>(null);
   const [weightTrend, setWeightTrend] = useState<WeightTrend | null>(null);
   const [showReminderBanner, setShowReminderBanner] = useState(false);
+  const [todo, setTodo] = useState<TodoState | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -172,10 +211,7 @@ export function Home({
     // Personalized, so it's refetched on the same triggers as totals/profile
     // (a fresh log can shift signals like "no recent exercise").
     getHomeContent()
-      .then(({ tips: fetchedTips, articles: fetchedArticles }) => {
-        setTips(fetchedTips);
-        setArticles(fetchedArticles);
-      })
+      .then(({ tips: fetchedTips }) => setTips(fetchedTips))
       .catch(() => {});
     getWeightTrend()
       .then((trend) => {
@@ -185,6 +221,9 @@ export function Home({
         setShowReminderBanner(trend.status !== 'no_data' && (hoursSinceLastWeightLog ?? Infinity) >= MISSED_LOG_HOURS);
       })
       .catch(() => setWeightTrend(null));
+    getTodo()
+      .then(setTodo)
+      .catch(() => setTodo(null));
   }, [refreshKey]);
 
   const baseTarget = profile?.daily_calorie_target ?? DEFAULT_TARGET_KCAL;
@@ -211,7 +250,7 @@ export function Home({
         </div>
       )}
 
-      {showReminderBanner && <ReminderBanner onLogWeight={onLogWeight} />}
+      {showReminderBanner && <ReminderBanner onLogWeight={() => onOpenAddSheet('weight')} />}
 
       <h1 className="text-ink-900 mb-1 text-2xl font-extrabold">Today</h1>
       <p className="text-ink-600 mb-4 text-sm">
@@ -245,7 +284,9 @@ export function Home({
         </>
       )}
 
-      {weightTrend && <WeightTrendCard trend={weightTrend} onLogWeight={onLogWeight} onGoToSettings={onGoToSettings} />}
+      {weightTrend && <WeightTrendCard trend={weightTrend} onLogWeight={() => onOpenAddSheet('weight')} onGoToSettings={onGoToSettings} />}
+
+      {todo && <TodoChecklist todo={todo} onOpenAddSheet={onOpenAddSheet} />}
 
       {tips.length > 0 && (
         <>
@@ -264,29 +305,6 @@ export function Home({
         </>
       )}
 
-      {articles.length > 0 && (
-        <>
-          <h2 className="text-ink-900 mb-3 text-lg font-bold">Worth a read</h2>
-          <div className="flex flex-col gap-3">
-            {articles.map((article) => (
-              <button
-                key={article.id}
-                onClick={() => setOpenArticleId(article.id)}
-                className="border-cream-200 flex items-center gap-3 rounded-2xl border bg-surface p-4 text-left"
-              >
-                <span className="text-2xl">{article.emoji}</span>
-                <div className="min-w-0 flex-1">
-                  <div className="text-ink-900 text-sm font-bold leading-snug">{article.title}</div>
-                  <div className="text-ink-600 mt-0.5 text-xs leading-relaxed">{article.summary}</div>
-                </div>
-                <span className="text-ink-400 shrink-0 text-lg">›</span>
-              </button>
-            ))}
-          </div>
-        </>
-      )}
-
-      {openArticleId && <ArticleReader articleId={openArticleId} onClose={() => setOpenArticleId(null)} />}
     </div>
   );
 }

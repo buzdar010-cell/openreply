@@ -1,9 +1,21 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { getProfile, saveProfile, setGamification as setGamificationApi, submitFeedback, logout, getLogs, type Gender, type ActivityLevel } from '../lib/api';
+import {
+  getProfile,
+  saveProfile,
+  setGamification as setGamificationApi,
+  submitFeedback,
+  logout,
+  getLogs,
+  getHomeContent,
+  type Gender,
+  type ActivityLevel,
+  type ArticleSummary,
+} from '../lib/api';
 import { GoalsStep, isGoalsDataValid, GOAL_OPTIONS, type GoalsData } from './onboarding/GoalsStep';
 import { ThemePicker } from './ThemePicker';
 import { ToggleSwitch } from './ToggleSwitch';
 import { SettingsSubScreen } from './SettingsSubScreen';
+import { ArticleReader } from './ArticleReader';
 import { showToast } from '../lib/toast';
 import { buildFullDataExportJson } from '../lib/dataExport';
 import { isPushSupported, getCurrentSubscription, enableWeightReminders, disableWeightReminders } from '../lib/push';
@@ -19,7 +31,7 @@ const EMPTY_GOALS: GoalsData = {
   goal: 'maintain',
 };
 
-type View = 'main' | 'goals' | 'feedback' | 'gamification';
+type View = 'main' | 'goals' | 'feedback' | 'gamification' | 'learn';
 
 function SettingsCard({ children }: { children: ReactNode }) {
   return <div className="border-cream-200 divide-cream-200 mb-6 divide-y overflow-hidden rounded-2xl border bg-surface">{children}</div>;
@@ -120,11 +132,21 @@ export function SettingsScreen({ resetSignal }: { resetSignal: number }) {
   const [remindersEnabled, setRemindersEnabled] = useState(false);
   const [remindersBusy, setRemindersBusy] = useState(false);
 
+  const [articles, setArticles] = useState<ArticleSummary[]>([]);
+  const [openArticleId, setOpenArticleId] = useState<string | null>(null);
+
   useEffect(() => {
     getCurrentSubscription()
       .then((sub) => setRemindersEnabled(sub !== null))
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (view !== 'learn' || articles.length > 0) return;
+    getHomeContent()
+      .then(({ articles: fetchedArticles }) => setArticles(fetchedArticles))
+      .catch(() => {});
+  }, [view, articles.length]);
 
   useEffect(() => {
     getProfile()
@@ -262,6 +284,34 @@ export function SettingsScreen({ resetSignal }: { resetSignal: number }) {
     return <div className="text-ink-400 flex flex-1 items-center justify-center text-sm">Loading…</div>;
   }
 
+  if (view === 'learn') {
+    return (
+      <SettingsSubScreen title="Learn" onBack={goBack}>
+        {articles.length === 0 ? (
+          <div className="text-ink-400 py-8 text-center text-sm">Loading…</div>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {articles.map((article) => (
+              <button
+                key={article.id}
+                onClick={() => setOpenArticleId(article.id)}
+                className="border-cream-200 flex items-center gap-3 rounded-2xl border bg-surface p-4 text-left"
+              >
+                <span className="text-2xl">{article.emoji}</span>
+                <div className="min-w-0 flex-1">
+                  <div className="text-ink-900 text-sm font-bold leading-snug">{article.title}</div>
+                  <div className="text-ink-600 mt-0.5 text-xs leading-relaxed">{article.summary}</div>
+                </div>
+                <span className="text-ink-400 shrink-0 text-lg">›</span>
+              </button>
+            ))}
+          </div>
+        )}
+        {openArticleId && <ArticleReader articleId={openArticleId} onClose={() => setOpenArticleId(null)} />}
+      </SettingsSubScreen>
+    );
+  }
+
   if (view === 'goals') {
     return (
       <SettingsSubScreen title="Profile & Goals" onBack={goBack}>
@@ -353,6 +403,10 @@ export function SettingsScreen({ resetSignal }: { resetSignal: number }) {
           onClick={() => navigateToView('gamification')}
           trailing={<ToggleSwitch enabled={gamification} onChange={handleGamificationToggle} />}
         />
+      </SettingsCard>
+
+      <SettingsCard>
+        <SettingsRow icon="📚" label="Learn" value="Articles on nutrition and your targets" onClick={() => navigateToView('learn')} />
       </SettingsCard>
 
       {isPushSupported() && (

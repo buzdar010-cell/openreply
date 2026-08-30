@@ -28,7 +28,12 @@ export default function App() {
   });
   const [refreshKey, setRefreshKey] = useState(0);
   const [showAddSheet, setShowAddSheet] = useState(false);
-  const [addSheetMode, setAddSheetMode] = useState<'food' | 'exercise' | 'weight'>('food');
+  const [addSheetMode, setAddSheetMode] = useState<'food' | 'exercise' | 'weight' | 'water'>('food');
+
+  function openAddSheet(mode: 'food' | 'exercise' | 'weight' | 'water') {
+    setAddSheetMode(mode);
+    setShowAddSheet(true);
+  }
   // Bumped every time Settings is tapped, even if it's already the active
   // tab -- tapping it while already active doesn't remount SettingsScreen
   // (the tab value doesn't change), so nothing else would reset a sub-screen
@@ -100,25 +105,11 @@ export default function App() {
   return (
     <>
       <ToastContainer />
-      {tab === 'home' && (
-        <Home
-          refreshKey={refreshKey}
-          onGoToSettings={() => changeTab('settings')}
-          onLogWeight={() => {
-            setAddSheetMode('weight');
-            setShowAddSheet(true);
-          }}
-        />
-      )}
+      {tab === 'home' && <Home refreshKey={refreshKey} onGoToSettings={() => changeTab('settings')} onOpenAddSheet={openAddSheet} />}
       {tab === 'logs' && <LogsScreen refreshKey={refreshKey} />}
       {tab === 'settings' && <SettingsScreen resetSignal={settingsResetSignal} />}
 
-      <FloatingAddButton
-        onClick={() => {
-          setAddSheetMode('food');
-          setShowAddSheet(true);
-        }}
-      />
+      <FloatingAddButton onClick={() => openAddSheet('food')} />
       <BottomNav tab={tab} onChange={changeTab} />
 
       {showAddSheet && (
