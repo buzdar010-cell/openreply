@@ -1,0 +1,57 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "nutrition-tracker",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-01",
+  "compatibility_flags": ["nodejs_compat"],
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "nutrition-tracker-db",
+      "database_id": "4b7cdc79-e520-4c40-afbd-9b77c1190d09",
+      "migrations_dir": "migrations"
+    }
+  ],
+
+  "r2_buckets": [
+    {
+      "binding": "PHOTOS",
+      "bucket_name": "nutrition-tracker-photos"
+    }
+  ],
+
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "RATE_LIMITER",
+        "class_name": "GeminiRateLimiterDO"
+      },
+      {
+        "name": "KEYED_LIMITER",
+        "class_name": "KeyedRateLimiterDO"
+      }
+    ]
+  },
+
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["GeminiRateLimiterDO"]
+    },
+    {
+      "tag": "v2",
+      "new_sqlite_classes": ["KeyedRateLimiterDO"]
+    }
+  ],
+
+  "triggers": {
+    // Once a day -- checked against each subscription's own last-reminded time, not just
+    // this schedule, so it's fine if the actual run time drifts a little.
+    "crons": ["0 12 * * *"]
+  },
+
+  "vars": {
+    "VAPID_PUBLIC_KEY": "BMoUaDb4XHQh4sNmh9d7AmxrNbnT8XVR5V4y7TLJxlsWFuFhOUU8y5De6dhkvJJQrmfaKWak1BIa2doE5rPuliM"
+  }
+}

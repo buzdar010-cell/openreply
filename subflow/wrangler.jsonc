@@ -1,0 +1,25 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "subflow",
+  "main": "./workers/app.ts",
+  "compatibility_date": "2026-08-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  },
+  "assets": {
+    "directory": "./build/client",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "subflow-db",
+      "database_id": "6a56c822-a9a5-4431-8eab-0b29243ec0e1"
+    }
+  ],
+  "vars": {
+    "SCOPES": "read_products,write_products,write_own_subscription_contracts,read_themes,read_customers",
+    "SHOPIFY_APP_URL": "https://subflow.buzdar0003.workers.dev"
+  }
+}

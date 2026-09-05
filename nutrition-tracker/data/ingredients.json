@@ -1,0 +1,1147 @@
+{
+  "_readme": "Per-100g nutrition for base ingredients used in Pakistani home cooking. Values are grounded in standard, well-established nutrition science (consistent with USDA FoodData Central figures for these items) \u2014 not scraped from any proprietary app. Cooked-weight basis unless noted. Used by build_dishes.py to compute dish-level nutrition from real recipes rather than guessing whole-dish numbers directly.",
+  "atta_whole_wheat_flour": {
+    "kcal": 340,
+    "protein_g": 12.0,
+    "carbs_g": 72.0,
+    "fat_g": 2.0,
+    "fiber_g": 11.0,
+    "note": "raw flour",
+    "sodium_mg": 5,
+    "sugar_g": 2.0
+  },
+  "rice_white_cooked": {
+    "kcal": 130,
+    "protein_g": 2.7,
+    "carbs_g": 28.0,
+    "fat_g": 0.3,
+    "fiber_g": 0.4,
+    "sodium_mg": 1,
+    "sugar_g": 0.0
+  },
+  "rice_white_raw": {
+    "kcal": 360,
+    "protein_g": 6.7,
+    "carbs_g": 79.0,
+    "fat_g": 0.6,
+    "fiber_g": 1.3,
+    "sodium_mg": 1,
+    "sugar_g": 0.0
+  },
+  "masoor_daal_cooked": {
+    "kcal": 116,
+    "protein_g": 9.0,
+    "carbs_g": 20.0,
+    "fat_g": 0.4,
+    "fiber_g": 7.9,
+    "sodium_mg": 2,
+    "sugar_g": 1.8
+  },
+  "chana_daal_cooked": {
+    "kcal": 164,
+    "protein_g": 8.9,
+    "carbs_g": 27.4,
+    "fat_g": 2.6,
+    "fiber_g": 7.6,
+    "sodium_mg": 6,
+    "sugar_g": 3.0
+  },
+  "moong_daal_cooked": {
+    "kcal": 105,
+    "protein_g": 7.0,
+    "carbs_g": 19.0,
+    "fat_g": 0.4,
+    "fiber_g": 7.6,
+    "sodium_mg": 4,
+    "sugar_g": 2.0
+  },
+  "chickpeas_cooked": {
+    "kcal": 164,
+    "protein_g": 8.9,
+    "carbs_g": 27.4,
+    "fat_g": 2.6,
+    "fiber_g": 7.6,
+    "sodium_mg": 7,
+    "sugar_g": 4.8
+  },
+  "chicken_breast_cooked": {
+    "kcal": 165,
+    "protein_g": 31.0,
+    "carbs_g": 0.0,
+    "fat_g": 3.6,
+    "fiber_g": 0.0,
+    "sodium_mg": 74,
+    "sugar_g": 0.0
+  },
+  "chicken_thigh_skin_cooked": {
+    "kcal": 250,
+    "protein_g": 26.0,
+    "carbs_g": 0.0,
+    "fat_g": 16.0,
+    "fiber_g": 0.0,
+    "sodium_mg": 80,
+    "sugar_g": 0.0
+  },
+  "beef_lean_cooked": {
+    "kcal": 250,
+    "protein_g": 26.0,
+    "carbs_g": 0.0,
+    "fat_g": 15.0,
+    "fiber_g": 0.0,
+    "sodium_mg": 60,
+    "sugar_g": 0.0
+  },
+  "mutton_curry_cut_cooked": {
+    "kcal": 260,
+    "protein_g": 25.0,
+    "carbs_g": 0.0,
+    "fat_g": 17.0,
+    "fiber_g": 0.0,
+    "sodium_mg": 65,
+    "sugar_g": 0.0
+  },
+  "beef_mince_keema_cooked": {
+    "kcal": 254,
+    "protein_g": 24.0,
+    "carbs_g": 0.0,
+    "fat_g": 17.0,
+    "fiber_g": 0.0,
+    "sodium_mg": 70,
+    "sugar_g": 0.0
+  },
+  "ghee": {
+    "kcal": 900,
+    "protein_g": 0.0,
+    "carbs_g": 0.0,
+    "fat_g": 100.0,
+    "fiber_g": 0.0,
+    "sodium_mg": 0,
+    "sugar_g": 0.0
+  },
+  "cooking_oil": {
+    "kcal": 884,
+    "protein_g": 0.0,
+    "carbs_g": 0.0,
+    "fat_g": 100.0,
+    "fiber_g": 0.0,
+    "sodium_mg": 0,
+    "sugar_g": 0.0
+  },
+  "yogurt_whole_milk": {
+    "kcal": 61,
+    "protein_g": 3.5,
+    "carbs_g": 4.7,
+    "fat_g": 3.3,
+    "fiber_g": 0.0,
+    "sodium_mg": 46,
+    "sugar_g": 4.7
+  },
+  "milk_whole": {
+    "kcal": 61,
+    "protein_g": 3.2,
+    "carbs_g": 4.8,
+    "fat_g": 3.3,
+    "fiber_g": 0.0,
+    "sodium_mg": 43,
+    "sugar_g": 5.0
+  },
+  "potato_cooked": {
+    "kcal": 87,
+    "protein_g": 1.9,
+    "carbs_g": 20.1,
+    "fat_g": 0.1,
+    "fiber_g": 1.8,
+    "sodium_mg": 6,
+    "sugar_g": 0.8
+  },
+  "onion_raw": {
+    "kcal": 40,
+    "protein_g": 1.1,
+    "carbs_g": 9.3,
+    "fat_g": 0.1,
+    "fiber_g": 1.7,
+    "sodium_mg": 4,
+    "sugar_g": 4.2
+  },
+  "tomato_raw": {
+    "kcal": 18,
+    "protein_g": 0.9,
+    "carbs_g": 3.9,
+    "fat_g": 0.2,
+    "fiber_g": 1.2,
+    "sodium_mg": 5,
+    "sugar_g": 2.6
+  },
+  "paneer": {
+    "kcal": 265,
+    "protein_g": 18.0,
+    "carbs_g": 3.6,
+    "fat_g": 20.0,
+    "fiber_g": 0.0,
+    "sodium_mg": 18,
+    "sugar_g": 1.2
+  },
+  "egg_cooked": {
+    "kcal": 155,
+    "protein_g": 13.0,
+    "carbs_g": 1.1,
+    "fat_g": 11.0,
+    "fiber_g": 0.0,
+    "sodium_mg": 124,
+    "sugar_g": 1.1
+  },
+  "besan_gram_flour": {
+    "kcal": 387,
+    "protein_g": 22.0,
+    "carbs_g": 58.0,
+    "fat_g": 6.7,
+    "fiber_g": 10.8,
+    "sodium_mg": 40,
+    "sugar_g": 6.0
+  },
+  "sugar": {
+    "kcal": 387,
+    "protein_g": 0.0,
+    "carbs_g": 100.0,
+    "fat_g": 0.0,
+    "fiber_g": 0.0,
+    "sodium_mg": 0,
+    "sugar_g": 100.0
+  },
+  "spinach_cooked": {
+    "kcal": 23,
+    "protein_g": 2.9,
+    "carbs_g": 3.8,
+    "fat_g": 0.3,
+    "fiber_g": 2.4,
+    "sodium_mg": 70,
+    "sugar_g": 0.4
+  },
+  "okra_cooked": {
+    "kcal": 33,
+    "protein_g": 1.9,
+    "carbs_g": 7.5,
+    "fat_g": 0.2,
+    "fiber_g": 3.2,
+    "sodium_mg": 8,
+    "sugar_g": 1.5
+  },
+  "cauliflower_cooked": {
+    "kcal": 25,
+    "protein_g": 1.8,
+    "carbs_g": 5.0,
+    "fat_g": 0.3,
+    "fiber_g": 2.3,
+    "sodium_mg": 15,
+    "sugar_g": 1.4
+  },
+  "wheat_bulgur_haleem_mix_cooked": {
+    "kcal": 150,
+    "protein_g": 5.5,
+    "carbs_g": 30.0,
+    "fat_g": 1.0,
+    "fiber_g": 5.0,
+    "sodium_mg": 5,
+    "sugar_g": 1.0
+  },
+  "fish_fillet_cooked": {
+    "kcal": 150,
+    "protein_g": 22.0,
+    "carbs_g": 0.0,
+    "fat_g": 6.0,
+    "fiber_g": 0.0,
+    "note": "generic white fish (rohu/similar), pan-fried",
+    "sodium_mg": 60,
+    "sugar_g": 0.0
+  },
+  "cream_fresh": {
+    "kcal": 340,
+    "protein_g": 2.1,
+    "carbs_g": 3.0,
+    "fat_g": 35.0,
+    "fiber_g": 0.0,
+    "sodium_mg": 27,
+    "sugar_g": 3.0
+  },
+  "carrot_cooked": {
+    "kcal": 35,
+    "protein_g": 0.8,
+    "carbs_g": 8.2,
+    "fat_g": 0.2,
+    "fiber_g": 2.8,
+    "sodium_mg": 45,
+    "sugar_g": 3.4
+  },
+  "khoya_mawa": {
+    "kcal": 430,
+    "protein_g": 15.0,
+    "carbs_g": 28.0,
+    "fat_g": 28.0,
+    "fiber_g": 0.0,
+    "note": "reduced/condensed milk solids",
+    "sodium_mg": 60,
+    "sugar_g": 15.0
+  },
+  "eggplant_cooked": {
+    "kcal": 35,
+    "protein_g": 0.8,
+    "carbs_g": 8.6,
+    "fat_g": 0.2,
+    "fiber_g": 2.5,
+    "sodium_mg": 1,
+    "sugar_g": 2.3
+  },
+  "white_bread_bun": {
+    "kcal": 265,
+    "protein_g": 9.0,
+    "carbs_g": 49.0,
+    "fat_g": 3.5,
+    "fiber_g": 2.5,
+    "note": "refined-flour burger bun",
+    "sodium_mg": 490,
+    "sugar_g": 5.0
+  },
+  "cheese_processed": {
+    "kcal": 300,
+    "protein_g": 20.0,
+    "carbs_g": 4.0,
+    "fat_g": 23.0,
+    "fiber_g": 0.0,
+    "note": "American-style processed cheese slice (e.g. cheese_slice, nachos) -- pizza and burger dishes now use the more accurate mozzarella_cheese/cheddar_cheese instead",
+    "sodium_mg": 1150,
+    "sugar_g": 6.0
+  },
+  "maida_refined_flour": {
+    "kcal": 364,
+    "protein_g": 10.0,
+    "carbs_g": 76.0,
+    "fat_g": 1.0,
+    "fiber_g": 2.7,
+    "note": "raw, refined (not whole wheat)",
+    "sodium_mg": 2,
+    "sugar_g": 1.0
+  },
+  "pasta_cooked": {
+    "kcal": 131,
+    "protein_g": 5.0,
+    "carbs_g": 25.0,
+    "fat_g": 1.1,
+    "fiber_g": 1.8,
+    "sodium_mg": 1,
+    "sugar_g": 1.0
+  },
+  "noodles_cooked": {
+    "kcal": 138,
+    "protein_g": 4.5,
+    "carbs_g": 25.0,
+    "fat_g": 2.1,
+    "fiber_g": 1.2,
+    "sodium_mg": 5,
+    "sugar_g": 1.0
+  },
+  "potato_fried_fries": {
+    "kcal": 312,
+    "protein_g": 3.4,
+    "carbs_g": 41.0,
+    "fat_g": 15.0,
+    "fiber_g": 3.8,
+    "sodium_mg": 210,
+    "sugar_g": 0.3
+  },
+  "chicken_breaded_fried": {
+    "kcal": 260,
+    "protein_g": 19.0,
+    "carbs_g": 10.0,
+    "fat_g": 16.0,
+    "fiber_g": 0.0,
+    "note": "battered/breaded fried chicken, KFC-style",
+    "sodium_mg": 400,
+    "sugar_g": 3.0
+  },
+  "cabbage_raw": {
+    "kcal": 25,
+    "protein_g": 1.3,
+    "carbs_g": 5.8,
+    "fat_g": 0.1,
+    "fiber_g": 2.5,
+    "sodium_mg": 18,
+    "sugar_g": 3.2
+  },
+  "atta_multigrain": {
+    "kcal": 330,
+    "protein_g": 13.0,
+    "carbs_g": 68.0,
+    "fat_g": 2.5,
+    "fiber_g": 13.0,
+    "note": "raw flour, swap option for atta_whole_wheat_flour",
+    "sodium_mg": 8,
+    "sugar_g": 3.0
+  },
+  "yogurt_low_fat": {
+    "kcal": 63,
+    "protein_g": 4.5,
+    "carbs_g": 6.0,
+    "fat_g": 1.5,
+    "fiber_g": 0.0,
+    "note": "swap option for yogurt_whole_milk",
+    "sodium_mg": 50,
+    "sugar_g": 5.0
+  },
+  "milk_low_fat": {
+    "kcal": 42,
+    "protein_g": 3.4,
+    "carbs_g": 5.0,
+    "fat_g": 1.0,
+    "fiber_g": 0.0,
+    "note": "swap option for milk_whole",
+    "sodium_mg": 44,
+    "sugar_g": 5.0
+  },
+  "mango_raw": {
+    "kcal": 60,
+    "protein_g": 0.8,
+    "carbs_g": 15.0,
+    "fat_g": 0.4,
+    "fiber_g": 1.6,
+    "unit_g": 200,
+    "unit_label": "1 medium mango (edible flesh)",
+    "sodium_mg": 1,
+    "sugar_g": 14.0
+  },
+  "banana_raw": {
+    "kcal": 89,
+    "protein_g": 1.1,
+    "carbs_g": 23.0,
+    "fat_g": 0.3,
+    "fiber_g": 2.6,
+    "unit_g": 120,
+    "unit_label": "1 medium banana",
+    "sodium_mg": 1,
+    "sugar_g": 12.0
+  },
+  "apple_raw": {
+    "kcal": 52,
+    "protein_g": 0.3,
+    "carbs_g": 14.0,
+    "fat_g": 0.2,
+    "fiber_g": 2.4,
+    "unit_g": 180,
+    "unit_label": "1 medium apple",
+    "sodium_mg": 1,
+    "sugar_g": 10.0
+  },
+  "guava_raw": {
+    "kcal": 68,
+    "protein_g": 2.6,
+    "carbs_g": 14.0,
+    "fat_g": 1.0,
+    "fiber_g": 5.4,
+    "unit_g": 100,
+    "unit_label": "1 medium guava",
+    "sodium_mg": 2,
+    "sugar_g": 8.9
+  },
+  "watermelon_raw": {
+    "kcal": 30,
+    "protein_g": 0.6,
+    "carbs_g": 7.6,
+    "fat_g": 0.2,
+    "fiber_g": 0.4,
+    "unit_g": 280,
+    "unit_label": "1 wedge/cup",
+    "sodium_mg": 1,
+    "sugar_g": 6.2
+  },
+  "kinnow_orange_raw": {
+    "kcal": 47,
+    "protein_g": 0.9,
+    "carbs_g": 12.0,
+    "fat_g": 0.1,
+    "fiber_g": 2.4,
+    "unit_g": 130,
+    "unit_label": "1 medium kinnow/orange",
+    "sodium_mg": 0,
+    "sugar_g": 9.4
+  },
+  "grapes_raw": {
+    "kcal": 69,
+    "protein_g": 0.7,
+    "carbs_g": 18.0,
+    "fat_g": 0.2,
+    "fiber_g": 0.9,
+    "unit_g": 100,
+    "unit_label": "1 small bunch/cup",
+    "sodium_mg": 2,
+    "sugar_g": 16.0
+  },
+  "pomegranate_raw": {
+    "kcal": 83,
+    "protein_g": 1.7,
+    "carbs_g": 19.0,
+    "fat_g": 1.2,
+    "fiber_g": 4.0,
+    "unit_g": 100,
+    "unit_label": "1 cup seeds (anaar)",
+    "sodium_mg": 3,
+    "sugar_g": 13.7
+  },
+  "dates_raw": {
+    "kcal": 277,
+    "protein_g": 1.8,
+    "carbs_g": 75.0,
+    "fat_g": 0.2,
+    "fiber_g": 6.7,
+    "unit_g": 8,
+    "unit_label": "1 date (khajoor)",
+    "sodium_mg": 1,
+    "sugar_g": 63.0
+  },
+  "cucumber_raw": {
+    "kcal": 15,
+    "protein_g": 0.7,
+    "carbs_g": 3.6,
+    "fat_g": 0.1,
+    "fiber_g": 0.5,
+    "unit_g": 150,
+    "unit_label": "1 medium cucumber (kheera)",
+    "sodium_mg": 2,
+    "sugar_g": 1.7
+  },
+  "radish_raw": {
+    "kcal": 16,
+    "protein_g": 0.7,
+    "carbs_g": 3.4,
+    "fat_g": 0.1,
+    "fiber_g": 1.6,
+    "unit_g": 60,
+    "unit_label": "1 medium radish (mooli)",
+    "sodium_mg": 21,
+    "sugar_g": 1.9
+  },
+  "carrot_raw": {
+    "kcal": 41,
+    "protein_g": 0.9,
+    "carbs_g": 9.6,
+    "fat_g": 0.2,
+    "fiber_g": 2.8,
+    "unit_g": 60,
+    "unit_label": "1 medium carrot",
+    "sodium_mg": 69,
+    "sugar_g": 4.7
+  },
+  "mustard_greens_cooked": {
+    "kcal": 27,
+    "protein_g": 2.6,
+    "carbs_g": 4.4,
+    "fat_g": 0.3,
+    "fiber_g": 3.2,
+    "note": "sarson",
+    "sodium_mg": 20,
+    "sugar_g": 0.8
+  },
+  "zucchini_cooked": {
+    "kcal": 17,
+    "protein_g": 1.2,
+    "carbs_g": 3.1,
+    "fat_g": 0.3,
+    "fiber_g": 1.0,
+    "note": "toriyan/courgette",
+    "sodium_mg": 3,
+    "sugar_g": 2.5
+  },
+  "corn_flour": {
+    "kcal": 365,
+    "protein_g": 9.0,
+    "carbs_g": 74.0,
+    "fat_g": 4.0,
+    "fiber_g": 7.0,
+    "note": "makki atta, raw \u2014 used as a saag thickener",
+    "sodium_mg": 1,
+    "sugar_g": 1.0
+  },
+  "fenugreek_leaves_dried": {
+    "kcal": 320,
+    "protein_g": 26.0,
+    "carbs_g": 47.0,
+    "fat_g": 6.0,
+    "fiber_g": 25.0,
+    "note": "kasuri methi \u2014 used in small (gram-scale) quantities as a flavoring, not a bulk ingredient",
+    "sodium_mg": 67,
+    "sugar_g": 0.0
+  },
+  "taro_cooked": {
+    "kcal": 112,
+    "protein_g": 1.5,
+    "carbs_g": 26.5,
+    "fat_g": 0.1,
+    "fiber_g": 4.1,
+    "note": "arvi/arbi",
+    "sodium_mg": 11,
+    "sugar_g": 0.4
+  },
+  "bottle_gourd_cooked": {
+    "kcal": 14,
+    "protein_g": 0.6,
+    "carbs_g": 3.4,
+    "fat_g": 0.0,
+    "fiber_g": 1.2,
+    "note": "lauki/ghiya",
+    "sodium_mg": 2,
+    "sugar_g": 1.3
+  },
+  "urad_daal_cooked": {
+    "kcal": 105,
+    "protein_g": 7.5,
+    "carbs_g": 17.0,
+    "fat_g": 0.4,
+    "fiber_g": 6.0,
+    "note": "maash ki dal",
+    "sodium_mg": 5,
+    "sugar_g": 1.0
+  },
+  "methi_leaves_cooked": {
+    "kcal": 35,
+    "protein_g": 4.0,
+    "carbs_g": 6.0,
+    "fat_g": 0.5,
+    "fiber_g": 3.0,
+    "note": "fresh fenugreek leaves, cooked \u2014 distinct from the dried kasuri methi entry",
+    "sodium_mg": 76,
+    "sugar_g": 1.0
+  },
+  "peas_cooked": {
+    "kcal": 84,
+    "protein_g": 5.4,
+    "carbs_g": 15.6,
+    "fat_g": 0.2,
+    "fiber_g": 5.5,
+    "note": "matar",
+    "sodium_mg": 3,
+    "sugar_g": 5.7
+  },
+  "chicken_mince_cooked": {
+    "kcal": 189,
+    "protein_g": 24.0,
+    "carbs_g": 0.0,
+    "fat_g": 10.0,
+    "fiber_g": 0.0,
+    "note": "ground chicken/chicken keema",
+    "sodium_mg": 75,
+    "sugar_g": 0.0
+  },
+  "vermicelli_dry": {
+    "kcal": 370,
+    "protein_g": 10.0,
+    "carbs_g": 75.0,
+    "fat_g": 1.5,
+    "fiber_g": 3.0,
+    "note": "seviyan, raw/dry weight before cooking in milk",
+    "sodium_mg": 5,
+    "sugar_g": 2.0
+  },
+  "kidney_beans_cooked": {
+    "kcal": 127,
+    "protein_g": 8.7,
+    "carbs_g": 22.8,
+    "fat_g": 0.5,
+    "fiber_g": 6.4,
+    "note": "rajma, boiled/cooked",
+    "sodium_mg": 2,
+    "sugar_g": 0.3
+  },
+  "cracked_wheat_dry": {
+    "kcal": 342,
+    "protein_g": 12.3,
+    "carbs_g": 75.9,
+    "fat_g": 1.3,
+    "fiber_g": 12.5,
+    "note": "dalia/bulgur, raw dry weight before cooking in milk or water",
+    "sodium_mg": 5,
+    "sugar_g": 1.0
+  },
+  "prawns_cooked": {
+    "kcal": 99,
+    "protein_g": 24.0,
+    "carbs_g": 0.2,
+    "fat_g": 0.3,
+    "fiber_g": 0.0,
+    "note": "shrimp/prawns, peeled, cooked",
+    "sodium_mg": 190,
+    "sugar_g": 0.0
+  },
+  "dried_plums_prunes": {
+    "kcal": 240,
+    "protein_g": 2.2,
+    "carbs_g": 63.9,
+    "fat_g": 0.4,
+    "fiber_g": 7.1,
+    "note": "aloo bukhara, used in Sindhi biryani",
+    "sodium_mg": 2,
+    "sugar_g": 38.0
+  },
+  "green_beans_cooked": {
+    "kcal": 35,
+    "protein_g": 1.9,
+    "carbs_g": 7.9,
+    "fat_g": 0.2,
+    "fiber_g": 3.2,
+    "sodium_mg": 6,
+    "sugar_g": 1.6
+  },
+  "mixed_nuts_dry": {
+    "kcal": 600,
+    "protein_g": 18.0,
+    "carbs_g": 20.0,
+    "fat_g": 52.0,
+    "fiber_g": 8.0,
+    "note": "generic almond/cashew/walnut average, used for pulao and naan garnish where the exact nut mix varies",
+    "sodium_mg": 5,
+    "sugar_g": 4.0
+  },
+  "raisins_dry": {
+    "kcal": 299,
+    "protein_g": 3.1,
+    "carbs_g": 79.2,
+    "fat_g": 0.5,
+    "fiber_g": 3.7,
+    "sodium_mg": 11,
+    "sugar_g": 59.0
+  },
+  "coconut_desiccated": {
+    "kcal": 660,
+    "protein_g": 6.9,
+    "carbs_g": 23.7,
+    "fat_g": 64.5,
+    "fiber_g": 16.0,
+    "sodium_mg": 37,
+    "sugar_g": 7.0
+  },
+  "mint_coriander_leaves_raw": {
+    "kcal": 44,
+    "protein_g": 3.3,
+    "carbs_g": 8.0,
+    "fat_g": 0.6,
+    "fiber_g": 3.0,
+    "note": "fresh mint/coriander leaves, blended for hari chutney",
+    "sodium_mg": 46,
+    "sugar_g": 0.9
+  },
+  "tamarind_pulp": {
+    "kcal": 239,
+    "protein_g": 2.8,
+    "carbs_g": 62.5,
+    "fat_g": 0.6,
+    "fiber_g": 5.1,
+    "note": "imli, deseeded pulp",
+    "sodium_mg": 28,
+    "sugar_g": 38.0
+  },
+  "garlic_raw": {
+    "kcal": 149,
+    "protein_g": 6.4,
+    "carbs_g": 33.1,
+    "fat_g": 0.5,
+    "fiber_g": 2.1,
+    "note": "lehsun, used as a primary ingredient in garlic chutney/pickle rather than background flavoring",
+    "sodium_mg": 17,
+    "sugar_g": 1.0
+  },
+  "raw_green_mango": {
+    "kcal": 44,
+    "protein_g": 0.6,
+    "carbs_g": 11.0,
+    "fat_g": 0.2,
+    "fiber_g": 1.7,
+    "note": "unripe keri, distinct from ripe mango_raw -- more tart, far less sugar",
+    "sodium_mg": 1,
+    "sugar_g": 3.0
+  },
+  "lemon_lime_raw": {
+    "kcal": 29,
+    "protein_g": 1.1,
+    "carbs_g": 9.3,
+    "fat_g": 0.3,
+    "fiber_g": 2.8,
+    "note": "nimbu",
+    "sodium_mg": 2,
+    "sugar_g": 2.5
+  },
+  "green_chili_raw": {
+    "kcal": 40,
+    "protein_g": 2.0,
+    "carbs_g": 9.5,
+    "fat_g": 0.2,
+    "fiber_g": 1.5,
+    "note": "hari mirch",
+    "sodium_mg": 7,
+    "sugar_g": 4.1
+  },
+  "turnip_raw": {
+    "kcal": 28,
+    "protein_g": 0.9,
+    "carbs_g": 6.4,
+    "fat_g": 0.1,
+    "fiber_g": 1.8,
+    "note": "shalgam",
+    "sodium_mg": 67,
+    "sugar_g": 3.8
+  },
+  "rose_syrup_concentrate": {
+    "kcal": 260,
+    "protein_g": 0.1,
+    "carbs_g": 65.0,
+    "fat_g": 0.0,
+    "fiber_g": 0.0,
+    "note": "Rooh Afza-style concentrated sugar syrup, undiluted",
+    "sodium_mg": 10,
+    "sugar_g": 65.0
+  },
+  "chocolate_syrup": {
+    "kcal": 260,
+    "protein_g": 2.0,
+    "carbs_g": 65.0,
+    "fat_g": 1.0,
+    "fiber_g": 2.0,
+    "sodium_mg": 150,
+    "sugar_g": 55.0
+  },
+  "oreo_cookie": {
+    "kcal": 480,
+    "protein_g": 5.0,
+    "carbs_g": 71.0,
+    "fat_g": 20.0,
+    "fiber_g": 3.0,
+    "sodium_mg": 430,
+    "sugar_g": 38.0
+  },
+  "strawberry_raw": {
+    "kcal": 32,
+    "protein_g": 0.7,
+    "carbs_g": 7.7,
+    "fat_g": 0.3,
+    "fiber_g": 2.0,
+    "sodium_mg": 1,
+    "sugar_g": 4.9
+  },
+  "sugarcane_juice": {
+    "kcal": 65,
+    "protein_g": 0.2,
+    "carbs_g": 16.0,
+    "fat_g": 0.0,
+    "fiber_g": 0.0,
+    "note": "ganne ka ras",
+    "sodium_mg": 10,
+    "sugar_g": 15.0
+  },
+  "cola_soft_drink": {
+    "kcal": 42,
+    "protein_g": 0.0,
+    "carbs_g": 10.6,
+    "fat_g": 0.0,
+    "fiber_g": 0.0,
+    "note": "generic carbonated cola/soft drink",
+    "sodium_mg": 4,
+    "sugar_g": 10.6
+  },
+  "orange_juice_fresh": {
+    "kcal": 45,
+    "protein_g": 0.7,
+    "carbs_g": 10.4,
+    "fat_g": 0.2,
+    "fiber_g": 0.2,
+    "note": "distinct from kinnow_orange_raw -- juice only, no pulp/peel fiber",
+    "sodium_mg": 1,
+    "sugar_g": 8.4
+  },
+  "salmon_cooked": {
+    "kcal": 206,
+    "protein_g": 22.1,
+    "carbs_g": 0.0,
+    "fat_g": 12.4,
+    "fiber_g": 0.0,
+    "sodium_mg": 60,
+    "sugar_g": 0.0
+  },
+  "egg_white_cooked": {
+    "kcal": 52,
+    "protein_g": 10.9,
+    "carbs_g": 0.7,
+    "fat_g": 0.2,
+    "fiber_g": 0.0,
+    "sodium_mg": 166,
+    "sugar_g": 0.7
+  },
+  "cottage_cheese": {
+    "kcal": 98,
+    "protein_g": 11.1,
+    "carbs_g": 3.4,
+    "fat_g": 4.3,
+    "fiber_g": 0.0,
+    "sodium_mg": 364,
+    "sugar_g": 3.4
+  },
+  "tuna_canned": {
+    "kcal": 116,
+    "protein_g": 25.5,
+    "carbs_g": 0.0,
+    "fat_g": 0.8,
+    "fiber_g": 0.0,
+    "note": "in water, drained",
+    "sodium_mg": 247,
+    "sugar_g": 0.0
+  },
+  "greek_yogurt_plain": {
+    "kcal": 59,
+    "protein_g": 10.0,
+    "carbs_g": 3.6,
+    "fat_g": 0.4,
+    "fiber_g": 0.0,
+    "sodium_mg": 36,
+    "sugar_g": 3.6
+  },
+  "oats_dry": {
+    "kcal": 389,
+    "protein_g": 16.9,
+    "carbs_g": 66.3,
+    "fat_g": 6.9,
+    "fiber_g": 10.6,
+    "note": "rolled oats, raw dry weight before cooking",
+    "sodium_mg": 2,
+    "sugar_g": 1.0
+  },
+  "brown_rice_cooked": {
+    "kcal": 123,
+    "protein_g": 2.7,
+    "carbs_g": 25.6,
+    "fat_g": 1.0,
+    "fiber_g": 1.6,
+    "sodium_mg": 4,
+    "sugar_g": 0.4
+  },
+  "whole_wheat_bread": {
+    "kcal": 247,
+    "protein_g": 13.0,
+    "carbs_g": 41.0,
+    "fat_g": 3.4,
+    "fiber_g": 7.0,
+    "sodium_mg": 450,
+    "sugar_g": 6.0
+  },
+  "sweet_potato_cooked": {
+    "kcal": 90,
+    "protein_g": 2.0,
+    "carbs_g": 20.7,
+    "fat_g": 0.2,
+    "fiber_g": 3.3,
+    "note": "baked",
+    "sodium_mg": 36,
+    "sugar_g": 6.5
+  },
+  "quinoa_cooked": {
+    "kcal": 120,
+    "protein_g": 4.4,
+    "carbs_g": 21.3,
+    "fat_g": 1.9,
+    "fiber_g": 2.8,
+    "sodium_mg": 7,
+    "sugar_g": 0.9
+  },
+  "granola": {
+    "kcal": 471,
+    "protein_g": 10.0,
+    "carbs_g": 64.0,
+    "fat_g": 20.0,
+    "fiber_g": 7.0,
+    "sodium_mg": 30,
+    "sugar_g": 25.0
+  },
+  "peanut_butter": {
+    "kcal": 588,
+    "protein_g": 25.0,
+    "carbs_g": 20.0,
+    "fat_g": 50.0,
+    "fiber_g": 6.0,
+    "sodium_mg": 430,
+    "sugar_g": 9.0
+  },
+  "potato_chips": {
+    "kcal": 536,
+    "protein_g": 6.6,
+    "carbs_g": 53.0,
+    "fat_g": 35.0,
+    "fiber_g": 4.4,
+    "sodium_mg": 525,
+    "sugar_g": 0.3
+  },
+  "chocolate_bar": {
+    "kcal": 534,
+    "protein_g": 7.6,
+    "carbs_g": 59.0,
+    "fat_g": 30.0,
+    "fiber_g": 3.4,
+    "note": "milk chocolate",
+    "sodium_mg": 80,
+    "sugar_g": 51.0
+  },
+  "cookie_generic": {
+    "kcal": 480,
+    "protein_g": 5.5,
+    "carbs_g": 65.0,
+    "fat_g": 22.0,
+    "fiber_g": 2.0,
+    "sodium_mg": 350,
+    "sugar_g": 30.0
+  },
+  "popcorn_plain": {
+    "kcal": 387,
+    "protein_g": 12.9,
+    "carbs_g": 78.0,
+    "fat_g": 4.5,
+    "fiber_g": 14.5,
+    "note": "air-popped",
+    "sodium_mg": 8,
+    "sugar_g": 0.9
+  },
+  "broccoli_cooked": {
+    "kcal": 35,
+    "protein_g": 2.4,
+    "carbs_g": 7.2,
+    "fat_g": 0.4,
+    "fiber_g": 3.3,
+    "sodium_mg": 41,
+    "sugar_g": 1.4
+  },
+  "avocado_raw": {
+    "kcal": 160,
+    "protein_g": 2.0,
+    "carbs_g": 8.5,
+    "fat_g": 14.7,
+    "fiber_g": 6.7,
+    "sodium_mg": 7,
+    "sugar_g": 0.7
+  },
+  "hummus": {
+    "kcal": 166,
+    "protein_g": 7.9,
+    "carbs_g": 14.3,
+    "fat_g": 9.6,
+    "fiber_g": 6.0,
+    "sodium_mg": 379,
+    "sugar_g": 0.3
+  },
+  "lettuce_raw": {
+    "kcal": 15,
+    "protein_g": 1.4,
+    "carbs_g": 2.9,
+    "fat_g": 0.2,
+    "fiber_g": 1.3,
+    "sodium_mg": 28,
+    "sugar_g": 0.8
+  },
+  "whey_protein_powder": {
+    "kcal": 400,
+    "protein_g": 80.0,
+    "carbs_g": 10.0,
+    "fat_g": 5.0,
+    "fiber_g": 1.0,
+    "sodium_mg": 150,
+    "sugar_g": 4.0
+  },
+  "honey": {
+    "kcal": 304,
+    "protein_g": 0.3,
+    "carbs_g": 82.4,
+    "fat_g": 0.0,
+    "fiber_g": 0.2,
+    "sodium_mg": 4,
+    "sugar_g": 82.0
+  },
+  "roasted_chana": {
+    "kcal": 364,
+    "protein_g": 19.3,
+    "carbs_g": 61.0,
+    "fat_g": 6.0,
+    "fiber_g": 17.0,
+    "note": "dry-roasted chickpeas, distinct from boiled chickpeas_cooked",
+    "sodium_mg": 15,
+    "sugar_g": 3.0
+  },
+  "pepperoni": {
+    "kcal": 494,
+    "protein_g": 23.0,
+    "carbs_g": 1.9,
+    "fat_g": 44.0,
+    "fiber_g": 0.0,
+    "sodium_mg": 1600,
+    "sugar_g": 1.0
+  },
+  "chicken_wing_cooked": {
+    "kcal": 203,
+    "protein_g": 30.5,
+    "carbs_g": 0.0,
+    "fat_g": 8.1,
+    "fiber_g": 0.0,
+    "note": "roasted/baked, meat and skin",
+    "sodium_mg": 82,
+    "sugar_g": 0.0
+  },
+  "hot_dog_sausage": {
+    "kcal": 290,
+    "protein_g": 10.4,
+    "carbs_g": 4.2,
+    "fat_g": 26.0,
+    "fiber_g": 0.0,
+    "sodium_mg": 950,
+    "sugar_g": 2.0
+  },
+  "tortilla_chips": {
+    "kcal": 489,
+    "protein_g": 7.0,
+    "carbs_g": 63.0,
+    "fat_g": 25.0,
+    "fiber_g": 4.5,
+    "sodium_mg": 480,
+    "sugar_g": 0.6
+  },
+  "mozzarella_stick_breaded_fried": {
+    "kcal": 306,
+    "protein_g": 15.0,
+    "carbs_g": 20.0,
+    "fat_g": 19.0,
+    "fiber_g": 1.0,
+    "sodium_mg": 700,
+    "sugar_g": 2.0
+  },
+  "veggie_patty": {
+    "kcal": 180,
+    "protein_g": 9.0,
+    "carbs_g": 18.0,
+    "fat_g": 8.0,
+    "fiber_g": 5.0,
+    "note": "bean/vegetable-based burger patty",
+    "sodium_mg": 400,
+    "sugar_g": 1.0
+  },
+  "mozzarella_cheese": {
+    "kcal": 280,
+    "protein_g": 27.5,
+    "carbs_g": 3.1,
+    "fat_g": 17.1,
+    "fiber_g": 0.0,
+    "sodium_mg": 620,
+    "sugar_g": 1.0,
+    "note": "low-moisture part-skim, the real profile for pizza/pasta cheese"
+  },
+  "cheddar_cheese": {
+    "kcal": 403,
+    "protein_g": 24.9,
+    "carbs_g": 1.3,
+    "fat_g": 33.1,
+    "fiber_g": 0.0,
+    "sodium_mg": 620,
+    "sugar_g": 0.5
+  },
+
+  "corn_on_cob_cooked": { "kcal": 96, "protein_g": 3.4, "carbs_g": 21.0, "fat_g": 1.5, "fiber_g": 2.4, "sodium_mg": 15, "sugar_g": 4.5, "note": "bhutta, boiled/roasted" },
+  "peanuts_roasted": { "kcal": 567, "protein_g": 25.8, "carbs_g": 16.1, "fat_g": 49.2, "fiber_g": 8.5, "sodium_mg": 230, "sugar_g": 4.0, "note": "moongfali, lightly salted, street-vendor style" }
+}
