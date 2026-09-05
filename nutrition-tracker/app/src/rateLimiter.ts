@@ -139,3 +139,16 @@ export async function checkRateLimit(
   const response = await stub.fetch(`https://do/check?capacity=${capacity}&windowMs=${windowMs}`);
   return (await response.json()) as { allowed: boolean; waitMs: number };
 }
+
+/**
+ * Clears a keyed bucket's stored state entirely -- use when a user's tier
+ * changes (e.g. free -> premium) so the new, higher cap applies immediately
+ * instead of waiting out the old tier's refill schedule. See rateLimiterDO.ts's
+ * /reset handler for why this is needed rather than just changing the capacity
+ * passed to future checkRateLimit calls.
+ */
+export async function resetRateLimit(namespace: DurableObjectNamespace, key: string): Promise<void> {
+  const id = namespace.idFromName(key);
+  const stub = namespace.get(id);
+  await stub.fetch("https://do/reset");
+}

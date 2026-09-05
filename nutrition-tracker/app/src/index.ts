@@ -1,6 +1,6 @@
 import { buildSearchIndex, shortlist } from "./candidateSearch.ts";
 import { parseTextLog, parsePhotoLog } from "./parseLog.ts";
-import { acquireViaDurableObject, checkRateLimit } from "./rateLimiter.ts";
+import { acquireViaDurableObject, checkRateLimit, resetRateLimit } from "./rateLimiter.ts";
 import {
   loadAllDishRecords,
   getDishById,
@@ -58,6 +58,9 @@ import {
   deleteWaterLogOwnedByDevice,
   insertDish,
   insertUnmatchedBarcode,
+  activatePremium,
+  getUserByPaddleSubscriptionId,
+  updateSubscriptionStatus,
 } from "./db.ts";
 import { computeSignals, selectTips, selectArticles } from "./content/selectContent.ts";
 import { ARTICLES } from "./content/articles.ts";
@@ -85,6 +88,11 @@ export interface Env {
   RESEND_API_KEY: string;
   VAPID_PRIVATE_JWK: string; // secret -- see scripts/generate_vapid.mjs
   VAPID_PUBLIC_KEY: string; // not secret -- also embedded in the frontend build to request a push subscription
+  PADDLE_API_KEY: string; // secret -- server-side calls to Paddle's API (not used by the webhook path itself, kept for future use e.g. cancellations initiated from our own UI)
+  PADDLE_WEBHOOK_SECRET: string; // secret -- verifies POST /webhooks/paddle actually came from Paddle
+  PADDLE_CLIENT_TOKEN: string; // not secret -- embedded in the frontend build, same as VAPID_PUBLIC_KEY, to open the Paddle.js checkout overlay
+  PADDLE_PRICE_ID_MONTHLY: string; // not secret -- a Price id, not a credential
+  PADDLE_PRICE_ID_ANNUAL: string;
 }
 
 // How long since the last weight log before someone is "overdue" for a reminder --
@@ -120,7 +128,15 @@ const CODE_ATTEMPT_CAP = 8;
 const LOG_BURST_WINDOW_MS = 60 * 1000;
 const LOG_BURST_CAP = 5; // stops a runaway loop/bug instantly, not just at the daily boundary
 const LOG_DAILY_WINDOW_MS = 24 * 60 * 60 * 1000;
-const LOG_DAILY_CAP = 40; // generous vs. real usage; caps how much of the shared 500/day Gemini budget one account can take
+// Free tier gets a real cap (small enough that even a large free userbase can't
+// exhaust the shared 500/day Gemini budget on its own); premium gets a much
+// higher one, but NOT literally unlimited -- "unlimited" in marketing copy,
+// bounded in the code, same reasoning the original single 40/day cap was
+// built on. Revisit LOG_DAILY_CAP_PREMIUM upward once real paid usage shows
+// what people actually need; costs nothing to raise later, costs a lot to
+// have left the shared budget unprotected in the meantime.
+const LOG_DAILY_CAP_FREE = 3;
+const LOG_DAILY_CAP_PREMIUM = 60;
 
 async function rateLimitOrNull(
   namespace: DurableObjectNamespace,
@@ -377,7 +393,15 @@ async function handleLogout(request: Request, env: Env): Promise<Response> {
 async function logRateLimitOrNull(env: Env, userId: string): Promise<Response | null> {
   const burst = await rateLimitOrNull(env.KEYED_LIMITER, `log-burst:${userId}`, LOG_BURST_CAP, LOG_BURST_WINDOW_MS);
   if (burst) return burst;
-  return rateLimitOrNull(env.KEYED_LIMITER, `log-day:${userId}`, LOG_DAILY_CAP, LOG_DAILY_WINDOW_MS);
+  const user = await getUserById(env.DB, userId);
+  const dailyCap = user?.subscription_tier === "premium" ? LOG_DAILY_CAP_PREMIUM : LOG_DAILY_CAP_FREE;
+  const limited = await rateLimitOrNull(env.KEYED_LIMITER, `log-day:${userId}`, dailyCap, LOG_DAILY_WINDOW_MS);
+  if (limited && user?.subscription_tier !== "premium") {
+    // Free-tier cap hit -- distinguish this from the generic rate-limit message so the
+    // frontend can show an upgrade prompt instead of a plain "try again later."
+    return jsonResponse({ error: "Daily free limit reached -- upgrade to Premium for more AI food logging.", upgradeRequired: true }, 429);
+  }
+  return limited;
 }
 
 async function handleTextLog(request: Request, env: Env): Promise<Response> {
@@ -1034,6 +1058,114 @@ async function handlePushUnsubscribe(request: Request, env: Env): Promise<Respon
   return jsonResponse({ ok: true });
 }
 
+/**
+ * Reads `Paddle-Signature: ts=<unix-seconds>;h1=<hex hmac>` and verifies h1
+ * against HMAC-SHA256(`${ts}:${rawBody}`, webhookSecret) using Web Crypto --
+ * same "verify by hand via fetch/Web Crypto, skip the Node SDK" pattern this
+ * codebase already uses for Gemini and Web Push, since Paddle's official SDK
+ * assumes Node APIs the Workers runtime doesn't have. Implemented against
+ * Paddle's documented format; treat as unverified until checked against a
+ * real delivered webhook once the Paddle account exists.
+ */
+async function verifyPaddleSignature(rawBody: string, signatureHeader: string | null, secret: string): Promise<boolean> {
+  if (!signatureHeader) return false;
+  const parts = Object.fromEntries(signatureHeader.split(";").map((p) => p.split("=") as [string, string]));
+  const ts = parts["ts"];
+  const h1 = parts["h1"];
+  if (!ts || !h1) return false;
+
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const signed = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(`${ts}:${rawBody}`));
+  const computedHex = [...new Uint8Array(signed)].map((b) => b.toString(16).padStart(2, "0")).join("");
+
+  // Constant-time compare -- this is an auth check, not a cache key.
+  if (computedHex.length !== h1.length) return false;
+  let diff = 0;
+  for (let i = 0; i < computedHex.length; i++) diff |= computedHex.charCodeAt(i) ^ h1.charCodeAt(i);
+  return diff === 0;
+}
+
+/**
+ * Paddle webhook -- NOT session-authenticated (Paddle isn't one of our
+ * users); the HMAC signature above is the entire auth check. `custom_data.user_id`
+ * (attached when the frontend opens the checkout overlay) is how a
+ * subscription.created event maps back to one of our accounts, since Paddle
+ * has no idea what our internal user ids are otherwise.
+ */
+async function handlePaddleWebhook(request: Request, env: Env): Promise<Response> {
+  const rawBody = await request.text();
+  const valid = await verifyPaddleSignature(rawBody, request.headers.get("Paddle-Signature"), env.PADDLE_WEBHOOK_SECRET);
+  if (!valid) return jsonResponse({ error: "invalid signature" }, 401);
+
+  const event = JSON.parse(rawBody) as {
+    event_type?: string;
+    data?: {
+      id?: string;
+      customer_id?: string;
+      status?: string;
+      next_billed_at?: string | null;
+      custom_data?: { user_id?: string } | null;
+    };
+  };
+
+  const data = event.data;
+  if (!data) return jsonResponse({ ok: true }); // nothing to act on, but acknowledge so Paddle doesn't retry
+
+  const renewsAt = data.next_billed_at ? Math.floor(new Date(data.next_billed_at).getTime() / 1000) : null;
+
+  switch (event.event_type) {
+    case "subscription.created":
+    case "subscription.activated": {
+      const userId = data.custom_data?.user_id;
+      if (userId && data.customer_id && data.id) {
+        await activatePremium(env.DB, userId, data.customer_id, data.id, data.status ?? "active", renewsAt);
+        // Without this, someone who exhausted their free daily cap earlier
+        // today would still see an error for up to one refill interval right
+        // after paying -- see resetRateLimit's own comment for why.
+        await resetRateLimit(env.KEYED_LIMITER, `log-day:${userId}`);
+      }
+      break;
+    }
+    case "subscription.updated":
+    case "subscription.canceled":
+    case "subscription.paused": {
+      if (data.id) {
+        const user = await getUserByPaddleSubscriptionId(env.DB, data.id);
+        if (user) await updateSubscriptionStatus(env.DB, data.id, data.status ?? "canceled", renewsAt);
+      }
+      break;
+    }
+    // Other event types (transaction.*, customer.*) aren't needed for gating access -- ignored, not errors.
+  }
+
+  return jsonResponse({ ok: true });
+}
+
+async function handleGetSubscription(request: Request, env: Env): Promise<Response> {
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+  const user = await getUserById(env.DB, userId);
+  if (!user) return jsonResponse({ error: "account not found" }, 404);
+
+  // Reuses the same free geo signal already captured at login/signup for
+  // trusted-device matching -- no separate IP-geolocation lookup needed.
+  // Pakistan-based users see PKR-friendly framing; everyone else sees USD.
+  const country = (request as unknown as { cf?: { country?: string } }).cf?.country ?? null;
+
+  return jsonResponse({
+    tier: user.subscription_tier,
+    status: user.subscription_status,
+    renewsAt: user.subscription_renews_at,
+    region: country === "PK" ? "PK" : "INTL",
+    dailyLogCapFree: LOG_DAILY_CAP_FREE,
+    dailyLogCapPremium: LOG_DAILY_CAP_PREMIUM,
+    paddleClientToken: env.PADDLE_CLIENT_TOKEN,
+    priceIdMonthly: env.PADDLE_PRICE_ID_MONTHLY,
+    priceIdAnnual: env.PADDLE_PRICE_ID_ANNUAL,
+    userId, // Paddle checkout needs this as custom_data so the webhook above can map back to this account
+  });
+}
+
 async function handleGetProfile(request: Request, env: Env): Promise<Response> {
   const userId = await requireAuth(request, env);
   if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
@@ -1384,6 +1516,12 @@ export default {
       }
       if (request.method === "POST" && url.pathname === "/push/unsubscribe") {
         return await handlePushUnsubscribe(request, env);
+      }
+      if (request.method === "GET" && url.pathname === "/subscription") {
+        return await handleGetSubscription(request, env);
+      }
+      if (request.method === "POST" && url.pathname === "/webhooks/paddle") {
+        return await handlePaddleWebhook(request, env);
       }
       if (request.method === "GET" && url.pathname === "/profile") {
         return await handleGetProfile(request, env);

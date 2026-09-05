@@ -125,6 +125,19 @@ export class KeyedRateLimiterDO {
 
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
+
+    // Clears stored bucket state so the very next check starts fresh at
+    // whatever capacity it's given -- needed when a user's tier changes
+    // mid-window (e.g. upgrading to premium right after exhausting the free
+    // daily cap). Without this, the bucket only changes its refill *rate*
+    // going forward; it doesn't retroactively grant the new tier's tokens,
+    // so a brand-new subscriber could still see an error for up to one
+    // refill interval after paying.
+    if (url.pathname === "/reset") {
+      await this.state.storage.delete("bucket");
+      return Response.json({ ok: true });
+    }
+
     const capacity = Number(url.searchParams.get("capacity"));
     const windowMs = Number(url.searchParams.get("windowMs"));
     const refillIntervalMs = windowMs / capacity;

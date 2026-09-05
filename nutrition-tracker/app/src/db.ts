@@ -543,6 +543,11 @@ export interface UserRow {
   password_salt: string;
   email_verified: number;
   created_at: number;
+  subscription_tier: string;
+  paddle_customer_id: string | null;
+  paddle_subscription_id: string | null;
+  subscription_status: string | null;
+  subscription_renews_at: number | null;
 }
 
 export async function getUserByEmail(db: D1Database, email: string): Promise<UserRow | null> {
@@ -598,6 +603,55 @@ export async function deleteSession(db: D1Database, token: string): Promise<void
 /** Called on password reset -- forces re-login everywhere, not just on the device that reset it. */
 export async function deleteAllSessionsForUser(db: D1Database, userId: string): Promise<void> {
   await db.prepare(`DELETE FROM sessions WHERE user_id = ?`).bind(userId).run();
+}
+
+/**
+ * Called when Paddle reports a subscription becoming active (checkout
+ * completed, or reactivated after a past-due recovery). `userId` comes from
+ * the `custom_data` we attach at checkout creation -- Paddle echoes it back
+ * on every webhook for that subscription, so this is the reliable join key
+ * back to our own accounts rather than trying to match on email.
+ */
+export async function activatePremium(
+  db: D1Database,
+  userId: string,
+  paddleCustomerId: string,
+  paddleSubscriptionId: string,
+  status: string,
+  renewsAt: number | null,
+): Promise<void> {
+  await db
+    .prepare(
+      `UPDATE users SET subscription_tier = 'premium', paddle_customer_id = ?, paddle_subscription_id = ?, subscription_status = ?, subscription_renews_at = ? WHERE id = ?`,
+    )
+    .bind(paddleCustomerId, paddleSubscriptionId, status, renewsAt, userId)
+    .run();
+}
+
+/** Looked up by subscription id -- update/cancel/paused webhooks identify the subscription, not our user id directly. */
+export async function getUserByPaddleSubscriptionId(db: D1Database, paddleSubscriptionId: string): Promise<UserRow | null> {
+  const row = await db.prepare(`SELECT * FROM users WHERE paddle_subscription_id = ?`).bind(paddleSubscriptionId).first<UserRow>();
+  return row ?? null;
+}
+
+/**
+ * Called on subscription.updated/canceled/paused -- Paddle's own `status`
+ * decides whether that still counts as premium access. Only 'active' and
+ * 'trialing' keep the higher log cap; anything else (canceled, paused,
+ * past_due) drops back to the free cap immediately rather than trusting a
+ * grace period we haven't built.
+ */
+export async function updateSubscriptionStatus(
+  db: D1Database,
+  paddleSubscriptionId: string,
+  status: string,
+  renewsAt: number | null,
+): Promise<void> {
+  const tier = status === "active" || status === "trialing" ? "premium" : "free";
+  await db
+    .prepare(`UPDATE users SET subscription_tier = ?, subscription_status = ?, subscription_renews_at = ? WHERE paddle_subscription_id = ?`)
+    .bind(tier, status, renewsAt, paddleSubscriptionId)
+    .run();
 }
 
 export async function isTrustedDevice(db: D1Database, deviceToken: string, userId: string, country: string | null): Promise<boolean> {
