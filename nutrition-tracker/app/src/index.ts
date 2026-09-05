@@ -128,14 +128,17 @@ const CODE_ATTEMPT_CAP = 8;
 const LOG_BURST_WINDOW_MS = 60 * 1000;
 const LOG_BURST_CAP = 5; // stops a runaway loop/bug instantly, not just at the daily boundary
 const LOG_DAILY_WINDOW_MS = 24 * 60 * 60 * 1000;
-// Free tier gets a real cap (small enough that even a large free userbase can't
-// exhaust the shared 500/day Gemini budget on its own); premium gets a much
-// higher one, but NOT literally unlimited -- "unlimited" in marketing copy,
-// bounded in the code, same reasoning the original single 40/day cap was
-// built on. Revisit LOG_DAILY_CAP_PREMIUM upward once real paid usage shows
-// what people actually need; costs nothing to raise later, costs a lot to
-// have left the shared budget unprotected in the meantime.
-const LOG_DAILY_CAP_FREE = 3;
+// Both caps are intentionally loosened to the same generous number during the
+// testing phase (matching the original pre-billing 40/day cap) -- monetizing
+// wasn't actually decided-and-ready yet; capping real testers at 3/day right
+// now would choke off the usage/feedback this app most needs before anyone's
+// proven willing to pay. Tighten LOG_DAILY_CAP_FREE back down (e.g. to 3) once
+// testing is further along and launch is actually being prepared for real --
+// the tier plumbing (schema, gating, webhook) stays in place either way, this
+// is a one-constant change whenever that time comes. Premium's cap still
+// isn't literally unlimited even then -- see the shared 500/day Gemini budget
+// note on LOG_DAILY_CAP_PREMIUM below.
+const LOG_DAILY_CAP_FREE = 40;
 const LOG_DAILY_CAP_PREMIUM = 60;
 
 async function rateLimitOrNull(
