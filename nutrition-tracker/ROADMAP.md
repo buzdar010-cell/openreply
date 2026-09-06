@@ -1,6 +1,6 @@
 # Roadmap
 
-Last updated: 2026-08-29 (exercise logging). Reflects the full-app audit (rated 6.5/10 as a
+Last updated: 2026-09-06 (monitoring kickoff + billing infrastructure, paused). Reflects the full-app audit (rated 6.5/10 as a
 working beta, not yet public-launch-ready) plus a competitive review against
 MyFitnessPal, Cronometer, Lose It, and HealthifyMe.
 
@@ -63,8 +63,10 @@ Fix before anyone outside trusted testers uses the app.
    screens look like a real product instead of a raw `workers.dev` URL.
 
    **Decided:** name is **Nourly**, domain is **nourly.app**, to be
-   bought at Spaceship ($4.98 first year, $14.69/yr renewal). Blocked on
-   funds to buy it -- pick this back up once that's sorted.
+   bought at Spaceship ($4.98 first year with promo code `SPSR86`,
+   $14.69/yr renewal). Blocked on funds to buy it, but very close --
+   about PKR 200-260 short as of 2026-09-06. Pick this back up once
+   that's sorted.
 
    **How it'll get wired up once bought:** the user registers the domain
    at Spaceship (only step that needs their login) and switches its
@@ -96,6 +98,19 @@ Fix before anyone outside trusted testers uses the app.
    checking (is the site even reachable -- a different failure mode
    than an application error) and lightweight usage visibility
    (signups, active users), none of which exists in any form today.
+
+   **In progress.** Delivery channel: Slack (not Telegram/push -- Telegram's
+   banned in Pakistan without a VPN, push notifications don't work well for
+   the user). Planned build order: (1) Slack incoming webhook wiring
+   [blocked on the user creating the webhook and sending the URL -- picks up
+   here], (2) backend error + uptime monitoring (cron watches `error_logs`,
+   pings the live site), (3) version-staleness detection (tag deploys with a
+   build id, alert when devices are stuck on an old one), (4) client-side
+   error reporting + real server-side session verification on app load
+   (catches silent frontend bugs like a stale cached build showing no login
+   screen -- the exact bug a real tester hit), (5) daily digest of new
+   unmatched foods/barcodes. Don't start building further sections until
+   the user gives the go-ahead per section.
 9. **Security polish** — CORS is currently wildcard-open
    (`Access-Control-Allow-Origin: "*"`); fine while everything's on
    workers.dev/pages.dev, should tighten to the real domain once item 5
@@ -205,11 +220,25 @@ Fix before anyone outside trusted testers uses the app.
     exercise still requires a live connection -- no offline
     queue-and-sync. Worth deciding whether "works offline" is actually a
     promise to make before building it; a real lift either way.
-22. **Monetization / business model** — free forever, or a plan (premium
-    tier, ads, local payment via JazzCash/Easypaisa)? Not decided,
-    nothing built either way -- worth settling since it shapes several
-    other decisions (account limits, what a "premium" account even
-    means here).
+22. **Monetization / business model** — decided: free/cheap for
+    Pakistan-based users, real paid tier ($4.99/mo, ~$39.99/yr) for
+    diaspora users abroad, via Paddle (merchant-of-record -- Stripe
+    doesn't onboard Pakistan-based sellers) with Payoneer payout.
+
+    **Infrastructure built, intentionally paused.** `subscription_tier`
+    on `users`, tiered gating on the 3 Gemini-consuming endpoints (free
+    cap and premium cap, both bounded to protect the shared 500/day
+    Gemini budget -- premium is NOT literally unlimited), `GET
+    /subscription`, and a HMAC-verified `POST /webhooks/paddle` all
+    exist and are deployed. **But this got built before it should have**
+    -- monetizing wasn't actually ready (app isn't thoroughly tested,
+    only one real account exists) -- so the free-tier cap is currently
+    loosened back to the pre-billing 40/day (see `LOG_DAILY_CAP_FREE` in
+    `index.ts`) and nothing past the backend exists yet: no Paddle
+    account, no frontend checkout UI, no live-tested webhook. Revisit
+    once testing is further along; picking this back up needs the user
+    to create a Paddle account/product/prices first (walkthrough already
+    given), then the frontend checkout + real webhook verification.
 
 ## Explicitly not planned right now
 
