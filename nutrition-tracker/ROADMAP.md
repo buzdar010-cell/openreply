@@ -101,16 +101,17 @@ Fix before anyone outside trusted testers uses the app.
 
    **In progress.** Delivery channel: Slack (not Telegram/push -- Telegram's
    banned in Pakistan without a VPN, push notifications don't work well for
-   the user). Planned build order: (1) Slack incoming webhook wiring
-   [blocked on the user creating the webhook and sending the URL -- picks up
-   here], (2) backend error + uptime monitoring (cron watches `error_logs`,
-   pings the live site), (3) version-staleness detection (tag deploys with a
-   build id, alert when devices are stuck on an old one), (4) client-side
-   error reporting + real server-side session verification on app load
-   (catches silent frontend bugs like a stale cached build showing no login
-   screen -- the exact bug a real tester hit), (5) daily digest of new
-   unmatched foods/barcodes. Don't start building further sections until
-   the user gives the go-ahead per section.
+   the user). Planned build order: (1) ✅ Slack incoming webhook -- DONE,
+   `SLACK_WEBHOOK_URL` stored as a Worker secret, verified live with a test
+   message. (2) backend error + uptime monitoring (cron watches
+   `error_logs`, pings the live site) -- next up. (3) version-staleness
+   detection (tag deploys with a build id, alert when devices are stuck on
+   an old one). (4) client-side error reporting + real server-side session
+   verification on app load (catches silent frontend bugs like a stale
+   cached build showing no login screen -- the exact bug a real tester
+   hit). (5) daily digest of new unmatched foods/barcodes. Don't start
+   building further sections until the user gives the go-ahead per
+   section.
 9. **Security polish** — CORS is currently wildcard-open
    (`Access-Control-Allow-Origin: "*"`); fine while everything's on
    workers.dev/pages.dev, should tighten to the real domain once item 5
