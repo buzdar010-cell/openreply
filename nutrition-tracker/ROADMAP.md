@@ -90,28 +90,35 @@ Fix before anyone outside trusted testers uses the app.
    doing now that there's real shared logic a change in one place could
    quietly break elsewhere (e.g. resolvePortion.ts is now used by food,
    photo, *and* barcode logging).
-8. **Monitoring & alerting** — `error_logs`, `unmatched_logs`, and
-   `unmatched_barcodes` already capture problems, but nothing looks at
-   them unless someone manually queries the database. Needs something
-   that actively watches those signals and proactively notifies
-   (push/email) when something's actually broken, plus basic uptime
-   checking (is the site even reachable -- a different failure mode
-   than an application error) and lightweight usage visibility
-   (signups, active users), none of which exists in any form today.
+8. ✅ **Monitoring & alerting** — DONE (core). Delivery channel is Slack
+   (not Telegram/push -- Telegram's banned in Pakistan without a VPN, push
+   notifications don't work well for the user), via `SLACK_WEBHOOK_URL`
+   stored as a Worker secret.
 
-   **In progress.** Delivery channel: Slack (not Telegram/push -- Telegram's
-   banned in Pakistan without a VPN, push notifications don't work well for
-   the user). Planned build order: (1) ✅ Slack incoming webhook -- DONE,
-   `SLACK_WEBHOOK_URL` stored as a Worker secret, verified live with a test
-   message. (2) backend error + uptime monitoring (cron watches
-   `error_logs`, pings the live site) -- next up. (3) version-staleness
+   Real-time, no polling delay: every backend error (the existing single
+   top-level catch block now also posts to Slack, alongside its existing
+   `error_logs` insert) and every frontend crash (new global
+   `window.onerror`/`unhandledrejection` handler in `main.tsx` reporting to
+   a new `POST /client-error`, globally rate-limited so a runaway loop
+   can't spam the channel). Every 15 minutes: pings both live deploys,
+   alerts on a 5xx or network failure (can't catch Cloudflare fully
+   dropping the Worker itself -- a real limit, would need an external
+   service for that specific case). Once daily: one Slack message
+   combining today's activity (signups, food/exercise/water/weight logs,
+   unmatched scans, errors) with all-time business totals (total/premium/
+   free users, MRR computed from each subscriber's actual billing period,
+   not just a head-count). All pieces live-verified against production
+   (`error_logs` rows confirmed for both a real and a test-triggered
+   error; daily-summary SQL run directly against prod data; both uptime
+   URLs confirmed to read as healthy).
+
+   **Not done, lower priority than what shipped:** version-staleness
    detection (tag deploys with a build id, alert when devices are stuck on
-   an old one). (4) client-side error reporting + real server-side session
-   verification on app load (catches silent frontend bugs like a stale
-   cached build showing no login screen -- the exact bug a real tester
-   hit). (5) daily digest of new unmatched foods/barcodes. Don't start
-   building further sections until the user gives the go-ahead per
-   section.
+   an old one) and real server-side session verification on app load
+   (defense-in-depth against a repeat of the "stuck on stale build, no
+   login shown" bug -- the frontend crash reporting above would likely
+   already catch a recurrence of that specific class of bug). Pick up
+   later if it seems worth it.
 9. **Security polish** — CORS is currently wildcard-open
    (`Access-Control-Allow-Origin: "*"`); fine while everything's on
    workers.dev/pages.dev, should tighten to the real domain once item 5
