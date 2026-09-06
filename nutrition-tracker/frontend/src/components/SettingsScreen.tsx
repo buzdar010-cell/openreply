@@ -31,7 +31,7 @@ const EMPTY_GOALS: GoalsData = {
   goal: 'maintain',
 };
 
-type View = 'main' | 'goals' | 'feedback' | 'gamification' | 'learn';
+type View = 'main' | 'goals' | 'feedback' | 'gamification' | 'learn' | 'legal';
 
 function SettingsCard({ children }: { children: ReactNode }) {
   return <div className="border-cream-200 divide-cream-200 mb-6 divide-y overflow-hidden rounded-2xl border bg-surface">{children}</div>;
@@ -126,7 +126,6 @@ export function SettingsScreen({ resetSignal }: { resetSignal: number }) {
 
   const [feedback, setFeedback] = useState('');
   const [sendingFeedback, setSendingFeedback] = useState(false);
-  const [confirmingReset, setConfirmingReset] = useState(false);
   const [exporting, setExporting] = useState(false);
 
   const [remindersEnabled, setRemindersEnabled] = useState(false);
@@ -238,12 +237,6 @@ export function SettingsScreen({ resetSignal }: { resetSignal: number }) {
     } finally {
       setSendingFeedback(false);
     }
-  }
-
-  function handleResetApp() {
-    showToast('App reset');
-    localStorage.removeItem(ONBOARDED_KEY);
-    setTimeout(() => window.location.reload(), 500);
   }
 
   async function handleLogout() {
@@ -372,6 +365,72 @@ export function SettingsScreen({ resetSignal }: { resetSignal: number }) {
     );
   }
 
+  if (view === 'legal') {
+    return (
+      <SettingsSubScreen title="Privacy & Disclaimer" onBack={goBack}>
+        <div className="text-ink-600 space-y-5 pb-6 text-sm leading-relaxed">
+          <section>
+            <h2 className="text-ink-900 mb-2 text-base font-bold">Not medical advice</h2>
+            <p>
+              Calorie and macro numbers in this app are estimates, based on a curated dish database and AI-assisted matching of
+              what you describe or photograph. They won't always be perfectly accurate, and they're not a substitute for advice
+              from a doctor, dietitian, or other qualified professional — especially if you have a medical condition, are
+              pregnant, or have specific dietary needs. Always check with a professional before making health decisions based on
+              anything in this app.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-ink-900 mb-2 text-base font-bold">What we collect</h2>
+            <p>
+              Your email and password (stored as a secure hash, never in plain text), the food/exercise/weight/water entries you
+              log, any photos you submit for food or barcode-label recognition, and basic technical info (device/browser errors,
+              rough country from your network, for security and fixing bugs).
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-ink-900 mb-2 text-base font-bold">How it's used</h2>
+            <p>
+              To calculate your nutrition estimates and targets, personalize tips, keep your account secure, and fix problems
+              when something breaks. Photos you submit may be sent to Google's Gemini AI to identify food or read a nutrition
+              label. Barcode lookups may be sent to Open Food Facts. We don't sell your data to anyone.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-ink-900 mb-2 text-base font-bold">Who else sees it</h2>
+            <p>
+              Service providers that help run the app: Cloudflare (hosting/database), Google Gemini (AI food/label recognition),
+              Open Food Facts (barcode data), Resend (account emails), and Paddle (payments, for anyone on a paid plan). Each
+              only sees what it needs to do its part.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-ink-900 mb-2 text-base font-bold">Deleting your data</h2>
+            <p>
+              "Export my data" above gives you everything in one file at any time. A self-serve delete-account button isn't
+              built yet — until it is, email{' '}
+              <a href="mailto:buzdar0003@gmail.com" className="text-primary-600 font-semibold">
+                buzdar0003@gmail.com
+              </a>{' '}
+              and your account and its data will be deleted.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-ink-900 mb-2 text-base font-bold">Questions</h2>
+            <p>
+              This is a small, actively-developed app — if anything here is unclear, or you want to know more about how your
+              data is handled, reach out at the email above.
+            </p>
+          </section>
+        </div>
+      </SettingsSubScreen>
+    );
+  }
+
   return (
     <div className="flex flex-1 flex-col overflow-y-auto px-5 pt-8 pb-24">
       <h1 className="text-ink-900 mb-6 text-2xl font-extrabold">Settings</h1>
@@ -438,28 +497,13 @@ export function SettingsScreen({ resetSignal }: { resetSignal: number }) {
       </SettingsCard>
 
       <SettingsCard>
-        {confirmingReset ? (
-          <div className="p-4">
-            <p className="text-ink-900 mb-3 text-sm font-semibold">Reset the app and clear all local data?</p>
-            <p className="text-ink-400 mb-3 text-xs">This can't be undone. You'll go through onboarding again.</p>
-            <div className="flex gap-2">
-              <button onClick={handleResetApp} className="bg-danger-500 flex-1 rounded-xl py-2 text-sm font-bold text-white">
-                Yes, reset
-              </button>
-              <button
-                onClick={() => setConfirmingReset(false)}
-                className="border-cream-200 text-ink-600 flex-1 rounded-xl border py-2 text-sm font-bold"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        ) : (
-          <SettingsRow icon="🗑️" label="Reset app" value="Clears local data" onClick={() => setConfirmingReset(true)} />
-        )}
+        <SettingsRow icon="📄" label="Privacy & Disclaimer" onClick={() => navigateToView('legal')} />
       </SettingsCard>
 
       <p className="text-ink-400 mt-2 text-center text-xs">Nutrition Tracker · v1.0</p>
+      <p className="text-ink-400 mx-auto mt-1 max-w-xs text-center text-[11px] leading-relaxed">
+        Nutrition estimates only, not medical advice — see Privacy & Disclaimer above.
+      </p>
     </div>
   );
 }
