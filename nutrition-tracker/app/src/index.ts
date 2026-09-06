@@ -68,6 +68,7 @@ import { ARTICLES } from "./content/articles.ts";
 import { computeWeightTrend } from "./weightTrend.ts";
 import { sendWebPush, importVapidPrivateKey, base64UrlDecode, type VapidKeyPair } from "./webPush.ts";
 import { notifySlack } from "./slackNotify.ts";
+import { humanizeError } from "./humanizeError.ts";
 import { lookupOpenFoodFacts } from "./openFoodFacts.ts";
 import { parseBarcodeLabel } from "./parseBarcodeLabel.ts";
 import { resolvePortion } from "./resolvePortion.ts";
@@ -1174,7 +1175,10 @@ async function handleClientError(request: Request, env: Env): Promise<Response> 
     message: body.stack ? `${message}\n${body.stack}` : message,
     created_at: Math.floor(Date.now() / 1000),
   });
-  await notifySlack(env.SLACK_WEBHOOK_URL, `Frontend error on ${body.url ?? "(unknown page)"}: ${message}`);
+  await notifySlack(
+    env.SLACK_WEBHOOK_URL,
+    `*App error on ${body.url ?? "(unknown page)"}*\n${humanizeError(message)}\n_Technical detail: ${message}_`,
+  );
 
   return jsonResponse({ ok: true });
 }
@@ -1670,7 +1674,10 @@ export default {
         // Don't let a failure to record the error mask the real error response.
       }
       try {
-        await notifySlack(env.SLACK_WEBHOOK_URL, `Error on ${url.pathname}: ${message}`);
+        await notifySlack(
+          env.SLACK_WEBHOOK_URL,
+          `*Something broke on ${url.pathname}*\n${humanizeError(message)}\n_Technical detail: ${message}_`,
+        );
       } catch {
         // Same reasoning -- a Slack outage must never turn into a 500 for the actual user request.
       }
