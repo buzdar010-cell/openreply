@@ -48,9 +48,14 @@ Fix before anyone outside trusted testers uses the app.
    Settings that downloads everything as one JSON file. No import path,
    deliberately: an account already IS the restore mechanism now, nothing
    to import back into.
-4. **Legal basics** — no privacy policy, no "these are estimates, not
-   medical advice" disclaimer anywhere. Deferred for now, will come back
-   to it.
+4. ✅ **Legal basics** — DONE. New Settings → "Privacy & Disclaimer"
+   sub-screen: not-medical-advice disclaimer, what's collected, how it's
+   used, which third parties are involved (Cloudflare, Gemini, Open Food
+   Facts, Resend, Paddle), and how to request account deletion by email
+   until a self-serve option (item 6) exists. Short one-line disclaimer
+   also added to the Settings footer for visibility. Also removed the
+   "Reset app" button while in here -- real risk of a tester tapping it
+   by accident, no benefit now that real accounts exist.
 5. **Custom domain + branding** — everything is currently on Cloudflare's
    own subdomains (`*.workers.dev`, `*.pages.dev`) under the placeholder
    name "Nutrition Tracker," which is a description, not a brand. Needs:
