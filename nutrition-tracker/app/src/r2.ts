@@ -35,3 +35,19 @@ export async function storePhoto(
 export async function getPhoto(bucket: R2Bucket, key: string): Promise<R2ObjectBody | null> {
   return bucket.get(key);
 }
+
+/**
+ * Deletes every photo stored for this account -- the exact "prefix-scan
+ * scoped per user" use case the photoKey layout was namespaced for. Paged
+ * via `cursor` since `list()` caps results per call; R2 has no
+ * delete-by-prefix primitive, so this is list-then-delete-each.
+ */
+export async function deleteAllPhotosForDevice(bucket: R2Bucket, deviceId: string): Promise<void> {
+  const prefix = `photos/${deviceId}/`;
+  let cursor: string | undefined;
+  do {
+    const listing = await bucket.list({ prefix, cursor });
+    await Promise.all(listing.objects.map((obj) => bucket.delete(obj.key)));
+    cursor = listing.truncated ? listing.cursor : undefined;
+  } while (cursor);
+}

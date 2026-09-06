@@ -1022,3 +1022,33 @@ export async function getDailySummary(
     mrrUsd,
   };
 }
+
+/**
+ * Removes every row this account owns. Order matters: sessions and
+ * trusted_devices have a real FOREIGN KEY REFERENCES users(id) (see
+ * 0006_accounts.sql), so those must go before the users row itself or the
+ * delete fails the same way the throwaway-test-account cleanups did earlier
+ * this session. Everything else is just device_id/user_id-keyed with no FK,
+ * order doesn't matter for those, but they're deleted before the account
+ * row regardless for the same "leave nothing dangling" reasoning.
+ *
+ * error_logs is deliberately NOT touched -- those are operational/diagnostic
+ * records (what broke, when), not this person's personal content, and
+ * device_id there is nullable/not a meaningful identity link.
+ */
+export async function deleteAccount(db: D1Database, userId: string): Promise<void> {
+  await db.batch([
+    db.prepare(`DELETE FROM logs WHERE device_id = ?`).bind(userId),
+    db.prepare(`DELETE FROM exercise_logs WHERE device_id = ?`).bind(userId),
+    db.prepare(`DELETE FROM weight_logs WHERE device_id = ?`).bind(userId),
+    db.prepare(`DELETE FROM water_logs WHERE device_id = ?`).bind(userId),
+    db.prepare(`DELETE FROM unmatched_logs WHERE device_id = ?`).bind(userId),
+    db.prepare(`DELETE FROM unmatched_barcodes WHERE device_id = ?`).bind(userId),
+    db.prepare(`DELETE FROM user_profiles WHERE device_id = ?`).bind(userId),
+    db.prepare(`DELETE FROM feedback WHERE device_id = ?`).bind(userId),
+    db.prepare(`DELETE FROM push_subscriptions WHERE user_id = ?`).bind(userId),
+    db.prepare(`DELETE FROM sessions WHERE user_id = ?`).bind(userId),
+    db.prepare(`DELETE FROM trusted_devices WHERE user_id = ?`).bind(userId),
+    db.prepare(`DELETE FROM users WHERE id = ?`).bind(userId),
+  ]);
+}

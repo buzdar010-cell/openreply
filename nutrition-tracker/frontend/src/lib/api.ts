@@ -86,6 +86,16 @@ export async function logout(): Promise<void> {
   }
 }
 
+/**
+ * Unlike logout, this must NOT swallow a failure -- clearing the local
+ * session while the server-side delete actually failed would tell someone
+ * their account is gone when it isn't. Only clear on confirmed success.
+ */
+export async function deleteAccount(): Promise<void> {
+  await postJson('/auth/delete-account', { confirm: 'delete my account' });
+  clearSession();
+}
+
 // ---- Food logging ----
 
 export interface LogResultEntry {

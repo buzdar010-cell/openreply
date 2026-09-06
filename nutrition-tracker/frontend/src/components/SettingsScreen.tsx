@@ -5,6 +5,7 @@ import {
   setGamification as setGamificationApi,
   submitFeedback,
   logout,
+  deleteAccount,
   getLogs,
   getHomeContent,
   type Gender,
@@ -127,6 +128,9 @@ export function SettingsScreen({ resetSignal }: { resetSignal: number }) {
   const [feedback, setFeedback] = useState('');
   const [sendingFeedback, setSendingFeedback] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleteTyped, setDeleteTyped] = useState('');
+  const [deleting, setDeleting] = useState(false);
 
   const [remindersEnabled, setRemindersEnabled] = useState(false);
   const [remindersBusy, setRemindersBusy] = useState(false);
@@ -246,6 +250,18 @@ export function SettingsScreen({ resetSignal }: { resetSignal: number }) {
     // this account's history.
     localStorage.removeItem(ONBOARDED_KEY);
     window.location.reload();
+  }
+
+  async function handleDeleteAccount() {
+    setDeleting(true);
+    try {
+      await deleteAccount();
+      localStorage.removeItem(ONBOARDED_KEY);
+      window.location.reload();
+    } catch {
+      showToast('Failed to delete account — try again', 'error');
+      setDeleting(false);
+    }
   }
 
   async function handleExportData() {
@@ -410,20 +426,8 @@ export function SettingsScreen({ resetSignal }: { resetSignal: number }) {
           <section>
             <h2 className="text-ink-900 mb-2 text-base font-bold">Deleting your data</h2>
             <p>
-              "Export my data" above gives you everything in one file at any time. A self-serve delete-account button isn't
-              built yet — until it is, email{' '}
-              <a href="mailto:buzdar0003@gmail.com" className="text-primary-600 font-semibold">
-                buzdar0003@gmail.com
-              </a>{' '}
-              and your account and its data will be deleted.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-ink-900 mb-2 text-base font-bold">Questions</h2>
-            <p>
-              This is a small, actively-developed app — if anything here is unclear, or you want to know more about how your
-              data is handled, reach out at the email above.
+              "Export my data" above gives you everything in one file at any time. "Delete account" below permanently erases
+              your account and everything tied to it — logs, photos, profile — immediately, with no recovery after.
             </p>
           </section>
         </div>
@@ -498,6 +502,48 @@ export function SettingsScreen({ resetSignal }: { resetSignal: number }) {
 
       <SettingsCard>
         <SettingsRow icon="📄" label="Privacy & Disclaimer" onClick={() => navigateToView('legal')} />
+      </SettingsCard>
+
+      <SettingsCard>
+        {confirmingDelete ? (
+          <div className="p-4">
+            <p className="text-ink-900 mb-2 text-sm font-bold">Delete your account permanently?</p>
+            <p className="text-ink-400 mb-3 text-xs leading-relaxed">
+              This can't be undone. Every log, photo, and your profile are gone immediately — there's no recovery after this.
+              Type <span className="text-ink-900 font-semibold">delete my account</span> below to confirm.
+            </p>
+            <input
+              type="text"
+              value={deleteTyped}
+              onChange={(e) => setDeleteTyped(e.target.value)}
+              placeholder="delete my account"
+              className="border-cream-200 text-ink-900 mb-3 w-full rounded-xl border p-3 text-sm outline-none"
+              autoCapitalize="none"
+              autoCorrect="off"
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={handleDeleteAccount}
+                disabled={deleteTyped.trim().toLowerCase() !== 'delete my account' || deleting}
+                className="bg-danger-500 flex-1 rounded-xl py-2 text-sm font-bold text-white disabled:opacity-40"
+              >
+                {deleting ? 'Deleting…' : 'Yes, delete everything'}
+              </button>
+              <button
+                onClick={() => {
+                  setConfirmingDelete(false);
+                  setDeleteTyped('');
+                }}
+                disabled={deleting}
+                className="border-cream-200 text-ink-600 flex-1 rounded-xl border py-2 text-sm font-bold"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <SettingsRow icon="⚠️" label="Delete account" value="Permanently erases everything" onClick={() => setConfirmingDelete(true)} />
+        )}
       </SettingsCard>
 
       <p className="text-ink-400 mt-2 text-center text-xs">Nutrition Tracker · v1.0</p>

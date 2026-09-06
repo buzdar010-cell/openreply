@@ -62,6 +62,7 @@ import {
   getUserByPaddleSubscriptionId,
   updateSubscriptionStatus,
   getDailySummary,
+  deleteAccount,
 } from "./db.ts";
 import { computeSignals, selectTips, selectArticles } from "./content/selectContent.ts";
 import { ARTICLES } from "./content/articles.ts";
@@ -72,7 +73,7 @@ import { humanizeError } from "./humanizeError.ts";
 import { lookupOpenFoodFacts } from "./openFoodFacts.ts";
 import { parseBarcodeLabel } from "./parseBarcodeLabel.ts";
 import { resolvePortion } from "./resolvePortion.ts";
-import { storePhoto, getPhoto } from "./r2.ts";
+import { storePhoto, getPhoto, deleteAllPhotosForDevice } from "./r2.ts";
 import { GeminiRateLimiterDO, KeyedRateLimiterDO } from "./rateLimiterDO.ts";
 import { calculateDailyCalorieTarget, calculateMacroTargets, calculateWaterTargetMl, isValidProfileInput } from "./goalCalc.ts";
 import { calculateCaloriesBurned, isValidActivityType } from "./exerciseCalc.ts";
@@ -386,6 +387,56 @@ async function handleLogout(request: Request, env: Env): Promise<Response> {
   if (header?.startsWith("Bearer ")) {
     await deleteSession(env.DB, header.slice("Bearer ".length));
   }
+  return jsonResponse({ ok: true });
+}
+
+/**
+ * Cancels a Paddle subscription via their REST API. Best-effort by design --
+ * called from account deletion, where a Paddle-side failure (their API
+ * down, a stale/already-canceled subscription id) must never block the
+ * person's own data actually being deleted. Implemented against Paddle's
+ * documented Cancel Subscription endpoint; like the webhook signature
+ * verification, this hasn't been exercised against a real Paddle account
+ * yet since one doesn't exist -- confirm the shape once it does, same
+ * caveat as everywhere else Paddle-shaped in this codebase.
+ */
+async function cancelPaddleSubscription(apiKey: string, subscriptionId: string): Promise<void> {
+  try {
+    await fetch(`https://api.paddle.com/subscriptions/${subscriptionId}/cancel`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ effective_from: "immediately" }),
+    });
+  } catch {
+    // Swallowed on purpose -- see the function comment above.
+  }
+}
+
+const DELETE_ACCOUNT_CONFIRM_PHRASE = "delete my account";
+
+/**
+ * Self-serve account deletion. Requires the confirmation phrase in the
+ * request body (not just a bearer token) as a second factor against a
+ * stray/automated call -- the frontend's own confirmation dialog is the
+ * primary safeguard against an accidental tap, this is a backend-side
+ * belt-and-suspenders check that the request really means it.
+ */
+async function handleDeleteAccount(request: Request, env: Env): Promise<Response> {
+  const userId = await requireAuth(request, env);
+  if (!userId) return jsonResponse({ error: "unauthorized" }, 401);
+
+  const body = (await request.json().catch(() => ({}))) as { confirm?: string };
+  if (body.confirm !== DELETE_ACCOUNT_CONFIRM_PHRASE) {
+    return jsonResponse({ error: "confirmation phrase did not match" }, 400);
+  }
+
+  const user = await getUserById(env.DB, userId);
+  if (user?.paddle_subscription_id) {
+    await cancelPaddleSubscription(env.PADDLE_API_KEY, user.paddle_subscription_id);
+  }
+  await deleteAllPhotosForDevice(env.PHOTOS, userId);
+  await deleteAccount(env.DB, userId);
+
   return jsonResponse({ ok: true });
 }
 
@@ -1547,6 +1598,9 @@ export default {
       }
       if (request.method === "POST" && url.pathname === "/auth/logout") {
         return await handleLogout(request, env);
+      }
+      if (request.method === "POST" && url.pathname === "/auth/delete-account") {
+        return await handleDeleteAccount(request, env);
       }
       if (request.method === "POST" && url.pathname === "/log/text") {
         return await handleTextLog(request, env);
