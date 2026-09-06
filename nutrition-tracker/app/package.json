@@ -1,0 +1,31 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test:search": "node --experimental-strip-types test/search_quality.ts",
+    "test:goal": "node --experimental-strip-types test/goal_calc.ts",
+    "test:content": "node --experimental-strip-types test/select_content.ts",
+    "test:weight": "node --experimental-strip-types test/weight_trend.ts",
+    "test:webpush": "node --experimental-strip-types test/web_push.ts",
+    "test:e2e": "node --experimental-strip-types test/test_e2e.ts",
+    "test": "npm run typecheck && npm run test:search && npm run test:goal && npm run test:content && npm run test:weight && npm run test:webpush",
+    "seed:generate": "python3 scripts/generate_seed.py",
+    "dev": "wrangler dev --local"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260827.1",
+    "@types/node": "^26.4.0",
+    "typescript": "^7.0.2",
+    "wrangler": "^4.127.0"
+  }
+}

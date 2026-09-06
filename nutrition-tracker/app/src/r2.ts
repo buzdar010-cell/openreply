@@ -1,0 +1,53 @@
+/**
+ * Photo storage for photo-based logs. Photos are kept (not discarded after
+ * parsing) so a user can review what they logged, same reasoning as any
+ * receipt/record -- see the app-flow discussion this module implements.
+ */
+
+function photoKey(deviceId: string, logId: string, ext: string): string {
+  // Namespaced by device so a bucket listing/prefix-scan can be scoped per
+  // user if ever needed (e.g. account deletion / data export).
+  return `photos/${deviceId}/${logId}.${ext}`;
+}
+
+const EXT_BY_MIME: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+};
+
+/** Stores a photo, returns the R2 object key to save alongside the log row. */
+export async function storePhoto(
+  bucket: R2Bucket,
+  deviceId: string,
+  logId: string,
+  imageBytes: ArrayBuffer,
+  mimeType: "image/jpeg" | "image/png" | "image/webp",
+): Promise<string> {
+  const key = photoKey(deviceId, logId, EXT_BY_MIME[mimeType]);
+  await bucket.put(key, imageBytes, {
+    httpMetadata: { contentType: mimeType },
+  });
+  return key;
+}
+
+/** Retrieves a stored photo by its key, or null if it doesn't exist. */
+export async function getPhoto(bucket: R2Bucket, key: string): Promise<R2ObjectBody | null> {
+  return bucket.get(key);
+}
+
+/**
+ * Deletes every photo stored for this account -- the exact "prefix-scan
+ * scoped per user" use case the photoKey layout was namespaced for. Paged
+ * via `cursor` since `list()` caps results per call; R2 has no
+ * delete-by-prefix primitive, so this is list-then-delete-each.
+ */
+export async function deleteAllPhotosForDevice(bucket: R2Bucket, deviceId: string): Promise<void> {
+  const prefix = `photos/${deviceId}/`;
+  let cursor: string | undefined;
+  do {
+    const listing = await bucket.list({ prefix, cursor });
+    await Promise.all(listing.objects.map((obj) => bucket.delete(obj.key)));
+    cursor = listing.truncated ? listing.cursor : undefined;
+  } while (cursor);
+}
