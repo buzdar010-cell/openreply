@@ -81,10 +81,13 @@ Fix before anyone outside trusted testers uses the app.
    SSL, and eventually a Resend sending domain on it -- Claude can do
    directly with the same Cloudflare API access already used all
    session for Workers/D1/R2/Pages.
-6. **Self-serve account deletion** — Export exists (Settings → "Export my
-   data"), but there's no way to actually delete an account and its data
-   without a direct database query. Real gap on its own, and something
-   app stores (item 16 below) require if this ever gets listed there.
+6. ✅ **Self-serve account deletion** — DONE. New "Delete account" row in
+   Settings, gated by typing the exact phrase "delete my account" (not
+   just a tap) since it's irreversible. Backend cancels any active Paddle
+   subscription, deletes every stored photo, and removes every row tied
+   to the account across every table. Live-verified against a real
+   throwaway account with real data -- every row confirmed gone
+   afterward, old session confirmed rejected.
 7. **CI (automated tests on every push)** — every test that exists today
    (backend: typecheck + the goal-calc/search/content/weight-trend/
    web-push regression tests; frontend: typecheck + lint) only runs
