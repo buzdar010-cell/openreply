@@ -46,9 +46,14 @@
   ],
 
   "triggers": {
-    // Once a day -- checked against each subscription's own last-reminded time, not just
-    // this schedule, so it's fine if the actual run time drifts a little.
-    "crons": ["0 12 * * *"]
+    "crons": [
+      // Once a day -- checked against each subscription's own last-reminded time, not just
+      // this schedule, so it's fine if the actual run time drifts a little. Also sends the
+      // daily Slack summary.
+      "0 12 * * *",
+      // Uptime check -- every 15 minutes, alerts to Slack on failure.
+      "*/15 * * * *"
+    ]
   },
 
   "vars": {

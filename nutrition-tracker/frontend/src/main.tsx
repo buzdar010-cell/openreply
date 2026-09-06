@@ -4,8 +4,23 @@ import { registerSW } from 'virtual:pwa-register'
 import './index.css'
 import App from './App.tsx'
 import { initTheme } from './lib/theme.ts'
+import { reportClientError } from './lib/api.ts'
 
 initTheme()
+
+// Catches crashes that never reach the backend's own error handling at all --
+// e.g. a stale cached build rendering broken UI, a null-ref in a component,
+// a rejected promise nobody awaited. Reported the moment it happens, same as
+// backend errors, rather than only ever surfacing as a tester's WhatsApp
+// screenshot.
+window.addEventListener('error', (event) => {
+  reportClientError(event.message, event.error?.stack);
+});
+window.addEventListener('unhandledrejection', (event) => {
+  const reason = event.reason;
+  const message = reason instanceof Error ? reason.message : String(reason);
+  reportClientError(message, reason instanceof Error ? reason.stack : undefined);
+});
 
 // Without this call, "registerType: 'autoUpdate'" in vite.config.ts does nothing --
 // vite-plugin-pwa only wires up its update-check/reload behavior when this virtual

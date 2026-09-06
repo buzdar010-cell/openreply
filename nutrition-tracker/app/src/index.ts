@@ -61,11 +61,13 @@ import {
   activatePremium,
   getUserByPaddleSubscriptionId,
   updateSubscriptionStatus,
+  getDailySummary,
 } from "./db.ts";
 import { computeSignals, selectTips, selectArticles } from "./content/selectContent.ts";
 import { ARTICLES } from "./content/articles.ts";
 import { computeWeightTrend } from "./weightTrend.ts";
 import { sendWebPush, importVapidPrivateKey, base64UrlDecode, type VapidKeyPair } from "./webPush.ts";
+import { notifySlack } from "./slackNotify.ts";
 import { lookupOpenFoodFacts } from "./openFoodFacts.ts";
 import { parseBarcodeLabel } from "./parseBarcodeLabel.ts";
 import { resolvePortion } from "./resolvePortion.ts";
@@ -93,6 +95,7 @@ export interface Env {
   PADDLE_CLIENT_TOKEN: string; // not secret -- embedded in the frontend build, same as VAPID_PUBLIC_KEY, to open the Paddle.js checkout overlay
   PADDLE_PRICE_ID_MONTHLY: string; // not secret -- a Price id, not a credential
   PADDLE_PRICE_ID_ANNUAL: string;
+  SLACK_WEBHOOK_URL: string; // secret -- posts real-time errors/unmatched-scan/uptime/daily-summary alerts
 }
 
 // How long since the last weight log before someone is "overdue" for a reminder --
@@ -1108,6 +1111,7 @@ async function handlePaddleWebhook(request: Request, env: Env): Promise<Response
       status?: string;
       next_billed_at?: string | null;
       custom_data?: { user_id?: string } | null;
+      billing_cycle?: { interval?: string } | null; // 'month' | 'year' -- needed to compute real MRR, not just a premium head-count
     };
   };
 
@@ -1115,13 +1119,14 @@ async function handlePaddleWebhook(request: Request, env: Env): Promise<Response
   if (!data) return jsonResponse({ ok: true }); // nothing to act on, but acknowledge so Paddle doesn't retry
 
   const renewsAt = data.next_billed_at ? Math.floor(new Date(data.next_billed_at).getTime() / 1000) : null;
+  const period = data.billing_cycle?.interval ?? null;
 
   switch (event.event_type) {
     case "subscription.created":
     case "subscription.activated": {
       const userId = data.custom_data?.user_id;
       if (userId && data.customer_id && data.id) {
-        await activatePremium(env.DB, userId, data.customer_id, data.id, data.status ?? "active", renewsAt);
+        await activatePremium(env.DB, userId, data.customer_id, data.id, data.status ?? "active", renewsAt, period);
         // Without this, someone who exhausted their free daily cap earlier
         // today would still see an error for up to one refill interval right
         // after paying -- see resetRateLimit's own comment for why.
@@ -1140,6 +1145,36 @@ async function handlePaddleWebhook(request: Request, env: Env): Promise<Response
     }
     // Other event types (transaction.*, customer.*) aren't needed for gating access -- ignored, not errors.
   }
+
+  return jsonResponse({ ok: true });
+}
+
+const CLIENT_ERROR_WINDOW_MS = 5 * 60 * 1000;
+const CLIENT_ERROR_CAP = 20; // global, not per-user -- a frontend crash loop shouldn't be able to spam the Slack channel unbounded
+
+/**
+ * Reports a frontend crash (window.onerror / unhandledrejection, wired up in
+ * main.tsx) the moment it happens -- these never reach the backend's own
+ * try/catch since they happen entirely in the browser. No auth required: a
+ * crash can happen before login, and knowing which account isn't needed to
+ * act on "the app broke." Global rate limit, not per-user, since the whole
+ * point is catching a bug that could be hitting everyone at once.
+ */
+async function handleClientError(request: Request, env: Env): Promise<Response> {
+  const limited = await rateLimitOrNull(env.KEYED_LIMITER, "client-error-global", CLIENT_ERROR_CAP, CLIENT_ERROR_WINDOW_MS);
+  if (limited) return jsonResponse({ ok: true }); // still 200 -- the reporting beacon itself shouldn't surface an error to the user
+
+  const body = (await request.json().catch(() => ({}))) as { message?: string; stack?: string; url?: string };
+  const message = typeof body.message === "string" && body.message ? body.message : "(no message)";
+
+  await insertErrorLog(env.DB, {
+    id: crypto.randomUUID(),
+    endpoint: `frontend:${typeof body.url === "string" ? body.url : "(unknown)"}`,
+    device_id: null,
+    message: body.stack ? `${message}\n${body.stack}` : message,
+    created_at: Math.floor(Date.now() / 1000),
+  });
+  await notifySlack(env.SLACK_WEBHOOK_URL, `Frontend error on ${body.url ?? "(unknown page)"}: ${message}`);
 
   return jsonResponse({ ok: true });
 }
@@ -1397,6 +1432,55 @@ async function handleAdminPhoto(request: Request, env: Env): Promise<Response> {
   });
 }
 
+const PREMIUM_MONTHLY_PRICE_USD = 4.99;
+const PREMIUM_ANNUAL_PRICE_USD = 39.99;
+
+/** One daily Slack message covering both "what happened today" and "where the business stands overall." */
+async function sendDailySummaryToSlack(env: Env): Promise<void> {
+  const now = Math.floor(Date.now() / 1000);
+  const dayAgo = now - 24 * 3600;
+  const s = await getDailySummary(env.DB, dayAgo, now, PREMIUM_MONTHLY_PRICE_USD, PREMIUM_ANNUAL_PRICE_USD);
+
+  const text = [
+    `*Nourly daily summary*`,
+    `Last 24h: ${s.newSignups} new signups, ${s.foodLogs} food logs, ${s.exerciseLogs} exercise logs, ${s.waterLogs} water logs, ${s.weightLogs} weight logs.`,
+    `Unmatched scans (text/photo/barcode that didn't match): ${s.unmatchedItems}. Errors: ${s.errors}.`,
+    `Totals: ${s.totalUsers} users (${s.premiumUsers} premium, ${s.freeUsers} free). MRR: $${s.mrrUsd.toFixed(2)}.`,
+  ].join("\n");
+
+  await notifySlack(env.SLACK_WEBHOOK_URL, text);
+}
+
+const FRONTEND_URL = "https://nutrition-tracker-app-ahu.pages.dev";
+const BACKEND_URL = "https://nutrition-tracker.buzdar0003.workers.dev";
+
+/**
+ * Pings both live URLs and alerts on anything that isn't a healthy response.
+ * Can't catch every failure mode -- if Cloudflare itself stopped running this
+ * Worker entirely, this same check wouldn't fire either. Catches the
+ * failure modes that matter day to day: the app erroring, a dependency
+ * failing, either deploy actually being unreachable.
+ */
+async function checkUptimeAndAlert(env: Env): Promise<void> {
+  const checks: { name: string; url: string }[] = [
+    { name: "frontend", url: FRONTEND_URL },
+    { name: "backend", url: `${BACKEND_URL}/subscription` }, // any real route -- a 401 here still proves the Worker is alive and routing correctly
+  ];
+
+  for (const check of checks) {
+    try {
+      const res = await fetch(check.url, { method: "GET" });
+      // 401/404 are fine -- they mean the server is up and answering; only 5xx or a network failure means something's actually down.
+      if (res.status >= 500) {
+        await notifySlack(env.SLACK_WEBHOOK_URL, `Uptime check failed: ${check.name} (${check.url}) returned HTTP ${res.status}`);
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      await notifySlack(env.SLACK_WEBHOOK_URL, `Uptime check failed: ${check.name} (${check.url}) unreachable -- ${message}`);
+    }
+  }
+}
+
 /** Daily cron: nudge anyone overdue for a weight log who has an active push subscription. See db.ts's query for the exact "overdue" + "not already reminded" logic. */
 async function sendWeightReminders(env: Env): Promise<void> {
   const subs = await getPushSubscriptionsOverdueForWeightLog(env.DB, WEIGHT_REMINDER_STALE_SECONDS);
@@ -1423,8 +1507,14 @@ async function sendWeightReminders(env: Env): Promise<void> {
 }
 
 export default {
-  async scheduled(_controller: ScheduledController, env: Env): Promise<void> {
+  async scheduled(controller: ScheduledController, env: Env): Promise<void> {
+    if (controller.cron === "*/15 * * * *") {
+      await checkUptimeAndAlert(env);
+      return;
+    }
+    // The once-daily cron does both existing weight-reminder pushes and the new Slack summary.
     await sendWeightReminders(env);
+    await sendDailySummaryToSlack(env);
   },
 
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -1520,6 +1610,9 @@ export default {
       if (request.method === "POST" && url.pathname === "/push/unsubscribe") {
         return await handlePushUnsubscribe(request, env);
       }
+      if (request.method === "POST" && url.pathname === "/client-error") {
+        return await handleClientError(request, env);
+      }
       if (request.method === "GET" && url.pathname === "/subscription") {
         return await handleGetSubscription(request, env);
       }
@@ -1575,6 +1668,11 @@ export default {
         });
       } catch {
         // Don't let a failure to record the error mask the real error response.
+      }
+      try {
+        await notifySlack(env.SLACK_WEBHOOK_URL, `Error on ${url.pathname}: ${message}`);
+      } catch {
+        // Same reasoning -- a Slack outage must never turn into a 500 for the actual user request.
       }
       return jsonResponse({ error: message }, 500);
     }

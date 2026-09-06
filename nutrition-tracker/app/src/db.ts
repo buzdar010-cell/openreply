@@ -548,6 +548,7 @@ export interface UserRow {
   paddle_subscription_id: string | null;
   subscription_status: string | null;
   subscription_renews_at: number | null;
+  subscription_period: string | null;
 }
 
 export async function getUserByEmail(db: D1Database, email: string): Promise<UserRow | null> {
@@ -619,12 +620,13 @@ export async function activatePremium(
   paddleSubscriptionId: string,
   status: string,
   renewsAt: number | null,
+  period: string | null,
 ): Promise<void> {
   await db
     .prepare(
-      `UPDATE users SET subscription_tier = 'premium', paddle_customer_id = ?, paddle_subscription_id = ?, subscription_status = ?, subscription_renews_at = ? WHERE id = ?`,
+      `UPDATE users SET subscription_tier = 'premium', paddle_customer_id = ?, paddle_subscription_id = ?, subscription_status = ?, subscription_renews_at = ?, subscription_period = ? WHERE id = ?`,
     )
-    .bind(paddleCustomerId, paddleSubscriptionId, status, renewsAt, userId)
+    .bind(paddleCustomerId, paddleSubscriptionId, status, renewsAt, period, userId)
     .run();
 }
 
@@ -936,4 +938,87 @@ export async function getWaterTotalForRange(db: D1Database, deviceId: string, st
 export async function deleteWaterLogOwnedByDevice(db: D1Database, deviceId: string, logId: string): Promise<boolean> {
   const result = await db.prepare(`DELETE FROM water_logs WHERE id = ? AND device_id = ?`).bind(logId, deviceId).run();
   return (result.meta.changes ?? 0) > 0;
+}
+
+export interface DailySummary {
+  newSignups: number;
+  foodLogs: number;
+  exerciseLogs: number;
+  waterLogs: number;
+  weightLogs: number;
+  unmatchedItems: number; // text + photo + barcode combined -- "things people scanned/described that didn't match"
+  errors: number;
+  totalUsers: number;
+  premiumUsers: number;
+  freeUsers: number;
+  mrrUsd: number;
+}
+
+/**
+ * Everything the daily Slack digest needs in one call. `startUnix`/`endUnix`
+ * bound "today"; the user/subscription counts are all-time snapshots, not
+ * bounded by the range, since "how many total users" isn't a daily figure.
+ * MRR: monthly-plan subscribers count at full price, annual-plan
+ * subscribers count at price/12 -- a subscriber with no period recorded yet
+ * (shouldn't happen once the webhook path is live, but possible from manual
+ * testing) is excluded rather than guessed at.
+ */
+export async function getDailySummary(
+  db: D1Database,
+  startUnix: number,
+  endUnix: number,
+  premiumMonthlyPriceUsd: number,
+  premiumAnnualPriceUsd: number,
+): Promise<DailySummary> {
+  // created_at, not logged_at -- logged_at reflects backdating (when the user says
+  // it happened), created_at reflects when it was actually submitted. "What
+  // happened today" should count real activity, not get skewed by someone
+  // backdating an entry to/from today.
+  const [signups, food, exercise, water, weight, unmatchedText, unmatchedBarcodes, errors, users] = await Promise.all([
+    db.prepare(`SELECT COUNT(*) c FROM users WHERE created_at >= ? AND created_at < ?`).bind(startUnix, endUnix).first<{ c: number }>(),
+    db.prepare(`SELECT COUNT(*) c FROM logs WHERE created_at >= ? AND created_at < ?`).bind(startUnix, endUnix).first<{ c: number }>(),
+    db
+      .prepare(`SELECT COUNT(*) c FROM exercise_logs WHERE created_at >= ? AND created_at < ?`)
+      .bind(startUnix, endUnix)
+      .first<{ c: number }>(),
+    db.prepare(`SELECT COUNT(*) c FROM water_logs WHERE created_at >= ? AND created_at < ?`).bind(startUnix, endUnix).first<{ c: number }>(),
+    db.prepare(`SELECT COUNT(*) c FROM weight_logs WHERE created_at >= ? AND created_at < ?`).bind(startUnix, endUnix).first<{ c: number }>(),
+    db
+      .prepare(`SELECT COUNT(*) c FROM unmatched_logs WHERE created_at >= ? AND created_at < ?`)
+      .bind(startUnix, endUnix)
+      .first<{ c: number }>(),
+    db
+      .prepare(`SELECT COUNT(*) c FROM unmatched_barcodes WHERE created_at >= ? AND created_at < ?`)
+      .bind(startUnix, endUnix)
+      .first<{ c: number }>(),
+    db.prepare(`SELECT COUNT(*) c FROM error_logs WHERE created_at >= ? AND created_at < ?`).bind(startUnix, endUnix).first<{ c: number }>(),
+    db
+      .prepare(
+        `SELECT COUNT(*) total, SUM(CASE WHEN subscription_tier = 'premium' THEN 1 ELSE 0 END) premium,
+                SUM(CASE WHEN subscription_tier = 'premium' AND subscription_period = 'month' THEN 1 ELSE 0 END) premiumMonthly,
+                SUM(CASE WHEN subscription_tier = 'premium' AND subscription_period = 'year' THEN 1 ELSE 0 END) premiumAnnual
+         FROM users`,
+      )
+      .first<{ total: number; premium: number; premiumMonthly: number; premiumAnnual: number }>(),
+  ]);
+
+  const totalUsers = users?.total ?? 0;
+  const premiumUsers = users?.premium ?? 0;
+  const premiumMonthly = users?.premiumMonthly ?? 0;
+  const premiumAnnual = users?.premiumAnnual ?? 0;
+  const mrrUsd = premiumMonthly * premiumMonthlyPriceUsd + premiumAnnual * (premiumAnnualPriceUsd / 12);
+
+  return {
+    newSignups: signups?.c ?? 0,
+    foodLogs: food?.c ?? 0,
+    exerciseLogs: exercise?.c ?? 0,
+    waterLogs: water?.c ?? 0,
+    weightLogs: weight?.c ?? 0,
+    unmatchedItems: (unmatchedText?.c ?? 0) + (unmatchedBarcodes?.c ?? 0),
+    errors: errors?.c ?? 0,
+    totalUsers,
+    premiumUsers,
+    freeUsers: totalUsers - premiumUsers,
+    mrrUsd,
+  };
 }

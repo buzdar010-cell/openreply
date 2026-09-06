@@ -2,7 +2,7 @@ import { getSessionToken, clearSession, UNAUTHORIZED_EVENT } from './session';
 
 // Overridable via VITE_API_BASE at build time so this doesn't need a code
 // change once the backend moves to a custom domain.
-const API_BASE = import.meta.env.VITE_API_BASE ?? 'https://nutrition-tracker.buzdar0003.workers.dev';
+export const API_BASE = import.meta.env.VITE_API_BASE ?? 'https://nutrition-tracker.buzdar0003.workers.dev';
 
 function authHeaders(): Record<string, string> {
   const token = getSessionToken();
@@ -415,4 +415,22 @@ export async function subscribePush(subscription: { endpoint: string; keys: { p2
 
 export async function unsubscribePush(endpoint: string): Promise<void> {
   await postJson('/push/unsubscribe', { endpoint });
+}
+
+/**
+ * Fire-and-forget frontend crash report -- deliberately NOT built on postJson,
+ * since postJson throws on failure and calls handleUnauthorized. A reporter
+ * that itself can throw (e.g. offline, or the report racing a real outage)
+ * would risk masking or compounding the very crash it's trying to report.
+ */
+export function reportClientError(message: string, stack?: string): void {
+  try {
+    fetch(`${API_BASE}/client-error`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, stack, url: window.location.href }),
+    }).catch(() => {});
+  } catch {
+    // Never let error reporting itself throw.
+  }
 }
